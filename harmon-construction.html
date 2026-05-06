@@ -32,7 +32,7 @@
     width: 100%;
     height: 100%;
     z-index: -1;
-    opacity: 0.07;
+    opacity: 0.14;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -360,6 +360,12 @@
   .fade-in:nth-child(3) { animation-delay: 0.2s; }
   .fade-in:nth-child(4) { animation-delay: 0.3s; }
   .fade-in:nth-child(5) { animation-delay: 0.4s; }
+
+  .variable {
+    background: rgba(245, 158, 11, 0.25);
+    border-bottom: 2px solid #f59e0b;
+    padding: 0 2px;
+  }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -373,20 +379,20 @@
   <!-- Header -->
   <div class="header fade-in">
     <div class="badge">AI Readiness Brief</div>
-    <h1>What AI could look like for<br><span class="company-name">Harmon Construction</span></h1>
-    <div class="subtitle">Prepared for Tim Harmon, President / CEO</div>
+    <h1>What AI could look like for<br><span class="company-name variable">Harmon Construction</span></h1>
+    <div class="subtitle">Prepared for <span class="variable">Tim Harmon</span>, <span class="variable">President / CEO</span></div>
   </div>
 
   <!-- Industry Context -->
   <div class="section fade-in">
     <div class="section-label">Where your industry stands</div>
-    <h2>Construction is one of the slowest industries to adopt AI</h2>
-    <p>That's not a criticism. It's context. Most GCs your size haven't done anything with AI beyond using ChatGPT for a few emails. The ones who have started connecting AI to their actual project data are seeing a real edge. Here's the landscape right now.</p>
+    <h2><span class="variable">Construction</span> is one of the slowest industries to adopt AI</h2>
+    <p>That's not a criticism. It's context. Most <span class="variable">GCs</span> your size haven't done anything with AI beyond using ChatGPT for a few emails. The ones who have started connecting AI to their actual <span class="variable">project data</span> are seeing a real edge. Here's the landscape right now.</p>
 
     <div class="stat-row">
       <div class="stat-card red">
-        <div class="number">8.9%</div>
-        <div class="label">Construction AI<br>adoption rate</div>
+        <div class="number variable">8.9%</div>
+        <div class="label"><span class="variable">Construction</span> AI<br>adoption rate</div>
       </div>
       <div class="stat-card amber">
         <div class="number">63%</div>
@@ -414,7 +420,7 @@
         <h3>"I know AI matters but I haven't done anything with it yet"</h3>
       </div>
       <div class="pain-body">
-        Every conference, every LinkedIn post, every trade article mentions AI. You know it's coming for your industry. But between running jobs, managing subs, and keeping the backlog healthy, figuring out where to start hasn't made the priority list.
+        Every conference, every LinkedIn post, every trade article mentions AI. You know it's coming for your industry. But between <span class="variable">running jobs, managing subs, and keeping the backlog healthy</span>, figuring out where to start hasn't made the priority list.
         <div class="owner-quote">"Feels like every day there's another AI ad, another person trying to sell some tool. But are other small business owners actually using AI in a way that makes a real difference?" — GC owner, 2025</div>
       </div>
     </div>
@@ -425,7 +431,7 @@
         <h3>"I've tried ChatGPT but it doesn't touch my actual business"</h3>
       </div>
       <div class="pain-body">
-        Maybe you've used it to draft an RFI response or summarize a spec document. That's fine. But it doesn't know your jobs, your margins, your subs, or your change orders. It's working from the internet, not from your data. That's like asking someone who's never been on your jobsite to tell you how the project is going.
+        Maybe you've used it to <span class="variable">draft an RFI response or summarize a spec document</span>. That's fine. But it doesn't know <span class="variable">your jobs, your margins, your subs, or your change orders</span>. It's working from the internet, not from your data. That's like <span class="variable">asking someone who's never been on your jobsite to tell you how the project is going</span>.
         <div class="owner-quote">"I keep trying to use it, but it's consistently a waste of time outside of extremely basic tasks." — Business owner, 2025</div>
       </div>
     </div>
@@ -436,7 +442,7 @@
         <h3>"I can't get a straight answer from my own systems without calling someone"</h3>
       </div>
       <div class="pain-body">
-        You want to know which jobs are over budget this month. That answer is split between your estimating software, your PM tool, and your accounting system. By the time someone puts it together, the job is further along and the number already changed. The person who knows how everything works is the bottleneck, and if they leave, a lot of knowledge walks out the door with them.
+        You want to know <span class="variable">which jobs are over budget this month</span>. That answer is split between <span class="variable">your estimating software, your PM tool, and your accounting system</span>. By the time someone puts it together, <span class="variable">the job is further along and the number already changed</span>. The person who knows how everything works is the bottleneck, and if they leave, a lot of knowledge walks out the door with them.
       </div>
     </div>
   </div>
@@ -445,33 +451,33 @@
 
   <!-- What it looks like -->
   <div class="section fade-in">
-    <div class="section-label">What AI actually looks like for a GC your size</div>
+    <div class="section-label">What AI actually looks like for <span class="variable">a GC your size</span></div>
     <h2>You type a question. You get a real answer from your real data.</h2>
     <p>No new software to learn. No ripping out what you already use. No training your team on another dashboard. AI connects to the systems you already run your business on, and you ask it questions in plain English.</p>
-    <p>Here are the kinds of questions a company like Harmon Construction could ask on day one:</p>
+    <p>Here are the kinds of questions a company like <span class="variable">Harmon Construction</span> could ask on day one:</p>
 
     <div class="example-grid">
-      <div class="example-q">
+      <div class="example-q variable">
         <span class="prompt">&gt;</span>
         Which jobs went over budget last quarter?
       </div>
-      <div class="example-q">
+      <div class="example-q variable">
         <span class="prompt">&gt;</span>
         What's our margin on the Overland Park senior living project?
       </div>
-      <div class="example-q">
+      <div class="example-q variable">
         <span class="prompt">&gt;</span>
         Which subs have the most open change orders right now?
       </div>
-      <div class="example-q">
+      <div class="example-q variable">
         <span class="prompt">&gt;</span>
         Show me every project where we're more than 10% over the original estimate
       </div>
-      <div class="example-q">
+      <div class="example-q variable">
         <span class="prompt">&gt;</span>
         What's our average close rate on healthcare bids vs commercial?
       </div>
-      <div class="example-q">
+      <div class="example-q variable">
         <span class="prompt">&gt;</span>
         Which customers haven't started a new project with us in 18 months?
       </div>
@@ -516,7 +522,7 @@
 
   <!-- CTA -->
   <div class="cta-section fade-in">
-    <h2>Curious what this would look like for Harmon?</h2>
+    <h2>Curious what this would look like for <span class="variable">Harmon</span>?</h2>
     <p>We can walk you through it if you'd like. It would be fun to have a conversation about what is possible with the systems you already have.</p>
     <img src="tim-wenger.jpg" alt="Timothy Wenger" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:16px auto 12px;display:block;">
     <div class="contact">
