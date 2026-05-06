@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Readiness Brief — Harmon Construction</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface-2: #232733;
+    --border: #2d3141;
+    --text: #e4e4e7;
+    --text-muted: #9ca3af;
+    --accent: #3b82f6;
+    --accent-soft: rgba(59, 130, 246, 0.12);
+    --green: #22c55e;
+    --green-soft: rgba(34, 197, 94, 0.12);
+    --amber: #f59e0b;
+    --amber-soft: rgba(245, 158, 11, 0.12);
+    --red: #ef4444;
+    --red-soft: rgba(239, 68, 68, 0.12);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --radius: 12px;
+  }
+
+  [data-theme="light"] {
+    --bg: #f8f9fb;
+    --surface: #ffffff;
+    --surface-2: #f1f3f5;
+    --border: #e2e5ea;
+    --text: #1a1d27;
+    --text-muted: #6b7280;
+    --accent-soft: rgba(59, 130, 246, 0.08);
+    --green-soft: rgba(34, 197, 94, 0.08);
+    --amber-soft: rgba(245, 158, 11, 0.08);
+    --red-soft: rgba(239, 68, 68, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 48px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+
+  .header .company-name {
+    color: var(--accent);
+  }
+
+  .header .subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  /* Theme toggle */
+  .theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: var(--font);
+    z-index: 100;
+    transition: all 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--text); }
+
+  /* Sections */
+  .section {
+    margin-bottom: 48px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+
+  .section p {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  /* Stat cards */
+  .stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-card .number {
+    font-size: 32px;
+    font-weight: 800;
+    font-family: var(--mono);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-card .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .stat-card.red .number { color: var(--red); }
+  .stat-card.amber .number { color: var(--amber); }
+  .stat-card.green .number { color: var(--green); }
+
+  /* Pain point cards */
+  .pain-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .pain-card .pain-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .pain-card .pain-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .pain-card.p1 .pain-number { background: var(--red-soft); color: var(--red); }
+  .pain-card.p2 .pain-number { background: var(--amber-soft); color: var(--amber); }
+  .pain-card.p3 .pain-number { background: var(--green-soft); color: var(--green); }
+
+  .pain-card h3 {
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .pain-card .pain-body {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .pain-card .owner-quote {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border-radius: 8px;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--text);
+    border-left: 3px solid var(--border);
+  }
+
+  /* Example questions */
+  .example-grid {
+    display: grid;
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .example-q {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14px;
+    font-family: var(--mono);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .example-q .prompt {
+    color: var(--accent);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  /* Safety section */
+  .safety-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .safety-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .safety-item .icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .safety-item h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .safety-item p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* CTA section */
+  .cta-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    margin-top: 48px;
+  }
+
+  .cta-section h2 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .cta-section p {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .cta-section .contact {
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .cta-section .contact a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .cta-section .contact a:hover { text-decoration: underline; }
+
+  .cta-section .fine-print {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+  }
+
+  .footer .brand {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .footer .disclaimer {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    opacity: 0.6;
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 48px 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .stat-row { grid-template-columns: 1fr; }
+    .safety-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 22px; }
+    .container { padding: 24px 16px 60px; }
+  }
+
+  /* Animations */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in:nth-child(2) { animation-delay: 0.1s; }
+  .fade-in:nth-child(3) { animation-delay: 0.2s; }
+  .fade-in:nth-child(4) { animation-delay: 0.3s; }
+  .fade-in:nth-child(5) { animation-delay: 0.4s; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()">Light / Dark</button>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header fade-in">
+    <div class="badge">AI Readiness Brief</div>
+    <h1>What AI could look like for<br><span class="company-name">Harmon Construction</span></h1>
+    <div class="subtitle">Prepared for Tim Harmon, President / CEO</div>
+  </div>
+
+  <!-- Industry Context -->
+  <div class="section fade-in">
+    <div class="section-label">Where your industry stands</div>
+    <h2>Construction is one of the slowest industries to adopt AI</h2>
+    <p>That's not a criticism. It's context. Most GCs your size haven't done anything with AI beyond using ChatGPT for a few emails. The ones who have started connecting AI to their actual project data are seeing a real edge. Here's the landscape right now.</p>
+
+    <div class="stat-row">
+      <div class="stat-card red">
+        <div class="number">8.9%</div>
+        <div class="label">Construction AI<br>adoption rate</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="number">63%</div>
+        <div class="label">Say AI will be<br>important in 5 years</div>
+      </div>
+      <div class="stat-card green">
+        <div class="number">27%</div>
+        <div class="label">Feel confident<br>adopting it</div>
+      </div>
+    </div>
+
+    <p>Sources: NFIB Small Business Technology Survey, JP Morgan Chase Institute, ASCE 2025 Survey</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Three Pain Points -->
+  <div class="section fade-in">
+    <div class="section-label">Three things we hear from owners like you</div>
+    <h2>The gap between knowing and doing</h2>
+
+    <div class="pain-card p1">
+      <div class="pain-header">
+        <div class="pain-number">1</div>
+        <h3>"I know AI matters but I haven't done anything with it yet"</h3>
+      </div>
+      <div class="pain-body">
+        Every conference, every LinkedIn post, every trade article mentions AI. You know it's coming for your industry. But between running jobs, managing subs, and keeping the backlog healthy, figuring out where to start hasn't made the priority list.
+        <div class="owner-quote">"Feels like every day there's another AI ad, another person trying to sell some tool. But are other small business owners actually using AI in a way that makes a real difference?" — GC owner, 2025</div>
+      </div>
+    </div>
+
+    <div class="pain-card p2">
+      <div class="pain-header">
+        <div class="pain-number">2</div>
+        <h3>"I've tried ChatGPT but it doesn't touch my actual business"</h3>
+      </div>
+      <div class="pain-body">
+        Maybe you've used it to draft an RFI response or summarize a spec document. That's fine. But it doesn't know your jobs, your margins, your subs, or your change orders. It's working from the internet, not from your data. That's like asking someone who's never been on your jobsite to tell you how the project is going.
+        <div class="owner-quote">"I keep trying to use it, but it's consistently a waste of time outside of extremely basic tasks." — Business owner, 2025</div>
+      </div>
+    </div>
+
+    <div class="pain-card p3">
+      <div class="pain-header">
+        <div class="pain-number">3</div>
+        <h3>"I can't get a straight answer from my own systems without calling someone"</h3>
+      </div>
+      <div class="pain-body">
+        You want to know which jobs are over budget this month. That answer is split between your estimating software, your PM tool, and your accounting system. By the time someone puts it together, the job is further along and the number already changed. The person who knows how everything works is the bottleneck, and if they leave, a lot of knowledge walks out the door with them.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- What it looks like -->
+  <div class="section fade-in">
+    <div class="section-label">What AI actually looks like for a GC your size</div>
+    <h2>You type a question. You get a real answer from your real data.</h2>
+    <p>No new software to learn. No ripping out what you already use. No training your team on another dashboard. AI connects to the systems you already run your business on, and you ask it questions in plain English.</p>
+    <p>Here are the kinds of questions a company like Harmon Construction could ask on day one:</p>
+
+    <div class="example-grid">
+      <div class="example-q">
+        <span class="prompt">&gt;</span>
+        Which jobs went over budget last quarter?
+      </div>
+      <div class="example-q">
+        <span class="prompt">&gt;</span>
+        What's our margin on the Overland Park senior living project?
+      </div>
+      <div class="example-q">
+        <span class="prompt">&gt;</span>
+        Which subs have the most open change orders right now?
+      </div>
+      <div class="example-q">
+        <span class="prompt">&gt;</span>
+        Show me every project where we're more than 10% over the original estimate
+      </div>
+      <div class="example-q">
+        <span class="prompt">&gt;</span>
+        What's our average close rate on healthcare bids vs commercial?
+      </div>
+      <div class="example-q">
+        <span class="prompt">&gt;</span>
+        Which customers haven't started a new project with us in 18 months?
+      </div>
+    </div>
+
+    <p>These answers already exist in your systems. They're just trapped behind logins, reports, and the one person who knows how to pull them.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Safety -->
+  <div class="section fade-in">
+    <div class="section-label">Why it's safe</div>
+    <h2>Your data stays exactly where it is</h2>
+    <p>The first question every owner asks is "what if it changes something?" Fair question. Here's the short answer: it can't.</p>
+
+    <div class="safety-grid">
+      <div class="safety-item">
+        <div class="icon">&#128274;</div>
+        <h4>Read-only by default</h4>
+        <p>AI can look at your data but can't touch it. No accidental deletes, no rogue updates, no surprises at 2am.</p>
+      </div>
+      <div class="safety-item">
+        <div class="icon">&#127968;</div>
+        <h4>Data stays on your servers</h4>
+        <p>Nothing gets uploaded to the cloud for AI training. Your financials, your bids, your client data stays in your building.</p>
+      </div>
+      <div class="safety-item">
+        <div class="icon">&#128209;</div>
+        <h4>Full audit trail</h4>
+        <p>Every question asked and every answer returned is logged. You see exactly what AI accessed and when.</p>
+      </div>
+      <div class="safety-item">
+        <div class="icon">&#128268;</div>
+        <h4>Unplug anytime</h4>
+        <p>If you hate it, we disconnect it and you're out nothing. Your systems go back to exactly how they were.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- CTA -->
+  <div class="cta-section fade-in">
+    <h2>We'll set this up for free</h2>
+    <p>We're looking for a handful of companies to connect AI to their existing systems at no cost. You tell us what you think. That's the whole deal.</p>
+    <div class="contact">
+      Timothy Wenger<br>
+      Partner, Strategy & Growth<br>
+      <a href="tel:5074694157">507-469-4157</a><br>
+      <a href="mailto:tw@norsoft.com">tw@norsoft.com</a><br>
+      <a href="https://norsoft.com">norsoft.com</a>
+    </div>
+    <div class="fine-print">No contracts. No obligations. No sales pitch on the call. If it's not a fit, we'll tell you.</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="brand">NORSOFT</div>
+    <div class="disclaimer">This brief was prepared using publicly available information about Harmon Construction. Industry statistics from NFIB, JP Morgan Chase Institute, and ASCE.</div>
+  </div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+}
+</script>
+
+</body>
+</html>
