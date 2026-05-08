@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Readiness Brief — SONUS Engineered Solutions</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: rgba(26, 29, 39, 0.85);
+    --surface-2: #232733;
+    --border: #2d3141;
+    --text: #e4e4e7;
+    --text-muted: #9ca3af;
+    --accent: #3b82f6;
+    --accent-soft: rgba(59, 130, 246, 0.12);
+    --green: #22c55e;
+    --green-soft: rgba(34, 197, 94, 0.12);
+    --amber: #f59e0b;
+    --amber-soft: rgba(245, 158, 11, 0.12);
+    --red: #ef4444;
+    --red-soft: rgba(239, 68, 68, 0.12);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --radius: 12px;
+  }
+
+  #matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.20;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header {
+    text-align: center;
+    padding: 32px;
+    margin-bottom: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+
+  .header .company-name { color: var(--text); }
+
+  .header .subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  .section {
+    margin-bottom: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+
+  .section p {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-card .number {
+    font-size: 32px;
+    font-weight: 800;
+    font-family: var(--mono);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-card .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .stat-card.red .number { color: var(--red); }
+  .stat-card.amber .number { color: var(--amber); }
+  .stat-card.green .number { color: var(--green); }
+
+  .arc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .arc-pain {
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .arc-pain .pain-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+
+  .arc-pain h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .arc-pain p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.8;
+    margin: 0;
+  }
+
+  .arc-resolve {
+    padding: 24px;
+    background: var(--surface-2);
+  }
+
+  .arc-resolve .resolve-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+
+  .arc-resolve p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.8;
+    margin: 0 0 12px 0;
+  }
+
+  .arc-resolve p:last-child { margin-bottom: 0; }
+
+  .example-grid {
+    display: grid;
+    gap: 6px;
+    margin: 12px 0 0 0;
+  }
+
+  .example-q {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-family: var(--mono);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .example-q .prompt {
+    color: var(--green);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .safety-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .safety-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .safety-item .icon { font-size: 20px; margin-bottom: 8px; }
+  .safety-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+
+  .safety-item p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .cta-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    margin-top: 24px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .cta-section h2 { font-size: 20px; margin-bottom: 12px; }
+
+  .cta-section p {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .cta-section .contact { font-size: 15px; color: var(--text); }
+  .cta-section .contact a { color: var(--accent); text-decoration: none; }
+  .cta-section .contact a:hover { text-decoration: underline; }
+
+  .cta-section .fine-print {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 24px;
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .footer .brand {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .footer .disclaimer {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    opacity: 0.6;
+  }
+
+  .variable {
+    background: rgba(245, 158, 11, 0.25);
+    border-bottom: 2px solid #f59e0b;
+    padding: 0 2px;
+  }
+
+  @media (max-width: 640px) {
+    .stat-row { grid-template-columns: 1fr; }
+    .safety-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 22px; }
+    .container { padding: 24px 16px 60px; }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in:nth-child(2) { animation-delay: 0.1s; }
+  .fade-in:nth-child(3) { animation-delay: 0.15s; }
+  .fade-in:nth-child(4) { animation-delay: 0.2s; }
+  .fade-in:nth-child(5) { animation-delay: 0.25s; }
+  .fade-in:nth-child(6) { animation-delay: 0.3s; }
+  .fade-in:nth-child(7) { animation-delay: 0.35s; }
+  .fade-in:nth-child(8) { animation-delay: 0.4s; }
+  .fade-in:nth-child(9) { animation-delay: 0.45s; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<canvas id="matrix-bg"></canvas>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header fade-in">
+    <div class="badge">AI Readiness Brief</div>
+    <h1><span class="company-name variable" style="font-size:33px">SONUS Engineered Solutions</span></h1>
+    <div class="subtitle">Prepared for <span class="variable">Tim Droege</span>, <span class="variable">President and CEO</span></div>
+  </div>
+
+  <!-- Context -->
+  <div class="section fade-in">
+    <div class="section-label">The reality right now</div>
+    <h2>Most <span class="variable">manufacturers</span> know AI matters. Almost none have done anything about it.</h2>
+
+    <div class="stat-row">
+      <div class="stat-card red">
+        <div class="number variable">24%</div>
+        <div class="label"><span class="variable">Manufacturing</span> SMB<br>AI adoption rate</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="number">63%</div>
+        <div class="label">Of SMB owners say AI<br>will be important in 5 years</div>
+      </div>
+      <div class="stat-card green">
+        <div class="number">72%</div>
+        <div class="label">Of AI adopters say<br>integration is the hardest part</div>
+      </div>
+    </div>
+
+    <p>Sources: <a href="https://www.nfib.com/news/press-release/new-nfib-report-how-small-businesses-incorporate-tech-and-ai-advancements/" target="_blank" style="color:var(--accent)">NFIB Small Business Technology Survey</a>, <a href="https://www.jpmorganchase.com/institute/all-topics/business-growth-and-entrepreneurship/understanding-ai-use-by-small-businesses" target="_blank" style="color:var(--accent)">JP Morgan Chase Institute</a>, <a href="https://www.federalreserve.gov/econres/notes/feds-notes/monitoring-ai-adoption-in-the-u-s-economy-20260403.html" target="_blank" style="color:var(--accent)">Federal Reserve AI Adoption Monitor</a></p>
+
+  </div>
+
+  <!-- Section intro -->
+  <div class="section fade-in">
+    <h2 style="text-align:center">4 Things Holding Leadership Back From AI</h2>
+  </div>
+
+  <!-- ARC 1 -->
+  <div class="arc-card fade-in">
+    <div class="arc-pain">
+      <div class="pain-label">Sound familiar?</div>
+      <h3>"I know AI matters but I haven't done anything with it yet"</h3>
+      <p>Every trade show, every OEM conversation, every industry article. You know it's coming. But between <span class="variable">running production, managing OEM deadlines, and keeping quality specs tight</span>, figuring out where to start hasn't made the priority list.</p>
+    </div>
+    <div class="arc-resolve">
+      <div class="resolve-label">It doesn't have to be</div>
+      <p>You don't need to become an AI expert. You don't need to evaluate tools or train your team on new software. AI connects to the systems you already have and reads from them without changing anything. Nothing changes about how you operate today.</p>
+      <p>The starting point is simple: <strong>what questions do you wish you could answer faster?</strong></p>
+    </div>
+  </div>
+
+  <!-- ARC 2 -->
+  <div class="arc-card fade-in">
+    <div class="arc-pain">
+      <h3>"I've tried ChatGPT but it doesn't touch my actual business"</h3>
+      <p>Maybe you've used it to <span class="variable">draft an email to a customer or summarize a spec sheet</span>. That's fine. But it doesn't know <span class="variable">your production runs, your scrap rates, your tooling schedules, or your customer quality requirements</span>. It's working from the internet, not from your data.</p>
+    </div>
+    <div class="arc-resolve">
+      <div class="resolve-label">The real version</div>
+      <p>When AI is connected to your actual business systems, the conversation changes completely. Instead of generic answers from the internet, you get real answers from your real data.</p>
+      <div class="example-grid">
+        <div class="example-q variable">
+          <span class="prompt">&gt;</span>
+          What's our scrap rate by product line this month vs last quarter?
+        </div>
+        <div class="example-q variable">
+          <span class="prompt">&gt;</span>
+          Which jobs are behind schedule on the floor right now?
+        </div>
+        <div class="example-q variable">
+          <span class="prompt">&gt;</span>
+          Show me every open customer complaint tied to the rubber molding line
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARC 3 -->
+  <div class="arc-card fade-in">
+    <div class="arc-pain">
+      <h3>"I don't know how to make AI useful for my specific business"</h3>
+      <p>The examples you see online are all tech companies or startups. Nobody is showing what AI looks like for <span class="variable">a Tier 1 NVH supplier running precision molding and testing for automotive OEMs</span>. So it stays theoretical.</p>
+    </div>
+    <div class="arc-resolve">
+      <div class="resolve-label">What it looks like for <span class="variable">SONUS</span></div>
+      <p>AI connected to your systems becomes a library of everything your company knows. Every <span class="variable">test result, production run, quality report, customer spec, tooling record, and shipping log</span>. Searchable in seconds.</p>
+      <p>Beyond searching, it starts working for you:</p>
+      <div class="example-grid">
+        <div class="example-q variable">
+          <span class="prompt">&gt;</span>
+          Flag any production run where reject rate is trending above 3%
+        </div>
+        <div class="example-q variable">
+          <span class="prompt">&gt;</span>
+          Based on our last 50 NVH test reports, what's the typical pass rate by component type?
+        </div>
+        <div class="example-q variable">
+          <span class="prompt">&gt;</span>
+          Generate this week's production status report across all active jobs
+        </div>
+        <div class="example-q variable">
+          <span class="prompt">&gt;</span>
+          Which OEM customers haven't placed a new order in 6 months?
+        </div>
+      </div>
+      <p style="margin-top:12px">None of this requires new data. It's already in your systems, just locked behind logins and the one person who knows how to pull it.</p>
+    </div>
+  </div>
+
+  <!-- ARC 4 -->
+  <div class="arc-card fade-in">
+    <div class="arc-pain">
+      <h3>"I'm not comfortable with AI touching our data"</h3>
+      <p>You've heard the stories. Data leaking to AI companies. AI making things up. Sensitive OEM specs and production data ending up somewhere they shouldn't. The hesitation is rational. 70% of business owners who have adopted AI cite data privacy as their top concern.</p>
+    </div>
+    <div class="arc-resolve">
+      <div class="resolve-label">Already solved</div>
+      <div class="safety-grid">
+        <div class="safety-item">
+          <div class="icon" style="font-family:var(--mono);color:var(--green);">[R]</div>
+          <h4>Read-only by default</h4>
+          <p>AI can look at your data but can't touch it. No accidental deletes, no rogue updates, no surprises.</p>
+        </div>
+        <div class="safety-item">
+          <div class="icon" style="font-family:var(--mono);color:var(--green);">[L]</div>
+          <h4>Data stays on your servers</h4>
+          <p>Nothing gets uploaded for AI training. Your <span class="variable">OEM specs, test data, and production records</span> stay in your building.</p>
+        </div>
+        <div class="safety-item">
+          <div class="icon" style="font-family:var(--mono);color:var(--green);">[A]</div>
+          <h4>Full audit trail</h4>
+          <p>Every question asked and every answer returned is logged. You see exactly what was accessed and when.</p>
+        </div>
+        <div class="safety-item">
+          <div class="icon" style="font-family:var(--mono);color:var(--green);">[X]</div>
+          <h4>Unplug anytime</h4>
+          <p>If it's not a fit, we disconnect it. Your systems go back to exactly how they were.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section fade-in">
+    <h2>Curious what this would look like for <span class="variable">SONUS</span>?</h2>
+    <p>We can walk you through it if you'd like. It would be fun to have a conversation about what is possible with the systems you already have.</p>
+    <a href="https://norsoft.pipedrive.com/scheduler/jq55RKf3/quick-chat-with-tim" target="_blank" style="display:inline-block;background:var(--accent);color:#fff;padding:12px 28px;border-radius:8px;font-weight:600;font-size:15px;text-decoration:none;margin:12px 0;">Pick a time to chat</a>
+    <img src="tim-wenger.jpg" alt="Timothy Wenger" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:16px auto 12px;display:block;">
+    <div class="contact">
+      Timothy Wenger<br>
+      Partner, Strategy & Growth<br>
+      <a href="tel:5074694157">507-469-4157</a><br>
+      <a href="mailto:tw@norsoft.com">tw@norsoft.com</a><br>
+      <a href="https://www.linkedin.com/in/timothy-wenger/" target="_blank">LinkedIn</a> · <a href="https://norsoft.com" target="_blank">norsoft.com</a>
+    </div>
+    <div class="fine-print">Building custom software since 1987. Based in Mankato, MN.</div>
+  </div>
+
+  <div class="footer">
+    <div class="brand">NORSOFT</div>
+    <div class="disclaimer">This brief was prepared using publicly available information about SONUS Engineered Solutions. Industry statistics sourced and linked above.</div>
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById('matrix-bg');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()';
+const fontSize = 14;
+let columns;
+let drops;
+
+function initDrops() {
+  columns = Math.floor(canvas.width / fontSize);
+  drops = Array(columns).fill(1);
+}
+initDrops();
+window.addEventListener('resize', initDrops);
+
+function draw() {
+  ctx.fillStyle = 'rgba(15, 17, 23, 0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = fontSize + 'px monospace';
+
+  for (let i = 0; i < drops.length; i++) {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
+    drops[i]++;
+  }
+}
+
+setInterval(draw, 50);
+</script>
+
+</body>
+</html>
