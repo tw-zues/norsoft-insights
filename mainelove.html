@@ -344,6 +344,44 @@
   .strip strong { color: var(--ink); font-weight: 600; }
   .strip .icon { color: var(--accent); flex: none; }
 
+  .roadmap {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 16px 18px;
+    margin-top: 16px;
+  }
+  .roadmap h3 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+  }
+  .roadmap p.lede { margin: 0 0 12px; font-size: 12.5px; color: var(--ink-faint); font-weight: 400; }
+  .roadmap ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .roadmap li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 400;
+  }
+  .roadmap li .stage {
+    flex: none;
+    font-family: 'Plex Mono';
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 5px;
+    background: var(--surface-sunken);
+    color: var(--ink-faint);
+    border: 1px dashed var(--line);
+  }
+
   /* ---------- Two column: activity + inventory glance ---------- */
   .cols {
     display: grid;
@@ -412,7 +450,7 @@
   .glance li:last-child { border-bottom: none; }
   .glance .n { color: var(--ink-soft); display: flex; align-items: center; gap: 8px; }
   .glance .n .swatch-dot { width: 9px; height: 9px; border-radius: 3px; flex: none; }
-  .glance .v { font-family: 'Plex Mono'; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .glance .v { font-family: 'Plex Mono'; font-weight: 500; font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 8px; }
 
   /* ---------- Tables ---------- */
   .table-wrap {
@@ -483,6 +521,9 @@
   .pill.picking { background: var(--warn-bg); color: var(--warn); }
   .pill.shipped { background: var(--good-bg); color: var(--good); }
   .pill.invoiced { background: var(--surface-sunken); color: var(--ink-soft); }
+  .pill.low { background: var(--crit-bg); color: var(--crit); }
+  .pill.progress { background: var(--warn-bg); color: var(--warn); }
+  .pill.received { background: var(--good-bg); color: var(--good); }
 
   .source-badge {
     display: inline-flex;
@@ -498,7 +539,16 @@
   .swatch.pfg { background: var(--accent); }
   .swatch.walmart { background: #3f7a56; }
 
-  /* ---------- EDI partner cards ---------- */
+  /* ---------- EDI / Distribution partner cards ---------- */
+  .section-sub {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin: 26px 0 12px;
+  }
+  .section-sub:first-child { margin-top: 0; }
   .partner-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -544,6 +594,27 @@
   .partner .meta b { color: var(--ink); font-weight: 700; }
   .partner hr { border: none; border-top: 1px solid var(--surface-sunken); margin: 0; }
 
+  .rollout {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .rollout li {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--surface-sunken);
+    font-size: 13px;
+    list-style: none;
+  }
+  .rollout li:last-child { border-bottom: none; }
+  .rollout .region { font-weight: 700; }
+  .rollout .year { font-family: 'Plex Mono'; font-size: 12px; color: var(--ink-faint); }
+
   .footnote {
     margin-top: 26px;
     font-size: 11.5px;
@@ -583,13 +654,17 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>
         Inventory
       </button>
+      <button role="tab" aria-selected="false" data-tab="production">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V10l6-4 6 4v11"/><path d="M10 21v-6h4v6"/><path d="M4 10 12 4l8 6"/><path d="M14 8h3v3"/></svg>
+        Production
+      </button>
       <button role="tab" aria-selected="false" data-tab="orders">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12l1 5H5l1-5Z"/><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 12h6"/></svg>
         Orders
       </button>
-      <button role="tab" aria-selected="false" data-tab="edi">
+      <button role="tab" aria-selected="false" data-tab="distribution">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h4l2-7 4 14 2-7h4"/></svg>
-        EDI Partners
+        Distribution
       </button>
     </nav>
     <div class="sidebar-foot">
@@ -609,7 +684,7 @@
       <section class="panel active" id="panel-overview">
         <div class="panel-head">
           <h2>Good morning — here's the whole operation</h2>
-          <p>Inventory, direct orders, and broadline EDI in one feed. No separate logins for NetSuite, SPS Commerce, or TrueCommerce.</p>
+          <p>Inventory, production, direct orders, and broadline EDI in one feed. No separate logins for NetSuite, SPS Commerce, or TrueCommerce.</p>
         </div>
 
         <div class="metric-grid">
@@ -654,13 +729,18 @@
                 <span class="pill new"><span class="dot"></span>New</span>
               </li>
               <li>
+                <span class="t">10:02 AM</span>
+                <span class="d"><strong>Low stock alert</strong> — Blackberry Grapefruit dipped below reorder point <span class="src">→ Inventory</span></span>
+                <span class="pill low"><span class="dot"></span>Attention</span>
+              </li>
+              <li>
                 <span class="t">Yesterday</span>
                 <span class="d"><strong>856 ASN sent</strong> to US Foods — Wild Blueberry Lemon, 120 cases <span class="src">→ Orders · ML-10229</span></span>
                 <span class="pill shipped"><span class="dot"></span>Shipped</span>
               </li>
               <li>
                 <span class="t">Yesterday</span>
-                <span class="d"><strong>Canning run confirmed</strong> — Fri, Jul 18 at partner brewery, Southern Maine</span>
+                <span class="d"><strong>Canning run confirmed</strong> — Fri, Jul 18 at partner brewery, Southern Maine <span class="src">→ Production · CR-0142</span></span>
                 <span class="pill confirmed"><span class="dot"></span>Scheduled</span>
               </li>
               <li>
@@ -670,7 +750,7 @@
               </li>
               <li>
                 <span class="t">Jul 11</span>
-                <span class="d"><strong>Direct order</strong> placed — venue account, With Bubbles, 30 cases</span>
+                <span class="d"><strong>Direct order</strong> placed — Aramark concessions, With Bubbles, 30 cases</span>
                 <span class="pill shipped"><span class="dot"></span>Shipped</span>
               </li>
             </ul>
@@ -682,10 +762,20 @@
               <li><span class="n"><span class="swatch-dot" style="background:var(--sku-still-fg)"></span>Perfectly Still</span><span class="v">18,400</span></li>
               <li><span class="n"><span class="swatch-dot" style="background:var(--sku-bub-fg)"></span>With Bubbles</span><span class="v">21,300</span></li>
               <li><span class="n"><span class="swatch-dot" style="background:var(--sku-blu-fg)"></span>Wild Blueberry Lemon</span><span class="v">9,850</span></li>
-              <li><span class="n"><span class="swatch-dot" style="background:var(--sku-blk-fg)"></span>Blackberry Grapefruit</span><span class="v">8,900</span></li>
+              <li><span class="n"><span class="swatch-dot" style="background:var(--sku-blk-fg)"></span>Blackberry Grapefruit</span><span class="v">8,900 <span class="pill low" style="padding:1px 6px;font-size:9.5px;">Low</span></span></li>
               <li><span class="n"><span class="swatch-dot" style="background:var(--sku-ras-fg)"></span>Raspberry Lime</span><span class="v">10,200</span></li>
             </ul>
           </div>
+        </div>
+
+        <div class="roadmap">
+          <h3>Where this grows next</h3>
+          <p class="lede">Built lean on purpose — these are the natural next additions as mainelove scales, not built yet.</p>
+          <ul>
+            <li><span class="stage">Phase 2</span> AR / invoicing dashboard — track what's owed by each broadliner, tied to the 810 Invoice feed already flowing in</li>
+            <li><span class="stage">Phase 2</span> DSD partner tracking — Reyes Beverage Group + Southern Glazer's alongside the broadline EDI queue</li>
+            <li><span class="stage">Phase 3</span> Retail analytics — sell-through on Walmart.com once Deal Days launches</li>
+          </ul>
         </div>
       </section>
 
@@ -705,6 +795,7 @@
                 <th class="num">Allocated</th>
                 <th class="num">Available</th>
                 <th class="num">Reorder pt.</th>
+                <th>Status</th>
                 <th>Next canning run</th>
               </tr>
             </thead>
@@ -716,6 +807,7 @@
                 <td class="num">6,000</td>
                 <td class="num">12,400</td>
                 <td class="num">5,000</td>
+                <td><span class="pill shipped"><span class="dot"></span>OK</span></td>
                 <td>Fri, Jul 18 · Southern Maine</td>
               </tr>
               <tr>
@@ -725,6 +817,7 @@
                 <td class="num">7,200</td>
                 <td class="num">14,100</td>
                 <td class="num">5,000</td>
+                <td><span class="pill shipped"><span class="dot"></span>OK</span></td>
                 <td>Fri, Jul 18 · Southern Maine</td>
               </tr>
               <tr>
@@ -734,16 +827,18 @@
                 <td class="num">3,100</td>
                 <td class="num">6,750</td>
                 <td class="num">2,500</td>
-                <td>Aug 1 · TBD partner</td>
+                <td><span class="pill shipped"><span class="dot"></span>OK</span></td>
+                <td>Aug 1 · Central Maine</td>
               </tr>
               <tr>
                 <td class="mono">MLV-BLK-12</td>
                 <td><span class="sku-name">Blackberry Grapefruit</span><span class="sku-tag blk">Flavored</span></td>
                 <td class="num">8,900</td>
-                <td class="num">2,400</td>
-                <td class="num">6,500</td>
+                <td class="num">6,600</td>
+                <td class="num">2,300</td>
                 <td class="num">2,500</td>
-                <td>Aug 1 · TBD partner</td>
+                <td><span class="pill low"><span class="dot"></span>Low stock</span></td>
+                <td>Aug 1 · Southern Maine</td>
               </tr>
               <tr>
                 <td class="mono">MLV-RAS-12</td>
@@ -752,7 +847,78 @@
                 <td class="num">2,900</td>
                 <td class="num">7,300</td>
                 <td class="num">2,500</td>
-                <td>Aug 1 · TBD partner</td>
+                <td><span class="pill shipped"><span class="dot"></span>OK</span></td>
+                <td>Aug 1 · Southern Maine</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PRODUCTION -->
+      <section class="panel" id="panel-production">
+        <div class="panel-head">
+          <h2>Production</h2>
+          <p>Asset-light by design — mainelove doesn't own a canning line. This tracks capacity booked across partner breweries instead of a single facility.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Run</th>
+                <th>Partner brewery</th>
+                <th>Line</th>
+                <th>SKU(s)</th>
+                <th class="num">Cases planned</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">CR-0142</td>
+                <td>Partner Brewery — Southern Maine</td>
+                <td class="mono">Line 2</td>
+                <td>Perfectly Still, With Bubbles</td>
+                <td class="num">3,200</td>
+                <td>Fri, Jul 18</td>
+                <td><span class="pill confirmed"><span class="dot"></span>Scheduled</span></td>
+              </tr>
+              <tr>
+                <td class="mono">CR-0141</td>
+                <td>Partner Brewery — Central Maine</td>
+                <td class="mono">Line 1</td>
+                <td>Wild Blueberry Lemon</td>
+                <td class="num">900</td>
+                <td>Aug 1</td>
+                <td><span class="pill confirmed"><span class="dot"></span>Scheduled</span></td>
+              </tr>
+              <tr>
+                <td class="mono">CR-0140</td>
+                <td>Partner Brewery — Southern Maine</td>
+                <td class="mono">Line 2</td>
+                <td>Blackberry Grapefruit, Raspberry Lime</td>
+                <td class="num">1,100</td>
+                <td>Aug 1</td>
+                <td><span class="pill progress"><span class="dot"></span>Confirming</span></td>
+              </tr>
+              <tr>
+                <td class="mono">CR-0139</td>
+                <td>Partner Brewery — Central Maine</td>
+                <td class="mono">Line 1</td>
+                <td>Perfectly Still</td>
+                <td class="num">2,800</td>
+                <td>Jul 8</td>
+                <td><span class="pill received"><span class="dot"></span>Received</span></td>
+              </tr>
+              <tr>
+                <td class="mono">CR-0138</td>
+                <td>Partner Brewery — Southern Maine</td>
+                <td class="mono">Line 2</td>
+                <td>With Bubbles</td>
+                <td class="num">2,600</td>
+                <td>Jul 3</td>
+                <td><span class="pill received"><span class="dot"></span>Received</span></td>
               </tr>
             </tbody>
           </table>
@@ -820,7 +986,7 @@
               </tr>
               <tr>
                 <td class="mono">ML-10226</td>
-                <td><span class="source-badge"><span class="swatch direct"></span>Direct — venue</span></td>
+                <td><span class="source-badge"><span class="swatch direct"></span>Direct — Aramark concessions</span></td>
                 <td class="mono">—</td>
                 <td>With Bubbles, 30 cs</td>
                 <td><span class="pill shipped"><span class="dot"></span>Shipped</span></td>
@@ -831,12 +997,14 @@
         </div>
       </section>
 
-      <!-- EDI PARTNERS -->
-      <section class="panel" id="panel-edi">
+      <!-- DISTRIBUTION -->
+      <section class="panel" id="panel-distribution">
         <div class="panel-head">
-          <h2>EDI trading partners</h2>
-          <p>Mapped to what each broadliner actually requires — built as the New England book of business goes live, ready ahead of the DC and Florida rollout.</p>
+          <h2>Distribution</h2>
+          <p>Broadline EDI, DSD, and the regional rollout in one place — mapped to what each channel actually requires.</p>
         </div>
+
+        <div class="section-sub">Broadline foodservice — EDI</div>
         <div class="partner-grid">
           <div class="partner">
             <div class="partner-top">
@@ -889,6 +1057,49 @@
             <div class="meta">In certification — 850 passing, 856/810 in progress.<br />Target: live ahead of DC / FL rollout, 2026</div>
           </div>
         </div>
+
+        <div class="section-sub">Direct store delivery — no EDI requirement flagged yet</div>
+        <div class="partner-grid">
+          <div class="partner">
+            <div class="partner-top">
+              <div>
+                <h3>Reyes Beverage Group</h3>
+                <div class="kind">DSD — 17 states</div>
+              </div>
+              <span class="chip good"><span class="dot"></span>Agreement active</span>
+            </div>
+            <div class="meta">National distribution agreement in place. Largest beverage DSD network in the country — order/invoice flow tracked here once it's needed, kept separate from the broadline EDI queue.</div>
+          </div>
+
+          <div class="partner">
+            <div class="partner-top">
+              <div>
+                <h3>Southern Glazer's</h3>
+                <div class="kind">DSD — 48 states</div>
+              </div>
+              <span class="chip good"><span class="dot"></span>Agreement active</span>
+            </div>
+            <div class="meta">National distribution agreement in place. Largest wine &amp; spirits distributor in the U.S. — same treatment as Reyes: tracked separately from broadline EDI until they require it.</div>
+          </div>
+
+          <div class="partner">
+            <div class="partner-top">
+              <div>
+                <h3>Walmart.com</h3>
+                <div class="kind">National ecommerce</div>
+              </div>
+              <span class="chip warn"><span class="dot"></span>Launching</span>
+            </div>
+            <div class="meta">Deal Days launch — <b>July 2026</b>. First national ecommerce shelf; sell-through tracking is the natural Phase 3 add once live.</div>
+          </div>
+        </div>
+
+        <div class="section-sub">Regional rollout</div>
+        <ul class="rollout">
+          <li><span class="region">New England</span><span class="chip good"><span class="dot"></span>Live</span><span class="year">2025</span></li>
+          <li><span class="region">Washington DC &amp; Florida</span><span class="chip warn"><span class="dot"></span>Planned</span><span class="year">2026</span></li>
+          <li><span class="region">Vermont &amp; Connecticut</span><span class="chip warn"><span class="dot"></span>Planned</span><span class="year">2027</span></li>
+        </ul>
       </section>
 
       <p class="footnote">Concept preview built by Norsoft for mainelove · all data shown is illustrative, not connected to live systems</p>
