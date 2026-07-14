@@ -244,8 +244,10 @@
     font-size: 17px;
     text-transform: uppercase;
     letter-spacing: 0.01em;
+    min-width: 0;
   }
   .topbar .crumb { color: var(--ink-faint); font-weight: 400; text-transform: none; }
+  .topbar .crumb-sep { color: var(--ink-faint); }
 
   .badge-preview {
     display: inline-flex;
@@ -628,11 +630,48 @@
     .sidebar {
       flex-direction: row;
       align-items: center;
+      justify-content: space-between;
       padding: 12px 16px;
-      overflow-x: auto;
     }
     .sidebar-foot { display: none; }
-    nav.tabs { flex-direction: row; }
+
+    /* Nav becomes a fixed bottom tab bar — the robust pattern for a fixed
+       set of 5 sections, instead of a horizontally-scrolling row with no
+       affordance that more tabs exist off-screen. */
+    nav.tabs {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      flex-direction: row;
+      gap: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--line);
+      padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+      z-index: 30;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+    }
+    nav.tabs button {
+      flex: 1 1 0;
+      min-width: 0;
+      flex-direction: column;
+      gap: 3px;
+      padding: 7px 2px;
+      font-size: 10px;
+      line-height: 1.2;
+      text-align: center;
+      border-radius: 10px;
+    }
+    nav.tabs button svg { width: 18px; height: 18px; }
+
+    .content { padding: 20px 16px calc(88px + env(safe-area-inset-bottom, 0px)); }
+
+    /* Topbar: drop the repeated wordmark (sidebar already shows it) and
+       let the section name be the mobile title; badge gets its own row
+       instead of squeezing the title into a few-character column. */
+    .topbar { flex-wrap: wrap; row-gap: 8px; padding: 14px 16px; }
+    .topbar .brandword,
+    .topbar .crumb-sep { display: none; }
+    .topbar h1 { font-size: 19px; }
+
     .metric-grid { grid-template-columns: repeat(2, 1fr); }
     .cols { grid-template-columns: 1fr; }
     .partner-grid { grid-template-columns: 1fr; }
@@ -674,7 +713,7 @@
 
   <div class="main">
     <header class="topbar">
-      <h1>mainelove ops <span class="crumb">/ <span id="crumbLabel">Overview</span></span></h1>
+      <h1><span class="brandword">mainelove ops</span><span class="crumb"><span class="crumb-sep"> / </span><span id="crumbLabel">Overview</span></span></h1>
       <span class="badge-preview"><span class="dot"></span>Concept preview — sample data</span>
     </header>
 
