@@ -91,7 +91,16 @@
   .step.done .num { background: var(--accent); color: #fff; }
 
   .layout { display: grid; grid-template-columns: 1fr 240px; gap: 20px; align-items: start; }
-  @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    .stepper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow-x: visible;
+      padding-bottom: 0;
+    }
+    .step { width: 100%; }
+  }
 
   .panel {
     display: none;
