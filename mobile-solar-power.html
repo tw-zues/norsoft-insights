@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Off-grid System Builder — Concept Preview</title>
+<style>
+  :root {
+    --bg: #0c1116;
+    --surface: #151c24;
+    --surface-2: #1c2530;
+    --border: #2a3542;
+    --text: #e7ecf2;
+    --text-muted: #8fa0b3;
+    --accent: #f5a623;
+    --accent-2: #ffce6b;
+    --accent-soft: rgba(245, 166, 35, 0.12);
+    --blue: #4da3ff;
+    --green: #33d17a;
+    --green-soft: rgba(51, 209, 122, 0.12);
+    --red: #ef4444;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    background-image: radial-gradient(circle at 50% -10%, rgba(245,166,35,0.10), transparent 55%);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 920px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; }
+  .brand .mark {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #1a1200; font-size: 16px;
+  }
+  .badge-preview {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px;
+    color: var(--accent-2); background: var(--accent-soft);
+    border: 1px solid rgba(245,166,35,0.35);
+    padding: 6px 12px; border-radius: 999px;
+  }
+  .badge-preview .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  .hero { margin-bottom: 28px; }
+  .hero h1 { font-size: 27px; font-weight: 800; line-height: 1.3; margin-bottom: 10px; }
+  .hero p { color: var(--text-muted); font-size: 15px; max-width: 640px; }
+
+  .stepper {
+    display: flex; gap: 6px; overflow-x: auto;
+    margin-bottom: 20px; padding-bottom: 4px;
+  }
+  .step {
+    flex: 0 0 auto;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text-muted); font-size: 13.5px; font-weight: 600;
+    padding: 9px 14px; border-radius: 999px; cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .step .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--surface-2); color: var(--text-muted);
+    font-size: 11px; font-family: var(--mono);
+  }
+  .step.active { background: var(--accent-soft); border-color: rgba(245,166,35,0.45); color: var(--accent-2); }
+  .step.active .num { background: var(--accent); color: #1a1200; }
+  .step.done .num { background: var(--green); color: #06210f; }
+
+  .layout { display: grid; grid-template-columns: 1fr 240px; gap: 20px; align-items: start; }
+  @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+
+  .panel {
+    display: none;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 26px;
+  }
+  .panel.active { display: block; }
+  .panel h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .panel .lede { color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+
+  .load-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .load-row {
+    display: grid; grid-template-columns: 22px 1fr 70px 90px;
+    align-items: center; gap: 10px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .load-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); }
+  .load-row .name { font-size: 14px; font-weight: 600; }
+  .load-row .watts { font-size: 12.5px; color: var(--text-muted); font-family: var(--mono); }
+  .load-row .hrs-wrap { display: flex; align-items: center; gap: 4px; justify-content: flex-end; }
+  .load-row input[type="number"] {
+    width: 48px; background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px; padding: 5px 6px; font-size: 13px;
+    font-family: var(--mono); text-align: right;
+  }
+  .load-row .hrs-label { font-size: 11px; color: var(--text-muted); }
+
+  .control-row { margin-bottom: 20px; }
+  .control-row label { display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 10px; }
+  .control-row label span { color: var(--accent-2); font-family: var(--mono); }
+  .control-row input[type="range"] { width: 100%; accent-color: var(--accent); }
+  .control-row select {
+    background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 12px; font-size: 14px; width: 160px;
+  }
+  .hint { font-size: 12.5px; color: var(--text-muted); margin-top: 8px; line-height: 1.6; }
+
+  .result-card {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 6px 16px; margin: 8px 0 18px;
+  }
+  .result-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-row span { color: var(--text-muted); }
+  .result-row strong { font-family: var(--mono); font-size: 14.5px; }
+  .result-row.highlight strong { color: var(--accent-2); }
+
+  .panel-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; }
+  .btn-next, .btn-back {
+    border: none; border-radius: 8px; padding: 11px 18px; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: var(--font);
+  }
+  .btn-next { background: var(--accent); color: #1a1200; margin-left: auto; }
+  .btn-back { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+
+  .tally {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px; position: sticky; top: 20px;
+  }
+  .tally-head {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 12px;
+  }
+  .tally-row {
+    display: flex; justify-content: space-between; gap: 8px;
+    padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .tally-row:last-child { border-bottom: none; }
+  .tally-row span { color: var(--text-muted); }
+  .tally-row strong { font-family: var(--mono); color: var(--accent-2); text-align: right; }
+
+  .parts-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  .parts-table th {
+    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px;
+    color: var(--text-muted); padding: 10px 12px; border-bottom: 1px solid var(--border);
+  }
+  .parts-table td {
+    padding: 13px 12px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: top;
+  }
+  .parts-table td.spec { font-family: var(--mono); font-size: 13px; color: var(--accent-2); }
+  .link-pill {
+    display: inline-block; font-size: 11.5px; font-weight: 600;
+    color: var(--text-muted); background: var(--surface-2); border: 1px dashed var(--border);
+    padding: 4px 10px; border-radius: 999px;
+  }
+
+  .strip {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--green-soft); border: 1px solid rgba(51,209,122,0.35);
+    border-radius: 10px; padding: 14px 16px; font-size: 13.5px; color: var(--text);
+  }
+
+  .roadmap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 26px; margin-top: 20px;
+  }
+  .roadmap h3 { font-size: 16px; margin-bottom: 14px; }
+  .roadmap ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .roadmap li { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+  .roadmap .stage {
+    display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.4px;
+    color: var(--accent-2); background: var(--accent-soft); padding: 2px 8px;
+    border-radius: 5px; margin-right: 8px; text-transform: uppercase;
+  }
+
+  .cta-section {
+    text-align: center; margin-top: 24px; padding: 34px 26px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .cta-section h2 { font-size: 19px; margin-bottom: 10px; }
+  .cta-section p { color: var(--text-muted); font-size: 14.5px; margin-bottom: 18px; max-width: 480px; margin-left: auto; margin-right: auto; }
+  .cta-btn {
+    display: inline-block; background: var(--accent); color: #1a1200; font-weight: 700;
+    padding: 12px 26px; border-radius: 8px; text-decoration: none; font-size: 14.5px; margin-bottom: 16px;
+  }
+  .cta-section img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; display: block; margin: 4px auto 12px; }
+  .contact { font-size: 14px; color: var(--text-muted); }
+  .contact a { color: var(--blue); text-decoration: none; }
+  .fine-print { font-size: 11.5px; color: var(--text-muted); opacity: 0.7; margin-top: 16px; max-width: 480px; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="topbar">
+    <div class="brand"><span class="mark">☀</span> Off-grid System Builder</div>
+    <span class="badge-preview"><span class="dot"></span>Concept preview — sample data, not your real list</span>
+  </div>
+
+  <div class="hero">
+    <h1>Your approved-products list, turned into a tool.</h1>
+    <p>Same data you already keep updated every year. Instead of a flat page, it takes the question the forum keeps asking &mdash; "what do I need for MY rig?" &mdash; and answers it directly, with your parts on every line.</p>
+  </div>
+
+  <nav class="stepper" id="stepper">
+    <button class="step active" data-step="loads"><span class="num">1</span>Loads</button>
+    <button class="step" data-step="battery"><span class="num">2</span>Battery Bank</button>
+    <button class="step" data-step="panels"><span class="num">3</span>Panels</button>
+    <button class="step" data-step="inverter"><span class="num">4</span>Inverter</button>
+    <button class="step" data-step="wiring"><span class="num">5</span>Wire Gauge</button>
+    <button class="step" data-step="results"><span class="num">6</span>Your System</button>
+  </nav>
+
+  <div class="layout">
+    <main>
+
+      <!-- STEP 1: LOADS -->
+      <section class="panel active" id="panel-loads">
+        <h2>What are you running?</h2>
+        <p class="lede">Check what applies, adjust hours/day if you know your setup. This is the exact intake question every custom-design email asks.</p>
+        <div class="load-grid" id="loadGrid"></div>
+        <div class="panel-actions"><button class="btn-next" data-goto="battery">Next: Battery Bank →</button></div>
+      </section>
+
+      <!-- STEP 2: BATTERY -->
+      <section class="panel" id="panel-battery">
+        <h2>Battery bank</h2>
+        <p class="lede">Sized off what you just picked, not a guess out of a forum thread.</p>
+        <div class="control-row">
+          <label>Days of autonomy <span id="autonomyVal">2</span> day(s) with no sun</label>
+          <input type="range" id="autonomy" min="1" max="4" value="2" step="1">
+        </div>
+        <div class="control-row">
+          <label>System voltage</label>
+          <select id="sysVoltage">
+            <option value="12">12V</option>
+            <option value="24">24V</option>
+            <option value="48" selected>48V</option>
+          </select>
+        </div>
+        <div class="result-card">
+          <div class="result-row"><span>Daily energy use</span><strong id="dailyWhOut">— Wh/day</strong></div>
+          <div class="result-row"><span>Bank size needed</span><strong id="battAhOut">— Ah</strong></div>
+          <div class="result-row highlight"><span>Approved bank config</span><strong id="battSpecOut">—</strong></div>
+        </div>
+        <p class="hint">Math: (daily Wh × days of autonomy) ÷ 80% usable depth-of-discharge ÷ system voltage. 80% DoD is standard for LiFePO4.</p>
+        <div class="panel-actions"><button class="btn-back" data-goto="loads">← Back</button><button class="btn-next" data-goto="panels">Next: Panels →</button></div>
+      </section>
+
+      <!-- STEP 3: PANELS -->
+      <section class="panel" id="panel-panels">
+        <h2>Solar panels</h2>
+        <p class="lede">Sized to fully recharge the bank on a typical day where you actually use it.</p>
+        <div class="control-row">
+          <label>Peak sun hours in your area <span id="sunVal">4.5</span> hrs/day</label>
+          <input type="range" id="sunHours" min="2" max="7" value="4.5" step="0.5">
+          <p class="hint">Rough guide: 2&ndash;3 hrs Pacific Northwest winter, 4&ndash;5 hrs most of the US, 6&ndash;7 hrs Southwest summer.</p>
+        </div>
+        <div class="result-card">
+          <div class="result-row"><span>Recommended array size</span><strong id="panelWOut">— W</strong></div>
+          <div class="result-row highlight"><span>Approved panel config</span><strong id="panelSpecOut">—</strong></div>
+        </div>
+        <p class="hint">Math: daily Wh ÷ sun hours ÷ 75% system-loss factor (wiring, controller, temperature derating, imperfect angle).</p>
+        <div class="panel-actions"><button class="btn-back" data-goto="battery">← Back</button><button class="btn-next" data-goto="inverter">Next: Inverter →</button></div>
+      </section>
+
+      <!-- STEP 4: INVERTER -->
+      <section class="panel" id="panel-inverter">
+        <h2>Inverter</h2>
+        <p class="lede">Sized off your highest realistic simultaneous draw &mdash; background loads plus whatever big appliance you'd actually run alongside them, not the sum of everything you checked.</p>
+        <div class="result-card">
+          <div class="result-row"><span>Estimated peak load</span><strong id="peakWOut">— W</strong></div>
+          <div class="result-row highlight"><span>Approved inverter</span><strong id="invSpecOut">—</strong></div>
+        </div>
+        <p class="hint">Math: peak load × 1.25 safety margin, rounded up to the nearest standard pure-sine size.</p>
+        <div class="panel-actions"><button class="btn-back" data-goto="panels">← Back</button><button class="btn-next" data-goto="wiring">Next: Wire Gauge →</button></div>
+      </section>
+
+      <!-- STEP 5: WIRING -->
+      <section class="panel" id="panel-wiring">
+        <h2>Wire gauge &amp; fusing</h2>
+        <p class="lede">Battery-to-inverter run, sized to keep voltage drop under 3%.</p>
+        <div class="control-row">
+          <label>One-way cable run <span id="runVal">10</span> ft</label>
+          <input type="range" id="runLength" min="2" max="30" value="10" step="1">
+        </div>
+        <div class="result-card">
+          <div class="result-row"><span>Continuous DC current</span><strong id="ampsOut">— A</strong></div>
+          <div class="result-row highlight"><span>Recommended wire gauge</span><strong id="wireOut">—</strong></div>
+          <div class="result-row highlight"><span>Recommended fuse</span><strong id="fuseOut">—</strong></div>
+        </div>
+        <p class="hint">Math: standard copper voltage-drop formula (K=12.9), solved for circular mils at a 3% max drop, mapped to the nearest AWG size. Fuse = current × 1.25, rounded to the next standard size. Always verify against NEC/local code before wiring anything live &mdash; this is a sizing starting point, not an inspection.</p>
+        <div class="panel-actions"><button class="btn-back" data-goto="inverter">← Back</button><button class="btn-next" data-goto="results">See Your System →</button></div>
+      </section>
+
+      <!-- STEP 6: RESULTS -->
+      <section class="panel" id="panel-results">
+        <h2>Your system</h2>
+        <p class="lede">This is the page every deleted custom-design email was asking for.</p>
+        <table class="parts-table">
+          <thead><tr><th>Component</th><th>Spec</th><th>Link</th></tr></thead>
+          <tbody id="partsBody"></tbody>
+        </table>
+        <div class="strip">
+          <span>&#9888;</span>
+          <span><strong>This is sample math on sample defaults, not your real approved-products data.</strong> The live version pulls straight from your list &mdash; every spec becomes a real product, every link a real affiliate link, priced and in stock.</span>
+        </div>
+        <div class="panel-actions"><button class="btn-back" data-goto="wiring">← Back</button></div>
+      </section>
+
+    </main>
+
+    <aside class="tally">
+      <div class="tally-head">Running tally</div>
+      <div class="tally-row"><span>Daily use</span><strong id="tallyWh">0 Wh</strong></div>
+      <div class="tally-row"><span>Battery</span><strong id="tallyBatt">—</strong></div>
+      <div class="tally-row"><span>Panels</span><strong id="tallyPanel">—</strong></div>
+      <div class="tally-row"><span>Inverter</span><strong id="tallyInv">—</strong></div>
+      <div class="tally-row"><span>Wire</span><strong id="tallyWire">—</strong></div>
+    </aside>
+  </div>
+
+  <div class="roadmap">
+    <h3>Where this grows next</h3>
+    <ul>
+      <li><span class="stage">Phase 2</span> Parts-compatibility checker &mdash; "will this inverter work with this battery/BMS," pulled from your own teardown verdicts. The #1 recurring forum question.</li>
+      <li><span class="stage">Phase 2</span> Saved builds + BOM export, so a build started here survives past one browser tab.</li>
+      <li><span class="stage">Phase 3</span> Forum-native version, embedded directly in diysolarforum.com threads.</li>
+    </ul>
+  </div>
+
+  <div class="cta-section">
+    <h2>40 minutes of demo, not a pitch deck.</h2>
+    <p>If it's not for you, no hard feelings &mdash; the forum already does what it does. If you want to see this running on your actual approved-products list instead of sample defaults, happy to show you.</p>
+    <a href="https://norsoft.pipedrive.com/scheduler/jq55RKf3/quick-chat-with-tim" target="_blank" class="cta-btn">Pick a time to chat</a>
+    <img src="tim-wenger.jpg" alt="Timothy Wenger">
+    <div class="contact">
+      Timothy Wenger<br>
+      Partner, Strategy &amp; Growth<br>
+      <a href="tel:5074694157">507-469-4157</a><br>
+      <a href="mailto:timw@norsoft.com">timw@norsoft.com</a>
+    </div>
+    <div class="fine-print">This preview is not affiliated with Prowse Publications LLC or mobile-solarpower.com. Sample data throughout &mdash; built to show the mechanism, not to represent your real catalog or pricing.</div>
+  </div>
+
+</div>
+
+<script>
+  const LOADS = [
+    { id: 'fridge',   name: 'Compressor fridge/freezer', watts: 55,   hours: 8,   checked: true,  peak: false },
+    { id: 'lights',   name: 'LED lighting',               watts: 20,   hours: 5,   checked: true,  peak: false },
+    { id: 'pump',     name: 'Water pump',                 watts: 60,   hours: 0.5, checked: true,  peak: false },
+    { id: 'laptop',   name: 'Laptop',                      watts: 65,   hours: 4,   checked: true,  peak: false },
+    { id: 'starlink', name: 'Starlink',                    watts: 50,   hours: 10,  checked: false, peak: false },
+    { id: 'cpap',     name: 'CPAP',                         watts: 40,   hours: 8,   checked: false, peak: false },
+    { id: 'tv',       name: 'TV / monitor',                watts: 100,  hours: 3,   checked: false, peak: true  },
+    { id: 'microwave',name: 'Microwave',                    watts: 1000, hours: 0.2, checked: false, peak: true  },
+    { id: 'minisplit',name: 'Mini-split A/C',               watts: 900,  hours: 3,   checked: false, peak: true  },
+    { id: 'induction',name: 'Induction cooktop',            watts: 1500, hours: 0.3, checked: false, peak: true  },
+  ];
+
+  const AWG_TABLE = [
+    { gauge: '14 AWG', cm: 4110 },
+    { gauge: '12 AWG', cm: 6530 },
+    { gauge: '10 AWG', cm: 10380 },
+    { gauge: '8 AWG',  cm: 16510 },
+    { gauge: '6 AWG',  cm: 26240 },
+    { gauge: '4 AWG',  cm: 41740 },
+    { gauge: '2 AWG',  cm: 66360 },
+    { gauge: '1 AWG',  cm: 83690 },
+    { gauge: '1/0 AWG',cm: 105600 },
+    { gauge: '2/0 AWG',cm: 133100 },
+    { gauge: '4/0 AWG',cm: 211600 },
+  ];
+  const FUSE_SIZES = [15,20,30,40,50,60,80,100,125,150,175,200,250,300,400];
+  const INVERTER_SIZES = [1000,1500,2000,3000,4000,6000];
+
+  const loadGrid = document.getElementById('loadGrid');
+  LOADS.forEach(l => {
+    const row = document.createElement('div');
+    row.className = 'load-row';
+    row.innerHTML = `
+      <input type="checkbox" id="chk-${l.id}" ${l.checked ? 'checked' : ''}>
+      <div>
+        <div class="name">${l.name}</div>
+        <div class="watts">${l.watts}W</div>
+      </div>
+      <div></div>
+      <div class="hrs-wrap">
+        <input type="number" id="hrs-${l.id}" value="${l.hours}" min="0" max="24" step="0.1">
+        <span class="hrs-label">hrs/day</span>
+      </div>
+    `;
+    loadGrid.appendChild(row);
+  });
+
+  function getLoadState() {
+    return LOADS.map(l => ({
+      ...l,
+      checked: document.getElementById(`chk-${l.id}`).checked,
+      hours: parseFloat(document.getElementById(`hrs-${l.id}`).value) || 0,
+    }));
+  }
+
+  function roundUpToStep(value, step) { return Math.ceil(value / step) * step; }
+  function pickFromList(value, list) { return list.find(v => v >= value) || list[list.length - 1]; }
+
+  function recompute() {
+    const state = getLoadState();
+    const checked = state.filter(l => l.checked);
+
+    const dailyWh = checked.reduce((sum, l) => sum + l.watts * l.hours, 0);
+
+    const backgroundW = checked.filter(l => !l.peak).reduce((sum, l) => sum + l.watts, 0);
+    const peakEligible = checked.filter(l => l.peak).map(l => l.watts);
+    const peakOnlyMax = peakEligible.length ? Math.max(...peakEligible) : 0;
+    const peakW = backgroundW + peakOnlyMax;
+
+    const autonomy = parseFloat(document.getElementById('autonomy').value);
+    const voltage = parseFloat(document.getElementById('sysVoltage').value);
+    document.getElementById('autonomyVal').textContent = autonomy;
+
+    const dod = 0.8;
+    const battWh = (dailyWh * autonomy) / dod;
+    const battAh = battWh / voltage;
+    const battAhRounded = roundUpToStep(battAh, 50) || 50;
+    const battKwh = (battAhRounded * voltage / 1000).toFixed(1);
+
+    const sunHours = parseFloat(document.getElementById('sunHours').value);
+    document.getElementById('sunVal').textContent = sunHours;
+    const panelW = dailyWh / sunHours / 0.75;
+    const panelWRounded = roundUpToStep(panelW, 100) || 100;
+
+    const invRaw = peakW * 1.25;
+    const invSize = pickFromList(invRaw, INVERTER_SIZES);
+
+    const runLength = parseFloat(document.getElementById('runLength').value);
+    document.getElementById('runVal').textContent = runLength;
+    const ampsDC = invSize / voltage;
+    const maxDropV = 0.03 * voltage;
+    const K = 12.9;
+    const requiredCM = ampsDC > 0 ? (2 * K * ampsDC * runLength) / maxDropV : 0;
+    const wireChoice = AWG_TABLE.find(w => w.cm >= requiredCM) || AWG_TABLE[AWG_TABLE.length - 1];
+    const fuseSize = pickFromList(ampsDC * 1.25, FUSE_SIZES);
+
+    // Step 2
+    document.getElementById('dailyWhOut').textContent = `${Math.round(dailyWh)} Wh/day`;
+    document.getElementById('battAhOut').textContent = `${Math.round(battAh)} Ah`;
+    document.getElementById('battSpecOut').textContent = `${battAhRounded} Ah @ ${voltage}V LiFePO4 (~${battKwh} kWh)`;
+
+    // Step 3
+    document.getElementById('panelWOut').textContent = `${Math.round(panelW)} W`;
+    document.getElementById('panelSpecOut').textContent = `~${panelWRounded}W array`;
+
+    // Step 4
+    document.getElementById('peakWOut').textContent = `${Math.round(peakW)} W`;
+    document.getElementById('invSpecOut').textContent = `${invSize}W pure sine inverter`;
+
+    // Step 5
+    document.getElementById('ampsOut').textContent = `${ampsDC.toFixed(1)} A`;
+    document.getElementById('wireOut').textContent = wireChoice.gauge;
+    document.getElementById('fuseOut').textContent = `${fuseSize}A`;
+
+    // Tally sidebar
+    document.getElementById('tallyWh').textContent = `${Math.round(dailyWh)} Wh`;
+    document.getElementById('tallyBatt').textContent = `${battAhRounded}Ah @ ${voltage}V`;
+    document.getElementById('tallyPanel').textContent = `~${panelWRounded}W`;
+    document.getElementById('tallyInv').textContent = `${invSize}W`;
+    document.getElementById('tallyWire').textContent = `${wireChoice.gauge} / ${fuseSize}A`;
+
+    // Parts table
+    const partsBody = document.getElementById('partsBody');
+    const rows = [
+      ['Battery bank', `${battAhRounded} Ah @ ${voltage}V LiFePO4 (~${battKwh} kWh)`],
+      ['Solar panels', `~${panelWRounded}W array`],
+      ['Inverter', `${invSize}W pure sine`],
+      ['Battery-to-inverter wire', `${wireChoice.gauge}, ${fuseSize}A fuse`],
+    ];
+    partsBody.innerHTML = rows.map(([name, spec]) => `
+      <tr>
+        <td>${name}</td>
+        <td class="spec">${spec}</td>
+        <td><span class="link-pill">→ your approved product</span></td>
+      </tr>
+    `).join('');
+  }
+
+  document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('input', recompute);
+  });
+
+  function goToStep(stepId) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`panel-${stepId}`).classList.add('active');
+
+    const order = ['loads','battery','panels','inverter','wiring','results'];
+    const idx = order.indexOf(stepId);
+    document.querySelectorAll('.step').forEach(btn => {
+      const btnStep = btn.dataset.step;
+      const btnIdx = order.indexOf(btnStep);
+      btn.classList.toggle('active', btnStep === stepId);
+      btn.classList.toggle('done', btnIdx < idx);
+    });
+    window.scrollTo({ top: document.querySelector('.stepper').offsetTop - 20, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.step').forEach(btn => {
+    btn.addEventListener('click', () => goToStep(btn.dataset.step));
+  });
+  document.querySelectorAll('[data-goto]').forEach(btn => {
+    btn.addEventListener('click', () => goToStep(btn.dataset.goto));
+  });
+
+  recompute();
+</script>
+
+</body>
+</html>
