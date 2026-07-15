@@ -205,6 +205,17 @@
     border-radius: 3px; margin-right: 8px; text-transform: uppercase;
   }
 
+  .demo-divider {
+    display: flex; align-items: center; gap: 16px; margin: 36px 0 0;
+  }
+  .demo-divider::before, .demo-divider::after {
+    content: ""; flex: 1; height: 2px; background: #000;
+  }
+  .demo-divider span {
+    font-family: var(--font-head); font-weight: 900; font-size: 12px;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); white-space: nowrap;
+  }
+
   .cta-section {
     text-align: center; margin-top: 24px; padding: 34px 26px;
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
@@ -362,16 +373,19 @@
     </ul>
   </div>
 
+  <div class="demo-divider"><span>End of demo, contact info below</span></div>
+
   <div class="cta-section">
     <h2>40 minutes of demo, not a pitch deck.</h2>
     <p>If it's not for you, no hard feelings. The forum already does what it does. If you want to see this running on your actual approved-products list instead of sample defaults, happy to show you.</p>
-    <a href="https://norsoft.pipedrive.com/scheduler/jq55RKf3/quick-chat-with-tim" target="_blank" class="cta-btn">Pick a time to chat</a>
+    <a href="https://norsoft.pipedrive.com/scheduler/qO66ZmuJ/discovery-video-call-norsoft" target="_blank" class="cta-btn">Pick a time to chat</a>
     <img src="tim-wenger.jpg" alt="Timothy Wenger">
     <div class="contact">
       Timothy Wenger<br>
       Partner, Strategy and Growth<br>
       <a href="tel:5074694157">507-469-4157</a><br>
-      <a href="mailto:timw@norsoft.com">timw@norsoft.com</a>
+      <a href="mailto:timw@norsoft.com">timw@norsoft.com</a><br>
+      <a href="https://norsoft.pipedrive.com/scheduler/qO66ZmuJ/discovery-video-call-norsoft" target="_blank">norsoft.pipedrive.com/scheduler/qO66ZmuJ/discovery-video-call-norsoft</a>
     </div>
     <div class="fine-print">This preview is not affiliated with Prowse Publications LLC or mobile-solarpower.com. Sample data throughout, built to show the mechanism, not to represent your real catalog or pricing.</div>
   </div>
