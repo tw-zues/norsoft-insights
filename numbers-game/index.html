@@ -91,12 +91,13 @@
   .irow .it b { display: block; letter-spacing: 1px; }
   .isec { font-size: 10px; letter-spacing: 2.5px; color: #6f8672; margin-top: 8px; }
   @media (prefers-reduced-motion: reduce) { .scanlines { background: none; } }
-  /* phones: drop the marquee (the game has its own title screen), reclaim the space */
+  /* phones: compact marquee, tight chrome, big canvas */
   @media (max-width: 540px) {
-    body { padding: 8px 4px 32px; gap: 10px; }
-    .marquee { display: none; }
+    body { padding: 8px 4px 32px; gap: 8px; }
+    .marquee .title { font-size: 20px; letter-spacing: 3px; }
+    .marquee .sub { font-size: 9px; letter-spacing: 2px; margin-top: 2px; }
     .cabinet { padding: 6px; border-radius: 10px; }
-    canvas#game { max-height: 88vh; }
+    canvas#game { max-height: 84vh; }
   }
 </style>
 
@@ -412,6 +413,16 @@
       correct: 0, why: "an email address whose entire job is to punish whoever sent to it" }
   ];
 
+  /* ---------- difficulty ---------- */
+  var DIFFS = [
+    { key: "INTERN", quota: 12, money: 350, speed: 0.85, score: 0.75, fishBonus: 0, desc: "someone set up the domains for you" },
+    { key: "SDR", quota: 10, money: 250, speed: 1, score: 1, fishBonus: 0, desc: "the job as posted" },
+    { key: "FOUNDER", quota: 6, money: 200, speed: 1.1, score: 1.5, fishBonus: 1, desc: "no budget. the quota is personal" }
+  ];
+  var diffIdx = 1;
+  function diff() { return DIFFS[diffIdx]; }
+  function menuRect(i) { return { x: W / 2 - 130, y: 310 + i * 62, w: 260, h: 44 }; }
+
   /* ---------- state ---------- */
   var state = "title"; // title | build | playing | gameover | initials | email | scores
   var money = 250, quota = 10, quotaMax = 10, day = 0, pendingDay = 1, meetings = 0, sentCount = 0, conversions = 0, burnedCount = 0, oversends = 0, bossesDown = 0;
@@ -488,7 +499,7 @@
 
   function buildDay(n) {
     var q = [];
-    var gates = 4 + n, ops = 2 + n, ceos = n >= 2 ? Math.min(4, n - 1) : 0, fish = (n >= 2 ? Math.min(5, n) : 1) + extraFish;
+    var gates = 4 + n, ops = 2 + n, ceos = n >= 2 ? Math.min(4, n - 1) : 0, fish = (n >= 2 ? Math.min(5, n) : 1) + extraFish + diff().fishBonus;
     extraFish = 0;
     for (var i = 0; i < gates; i++) q.push("gate");
     for (i = 0; i < ops; i++) q.push("ops");
@@ -603,7 +614,8 @@
   });
 
   function advance() {
-    if (state === "title" || state === "scores") { reset(); enterBuild(1); return; }
+    if (state === "title") { reset(); enterBuild(1); return; }
+    if (state === "scores") { state = "title"; return; }
     if (state === "build") {
       if (quiz) return;
       if (briefing) { briefing = false; beep(520, 0.08, "square", 0.04); return; }
@@ -615,7 +627,7 @@
   }
 
   function reset() {
-    money = 250; quota = 10; quotaMax = 10; day = 0; meetings = 0; sentCount = 0; conversions = 0; burnedCount = 0; oversends = 0; bossesDown = 0;
+    money = diff().money; quota = diff().quota; quotaMax = diff().quota; day = 0; meetings = 0; sentCount = 0; conversions = 0; burnedCount = 0; oversends = 0; bossesDown = 0;
     domains = []; creeps = []; shots = []; floats = []; selected = null; placing = false;
     certs = { target: false, pers: false, seq: false };
     streak = 0; scorePts = 0; founderCd = 0; replyDrops = []; extraFish = 0; speedMult = 1; gateIdx = 0;
@@ -643,6 +655,25 @@
   function quizRect(i) { return { x: 30, y: 258 + i * 62, w: W - 60, h: 52 }; }
 
   function tap(x, y) {
+    if (state === "howto" || state === "board") {
+      state = "title";
+      beep(400, 0.05, "square", 0.03);
+      return;
+    }
+    if (state === "title") {
+      for (var mi = 0; mi < 4; mi++) {
+        var mr = menuRect(mi);
+        if (x >= mr.x && x <= mr.x + mr.w && y >= mr.y && y <= mr.y + mr.h) {
+          beep(520, 0.06, "square", 0.04);
+          if (mi === 0) { reset(); enterBuild(1); }
+          else if (mi === 1) { diffIdx = (diffIdx + 1) % DIFFS.length; }
+          else if (mi === 2) { state = "howto"; }
+          else { state = "board"; }
+          return;
+        }
+      }
+      return;
+    }
     if (state !== "playing" && state !== "build") { advance(); return; }
 
     if (state === "build" && dayClearT > 0.7) return;
@@ -1003,7 +1034,7 @@
         var hp = def.hp;
         if (type === "committee") hp = 24 + day * 3;
         if (type === "algorithm") hp = 20 + day * 2;
-        var nc = { type: type, hp: hp, maxhp: hp, speed: def.speed * (0.9 + Math.random() * 0.2), dist: 0, x: PATH[0][0], y: PATH[0][1], alive: true };
+        var nc = { type: type, hp: hp, maxhp: hp, speed: def.speed * (0.9 + Math.random() * 0.2) * todayMods.speed * diff().speed, dist: 0, x: PATH[0][0], y: PATH[0][1], alive: true };
         if (type === "fish" && !fishIntroDone) {
           fishIntroDone = true;
           nc.introT = 2.5;
@@ -1158,7 +1189,7 @@
       streak++;
       var b = CREEP_DEF[c.type].bounty;
       money += b;
-      var pts = Math.round(b * mult() * todayMods.score);
+      var pts = Math.round(b * mult() * todayMods.score * diff().score);
       scorePts += pts;
       floatText(c.x, c.y - 14, "+" + pts + " PTS", "#ffb000");
       replyDrops.push({ x: c.x, y: c.y, val: Math.max(10, Math.round(b * 0.4 * todayMods.reply)), t: 3.2, gold: c.type === "ceo" || c.type === "committee" || c.type === "algorithm" });
@@ -1402,26 +1433,61 @@
     cx.fillRect(0, 0, W, H);
 
     if (state === "title") {
-      text("NUMBERS GAME", W / 2, 110, 34, "#39ff6e");
-      text("COLD EMAIL TOWER DEFENSE", W / 2, 142, 12, "#ffb000");
-      text("PROSPECTS ARE WALKING TO YOUR COMPETITOR.", W / 2, 190, 12, "#ffffff");
-      text("BUILD THE MACHINE THAT STOPS THEM.", W / 2, 210, 12, "#ffffff");
+      text("NUMBERS GAME", W / 2, 150, 34, "#39ff6e");
+      text("COLD EMAIL TOWER DEFENSE", W / 2, 182, 12, "#ffb000");
+      text("THEY DID NOT ASK FOR THESE EMAILS.", W / 2, 232, 12, "#ffffff");
+      text("SEND THEM ANYWAY.", W / 2, 252, 12, "#ffffff");
 
-      drawSprite(SPR.ceo, 90, 268); text("CEO Â· $120 Â· BOOKS THE MEETING", 125, 273, 11, "#39ff6e", "left");
-      drawSprite(SPR.ops, 90, 312); text("OPS MANAGER Â· $60", 125, 317, 11, "#ffb000", "left");
-      drawSprite(SPR.gate, 90, 356); text("GATEKEEPER Â· $40", 125, 361, 11, "#4de8ff", "left");
-      drawSprite(SPR.fish, 90, 400); text("A FISH Â· NOT ICP Â· $0 + A COMPLAINT", 125, 405, 11, "#8a9a8a", "left");
-
-      text("DOMAINS HOLD 3 INBOXES. INBOXES SEND ON THEIR OWN.", W / 2, 448, 10, "#cfe8d2");
-      text("UNTARGETED DOMAINS WILL EMAIL THE FISH.", W / 2, 466, 10, "#cfe8d2");
-      text("SEND TOO FAST AND THE DOMAIN COOLS OFF. SPREAD THE LOAD.", W / 2, 484, 10, "#cfe8d2");
-      text("EVERY 4TH DAY: A BOSS.", W / 2, 502, 10, "#b26bff");
-      text("SURVIVE, PASS CERTIFICATIONS, UNLOCK SKILLS.", W / 2, 520, 10, "#ffb000");
-      text("FULL INDEX BELOW THE CABINET.", W / 2, 538, 10, "#8a9a8a");
-
-      if (Math.floor(blink * 2) % 2) text("TAP / PRESS SPACE TO START", W / 2, 574, 15, "#ffffff");
+      var items = ["â–¶  START RUN", "DIFFICULTY: " + diff().key, "HOW TO PLAY", "TOP CLOSERS"];
+      items.forEach(function (label, i) {
+        var mr = menuRect(i);
+        var hot = i === 0 && Math.floor(blink * 2) % 2;
+        cx.fillStyle = hot ? "#183a24" : "#101715";
+        cx.fillRect(mr.x, mr.y, mr.w, mr.h);
+        cx.strokeStyle = i === 0 ? "#39ff6e" : "#2c4433";
+        cx.strokeRect(mr.x + 0.5, mr.y + 0.5, mr.w, mr.h);
+        text(label, W / 2, mr.y + 28, 12, i === 0 ? "#39ff6e" : "#cfe8d2");
+      });
+      text(diff().desc + " Â· x" + diff().score + " pts", W / 2, 604, 9, "#8a9a8a");
       var hs = getScores();
-      if (hs.length) text("TOP CLOSER: " + hs[0].n + " Â· DAY " + hs[0].d, W / 2, 606, 11, "#b26bff");
+      if (hs.length) text("TOP CLOSER: " + hs[0].n + " Â· DAY " + hs[0].d, W / 2, 634, 11, "#b26bff");
+      return;
+    }
+
+    if (state === "howto") {
+      text("HOW TO PLAY", W / 2, 80, 20, "#ffb000");
+      drawSprite(SPR.ceo, 70, 140); text("CEO Â· $120 Â· BOOKS THE MEETING", 105, 145, 11, "#39ff6e", "left");
+      drawSprite(SPR.ops, 70, 190); text("OPS MANAGER Â· $60 Â· CHECKS YOUR SPF", 105, 195, 11, "#ffb000", "left");
+      drawSprite(SPR.gate, 70, 240); text("GATEKEEPER Â· $40", 105, 245, 11, "#4de8ff", "left");
+      drawSprite(SPR.fish, 70, 290); text("A FISH Â· NOT ICP Â· $0 + A COMPLAINT", 105, 295, 11, "#8a9a8a", "left");
+
+      text("DOMAINS HOLD 3 INBOXES. INBOXES SEND ON THEIR OWN.", W / 2, 350, 10, "#cfe8d2");
+      text("UNTARGETED DOMAINS WILL EMAIL THE FISH.", W / 2, 372, 10, "#cfe8d2");
+      text("SEND TOO FAST AND THE DOMAIN COOLS OFF.", W / 2, 394, 10, "#cfe8d2");
+      text("STACK DOMAINS ON A DESK: BIGGER SENDS, LONGER REACH.", W / 2, 416, 10, "#cfe8d2");
+      text("EVERY 4TH DAY: A BOSS.", W / 2, 438, 10, "#b26bff");
+      text("A REVIEW QUESTION GATES EVERY DAY. WRONG COSTS $50.", W / 2, 460, 10, "#ffb000");
+
+      text("TAP DESK SPACES TO BUILD", W / 2, 506, 10, "#39ff6e");
+      text("TAP PROSPECTS = FOUNDER SEND (3 DMG, COOLDOWN)", W / 2, 528, 10, "#39ff6e");
+      text("TAP REPLY BUBBLES TO BANK THE MONEY", W / 2, 550, 10, "#39ff6e");
+      text("FULL INDEX BELOW THE CABINET.", W / 2, 586, 9, "#8a9a8a");
+
+      if (Math.floor(blink * 2) % 2) text("TAP ANYWHERE TO GO BACK", W / 2, 636, 12, "#ffffff");
+      return;
+    }
+
+    if (state === "board") {
+      text("TOP CLOSERS", W / 2, 110, 20, "#b26bff");
+      var list2 = getScores();
+      if (!list2.length) {
+        text("no closers yet.", W / 2, 200, 12, "#8a9a8a");
+        text("the quota remains unmet.", W / 2, 224, 12, "#8a9a8a");
+      } else {
+        for (var bi = 0; bi < list2.length; bi++)
+          text((bi + 1) + ". " + list2[bi].n + "  " + list2[bi].s + " pts  (day " + list2[bi].d + ")", W / 2, 180 + bi * 34, 13, bi === 0 ? "#39ff6e" : "#cfe8d2");
+      }
+      if (Math.floor(blink * 2) % 2) text("TAP ANYWHERE TO GO BACK", W / 2, 636, 12, "#ffffff");
       return;
     }
 
@@ -1430,6 +1496,7 @@
       text(OVER_QUOTA[1], W / 2, 178, 13, "#cfe8d2");
       text(OVER_QUOTA[2], W / 2, 200, 13, "#cfe8d2");
       text("FINAL SCORE ..... " + (scorePts + meetings * 400 + bossesDown * 1000), W / 2, 232, 15, "#ffb000");
+      text("MODE .............. " + diff().key, W / 2, 234, 13, "#cfe8d2");
       text("DAYS SURVIVED ..... " + day, W / 2, 256, 13, "#cfe8d2");
       text("EMAILS SENT ....... " + sentCount, W / 2, 278, 13, "#cfe8d2");
       text("CONVERSIONS ....... " + conversions, W / 2, 300, 13, "#cfe8d2");
@@ -1453,7 +1520,7 @@
         for (var i = 0; i < list.length; i++)
           text((i + 1) + ". " + list[i].n + "  " + list[i].s + " pts  (day " + list[i].d + ")", W / 2, 456 + i * 22, 13, i === 0 ? "#39ff6e" : "#cfe8d2");
         text("IN THE BOOTH: THIS SCREEN CAPTURES THE LEAD", W / 2, 588, 11, "#8a9a8a");
-        if (Math.floor(blink * 2) % 2) text("TAP TO PLAY AGAIN", W / 2, 616, 13, "#ffffff");
+        if (Math.floor(blink * 2) % 2) text("TAP FOR THE MENU", W / 2, 616, 13, "#ffffff");
       }
       return;
     }
