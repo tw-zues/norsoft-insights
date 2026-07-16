@@ -1,0 +1,300 @@
+<title>Woodcraft Millwork: Shop Platform Concept</title>
+<style>
+  :root{
+    --bg:#f4f3f1; --panel:#fff; --panel2:#faf9f7; --ink:#1a1c1e; --muted:#60646a; --faint:#8d9299;
+    --line:#e4e1dd; --accent:#8f5522; --accent-soft:#f3e9df;
+    --risk:#b3392f; --risk-bg:#fbecea; --wait:#a9761a; --wait-bg:#fbf2e2; --ok:#3f7346; --ok-bg:#eaf3ec;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --bg:#131517; --panel:#1b1f22; --panel2:#191d20; --ink:#e9e7e4; --muted:#9ba1a8; --faint:#6f767d;
+      --line:#2b3034; --accent:#cf9159; --accent-soft:#2a211a;
+      --risk:#e0695d; --risk-bg:#2b1a18; --wait:#dfa94b; --wait-bg:#2a2115; --ok:#74b184; --ok-bg:#17251b; }
+  }
+  :root[data-theme="light"]{ --bg:#f4f3f1; --panel:#fff; --panel2:#faf9f7; --ink:#1a1c1e; --muted:#60646a; --faint:#8d9299;
+    --line:#e4e1dd; --accent:#8f5522; --accent-soft:#f3e9df; --risk:#b3392f; --risk-bg:#fbecea; --wait:#a9761a; --wait-bg:#fbf2e2; --ok:#3f7346; --ok-bg:#eaf3ec; }
+  :root[data-theme="dark"]{ --bg:#131517; --panel:#1b1f22; --panel2:#191d20; --ink:#e9e7e4; --muted:#9ba1a8; --faint:#6f767d;
+    --line:#2b3034; --accent:#cf9159; --accent-soft:#2a211a; --risk:#e0695d; --risk-bg:#2b1a18; --wait:#dfa94b; --wait-bg:#2a2115; --ok:#74b184; --ok-bg:#17251b; }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:940px;margin:0 auto;padding:clamp(16px,3vw,32px) clamp(14px,3vw,24px) 46px;}
+  .topbar{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:14px;border-bottom:2px solid var(--ink);}
+  .brand{font-size:clamp(18px,2.4vw,23px);font-weight:800;letter-spacing:-.02em;}
+  .brand span{color:var(--accent);}
+  .tagline{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);}
+  .pill{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+    background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent);padding:3px 9px;border-radius:999px;font-weight:700;}
+  .lede{margin:18px 0 22px;font-size:15.5px;color:var(--muted);max-width:68ch;}
+  .lede b{color:var(--ink);font-weight:650;}
+
+  .shell{display:grid;grid-template-columns:158px 1fr;gap:18px;align-items:start;}
+  @media(max-width:720px){.shell{grid-template-columns:1fr;}}
+  .rail{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px;position:sticky;top:14px;}
+  .rail .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:6px 8px 4px;font-weight:700;}
+  .rail button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;
+    font-size:13px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit;text-align:left;}
+  .rail button:hover{background:var(--panel2);color:var(--ink);}
+  .rail button.on{background:var(--accent-soft);color:var(--accent);font-weight:700;}
+  .rail button b{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--risk);}
+  .rail button:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+  @media(max-width:720px){.rail{position:static;display:flex;flex-wrap:wrap;gap:4px;} .rail .lbl{width:100%} .rail button{width:auto}}
+
+  .alerts{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin-bottom:16px;}
+  .alerts h2{margin:0 0 8px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;}
+  .al{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  .al:last-child{border-bottom:0;padding-bottom:0;}
+  .dot{flex:0 0 6px;height:6px;border-radius:50%;margin-top:6px;background:var(--d,var(--muted));}
+  .al.r .dot{--d:var(--risk)} .al.w .dot{--d:var(--wait)}
+  .al .t{font-weight:640;line-height:1.3;} .al .d{font-size:12px;color:var(--muted);}
+  .money{font-family:var(--mono);font-weight:700;color:var(--risk);}
+
+  h3.sec{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;font-weight:700;}
+  .tblwrap{background:var(--panel);border:1px solid var(--line);border-radius:9px;overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th{font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);
+    text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap;}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+  tr:last-child td{border-bottom:0;}
+  td.job{font-weight:650;} td.job small{display:block;color:var(--faint);font-weight:400;font-size:11px;}
+  td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .stg{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:4px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);white-space:nowrap;}
+  .fl{font-size:11px;font-weight:650;padding:2px 6px;border-radius:4px;white-space:nowrap;}
+  .fl.r{background:var(--risk-bg);color:var(--risk)} .fl.w{background:var(--wait-bg);color:var(--wait)} .fl.g{background:var(--ok-bg);color:var(--ok)}
+  .sum{font-size:12.5px;color:var(--muted);margin:0 0 10px;}
+  .sum b{color:var(--ink);font-family:var(--mono);font-weight:700;}
+  .panel{display:none} .panel.on{display:block}
+
+  .job{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+  .job .hd{padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel2);display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;}
+  .job .hd .nm{font-size:15px;font-weight:750;} .job .hd .sub{font-family:var(--mono);font-size:10.5px;color:var(--faint);}
+  .job .bd{display:grid;grid-template-columns:repeat(3,1fr);}
+  @media(max-width:680px){.job .bd{grid-template-columns:1fr;}}
+  .pane{padding:12px 14px;border-right:1px solid var(--line);} .pane:last-child{border-right:0;}
+  @media(max-width:680px){.pane{border-right:0;border-bottom:1px solid var(--line);}}
+  .pane h4{margin:0 0 7px;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700;}
+  .row{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0;color:var(--muted);}
+  .row b{color:var(--ink);font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:650;}
+  .bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 3px;}
+  .bar i{display:block;height:100%;background:var(--risk);}
+  .load{height:5px;background:var(--line);border-radius:3px;overflow:hidden;width:90px;}
+  .load i{display:block;height:100%;background:var(--ok);}
+  .load.w i{background:var(--wait)} .load.r i{background:var(--risk)}
+  .note{margin-top:22px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:14px 16px;}
+  .note p{margin:0 0 7px;font-size:13px;color:var(--muted);} .note p:last-child{margin:0;} .note b{color:var(--ink);}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">Woodcraft <span>Millwork</span></div>
+    <div class="tagline">Shop platform</div>
+    <div class="pill">Concept mockup</div>
+  </div>
+
+  <p class="lede">One system that runs the shop, from the takeoff to the last punch item. Estimating, submittals, purchasing, the floor, job costing and billing all writing to <b>the same job record</b>, so a change order raised on the floor shows up on the invoice, and hours drifting past estimate show up while you can still do something about it. <b>Click any module.</b></p>
+
+  <div class="shell">
+    <nav class="rail">
+      <div class="lbl">Modules</div>
+      <button data-p="est">Estimating</button>
+      <button data-p="jobs" class="on">Jobs</button>
+      <button data-p="sub">Submittals <b>2</b></button>
+      <button data-p="pur">Purchasing <b>1</b></button>
+      <button data-p="prod">Production</button>
+      <button data-p="ins">Install</button>
+      <button data-p="cost">Job costing <b>3</b></button>
+      <button data-p="bill">Billing &amp; COs <b>4</b></button>
+    </nav>
+
+    <div>
+      <!-- JOBS -->
+      <section class="panel on" id="jobs">
+        <div class="alerts">
+          <h2>Needs you today</h2>
+          <div class="al r"><div class="dot"></div><div><div class="t">Tobey Hospital ED submittal out 12 days</div><div class="d">No architect response. The install date won't move.</div></div></div>
+          <div class="al r"><div class="dot"></div><div><div class="t">4 change orders unbilled, <span class="money">$31,200</span></div><div class="d">Work is done. Nobody sent them.</div></div></div>
+          <div class="al r"><div class="dot"></div><div><div class="t">Seamark at 112% of estimated hours</div><div class="d">Was 96% last week. Trending wrong.</div></div></div>
+          <div class="al w"><div class="dot"></div><div><div class="t">MANGO Hudson Yards veneer, 6 week lead</div><div class="d">Order now or the install slips.</div></div></div>
+        </div>
+        <h3 class="sec">Jobs · 14 in flight · $2.4M</h3>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Job</th><th>Stage</th><th>Value</th><th>Hrs vs est</th><th>Flag</th></tr></thead>
+          <tbody>
+            <tr><td class="job">Tobey Hospital ED<small>Wareham, MA · healthcare</small></td><td><span class="stg">Submittals</span></td><td class="num">$310K</td><td class="num">—</td><td><span class="fl r">Approval 12d</span></td></tr>
+            <tr><td class="job">Seamark Restaurant<small>Boston, MA · hospitality</small></td><td><span class="stg">In shop</span></td><td class="num">$268K</td><td class="num" style="color:var(--risk)">112%</td><td><span class="fl r">Over hours</span></td></tr>
+            <tr><td class="job">MANGO Hudson Yards<small>New York, NY · retail</small></td><td><span class="stg">Purchasing</span></td><td class="num">$402K</td><td class="num">—</td><td><span class="fl r">6wk veneer</span></td></tr>
+            <tr><td class="job">Vero Apartments<small>community living</small></td><td><span class="stg">Submittals</span></td><td class="num">$186K</td><td class="num">—</td><td><span class="fl r">Approval 11d</span></td></tr>
+            <tr><td class="job">MANGO Bethesda<small>Bethesda, MD · retail</small></td><td><span class="stg">Install</span></td><td class="num">$240K</td><td class="num">98%</td><td><span class="fl w">No crew set</span></td></tr>
+            <tr><td class="job">Congregation Beth Shalom<small>Brookline, MA · worship</small></td><td><span class="stg">Submittals</span></td><td class="num">$122K</td><td class="num">—</td><td><span class="fl w">Finish sample</span></td></tr>
+            <tr><td class="job">Fiorella's Cocina<small>Burlington, MA · hospitality</small></td><td><span class="stg">In shop</span></td><td class="num">$95K</td><td class="num">88%</td><td><span class="fl g">On track</span></td></tr>
+            <tr><td class="job">St Marks<small>education</small></td><td><span class="stg">In shop</span></td><td class="num">$154K</td><td class="num">94%</td><td><span class="fl g">On track</span></td></tr>
+            <tr><td class="job">G20 Spa<small>Boston, MA · boutique</small></td><td><span class="stg">Purchasing</span></td><td class="num">$78K</td><td class="num">—</td><td><span class="fl g">Material set</span></td></tr>
+            <tr><td class="job">Bred Gourmet<small>Cambridge, MA · hospitality</small></td><td><span class="stg">Finishing</span></td><td class="num">$66K</td><td class="num">91%</td><td><span class="fl w">Booth Thu</span></td></tr>
+            <tr><td class="job">South Shore Mammography<small>Weymouth, MA · healthcare</small></td><td><span class="stg">Punch</span></td><td class="num">$118K</td><td class="num">103%</td><td><span class="fl w">3 open items</span></td></tr>
+            <tr><td class="job">Faraway Martha's Vineyard<small>hospitality</small></td><td><span class="stg">Punch</span></td><td class="num">$205K</td><td class="num">99%</td><td><span class="fl g">Ready to bill</span></td></tr>
+          </tbody>
+        </table></div>
+        <div class="job">
+          <div class="hd"><div class="nm">Seamark Restaurant</div><div class="sub">Boston, MA · in shop · one record, every module writes to it</div></div>
+          <div class="bd">
+            <div class="pane"><h4>Job costing</h4>
+              <div class="row"><span>Estimated</span><b>640 hrs</b></div>
+              <div class="row"><span>Actual to date</span><b>717 hrs</b></div>
+              <div class="bar"><i style="width:100%"></i></div>
+              <div class="row"><span>Over by</span><b style="color:var(--risk)">77 hrs / 12%</b></div>
+              <div class="row"><span>Margin at risk</span><b style="color:var(--risk)">$9,400</b></div></div>
+            <div class="pane"><h4>Submittal log</h4>
+              <div class="row"><span>Rev 0 issued</span><b>Apr 02</b></div>
+              <div class="row"><span>Returned</span><b>Apr 19</b></div>
+              <div class="row"><span>Rev 1 approved</span><b>May 08</b></div>
+              <div class="row"><span>Approval cycle</span><b>36 days</b></div></div>
+            <div class="pane"><h4>Billing &amp; COs</h4>
+              <div class="row"><span>CO 1 banquette</span><b style="color:var(--ok)">billed</b></div>
+              <div class="row"><span>CO 2 stone swap</span><b style="color:var(--ok)">billed</b></div>
+              <div class="row"><span>CO 3 bar millwork</span><b style="color:var(--risk)">$8,400</b></div>
+              <div class="row"><span>CO 4 shelving</span><b style="color:var(--risk)">$2,150</b></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ESTIMATING -->
+      <section class="panel" id="est">
+        <h3 class="sec">Estimating · 5 bids out</h3>
+        <p class="sum">Out for bid <b>$538K</b> · Hit rate YTD <b>34%</b> · Avg takeoff time <b>9.5 hrs</b></p>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Job</th><th>GC / Architect</th><th>Bid due</th><th>Takeoff</th><th>Value</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="job">Flower Soul<small>Haverhill, MA · retail</small></td><td>Consigli</td><td class="num">Fri Jul 17</td><td class="num">100%</td><td class="num">$84K</td><td><span class="fl g">Ready to send</span></td></tr>
+            <tr><td class="job">Tufts Crown Colony<small>healthcare</small></td><td>Suffolk</td><td class="num">Jul 24</td><td class="num">40%</td><td class="num">$190K</td><td><span class="fl w">RFI out, waiting drawings</span></td></tr>
+            <tr><td class="job">Expansion Therapeutics<small>Boston, MA · healthcare</small></td><td>Columbia</td><td class="num">Jul 29</td><td class="num">30%</td><td class="num">$145K</td><td><span class="fl w">In takeoff</span></td></tr>
+            <tr><td class="job">Murrays Toggery Shop<small>boutique</small></td><td>Shawmut</td><td class="num">Aug 04</td><td class="num">60%</td><td class="num">$62K</td><td><span class="fl w">In takeoff</span></td></tr>
+            <tr><td class="job">Jonathan Adler<small>boutique · retail</small></td><td>Direct</td><td class="num">submitted</td><td class="num">100%</td><td class="num">$57K</td><td><span class="fl g">Awaiting award</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="sum" style="margin-top:10px">Every takeoff line carries to the job record, so the estimate you bid is the estimate the floor is measured against. No re-keying.</p>
+      </section>
+
+      <!-- SUBMITTALS -->
+      <section class="panel" id="sub">
+        <h3 class="sec">Submittals · 2 past 10 days</h3>
+        <p class="sum">Open submittals <b>4</b> · Avg approval cycle <b>31 days</b> · Longest open <b>12 days</b></p>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Job</th><th>Rev</th><th>Issued</th><th>Days out</th><th>With</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="job">Tobey Hospital ED<small>Wareham, MA</small></td><td class="num">Rev 2</td><td class="num">Jun 28</td><td class="num" style="color:var(--risk)">12</td><td>Architect</td><td><span class="fl r">No response</span></td></tr>
+            <tr><td class="job">Vero Apartments<small>community living</small></td><td class="num">Rev 1</td><td class="num">Jun 29</td><td class="num" style="color:var(--risk)">11</td><td>Architect</td><td><span class="fl r">No response</span></td></tr>
+            <tr><td class="job">Congregation Beth Shalom<small>Brookline, MA</small></td><td class="num">Rev 0</td><td class="num">Jul 06</td><td class="num">4</td><td>Architect</td><td><span class="fl w">Finish sample pending</span></td></tr>
+            <tr><td class="job">The Quill<small>hospitality</small></td><td class="num">Rev 0</td><td class="num">not issued</td><td class="num">—</td><td>Shop</td><td><span class="fl w">Drafting 80%</span></td></tr>
+            <tr><td class="job">Seamark Restaurant<small>Boston, MA</small></td><td class="num">Rev 1</td><td class="num">Apr 22</td><td class="num">—</td><td>—</td><td><span class="fl g">Approved May 08</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="sum" style="margin-top:10px">The clock starts the day it's issued and nags on its own. Nothing sits on an architect's desk unnoticed for two weeks again.</p>
+      </section>
+
+      <!-- PURCHASING -->
+      <section class="panel" id="pur">
+        <h3 class="sec">Purchasing · 1 not ordered</h3>
+        <p class="sum">Open POs <b>$412K</b> · Longest lead <b>6 wks</b> · Long-lead items unordered <b style="color:var(--risk)">1</b></p>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Job</th><th>Item</th><th>Vendor</th><th>Lead</th><th>Need by</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="job">MANGO Hudson Yards<small>New York, NY</small></td><td>Rift white oak veneer, sequence matched</td><td>Certainly Wood</td><td class="num" style="color:var(--risk)">6 wks</td><td class="num">Aug 22</td><td><span class="fl r">Not ordered</span></td></tr>
+            <tr><td class="job">Tobey Hospital ED<small>Wareham, MA</small></td><td>Plastic laminate, hardware</td><td>Wilsonart</td><td class="num">3 wks</td><td class="num">Sep 05</td><td><span class="fl w">Held for approval</span></td></tr>
+            <tr><td class="job">G20 Spa<small>Boston, MA</small></td><td>Solid surface tops</td><td>Corian</td><td class="num">2 wks</td><td class="num">Aug 01</td><td><span class="fl g">Confirmed</span></td></tr>
+            <tr><td class="job">Fiorella's Cocina<small>Burlington, MA</small></td><td>Hinges, slides</td><td>Blum</td><td class="num">stock</td><td class="num">Jul 21</td><td><span class="fl g">Received</span></td></tr>
+            <tr><td class="job">St Marks<small>education</small></td><td>Maple ply, edgebanding</td><td>Boston Plywood</td><td class="num">1 wk</td><td class="num">Jul 18</td><td><span class="fl g">Received</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="sum" style="margin-top:10px">Lead times sit against the install date, not in someone's head. If the veneer won't land in time, you know now, not in August.</p>
+      </section>
+
+      <!-- PRODUCTION -->
+      <section class="panel" id="prod">
+        <h3 class="sec">Production · week of Jul 13</h3>
+        <p class="sum">Shop load <b>94%</b> · Assembly <b style="color:var(--risk)">over capacity</b> · Finish booth <b>3 slots open</b></p>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Work center</th><th>Running</th><th>Next up</th><th>Load</th><th></th></tr></thead>
+          <tbody>
+            <tr><td class="job">CNC / nesting</td><td>Seamark, Fiorella's</td><td>St Marks</td><td class="num">92%</td><td><div class="load w"><i style="width:92%"></i></div></td></tr>
+            <tr><td class="job">Mill / solid stock</td><td>St Marks</td><td>Beth Shalom</td><td class="num">70%</td><td><div class="load"><i style="width:70%"></i></div></td></tr>
+            <tr><td class="job">Assembly</td><td>Seamark, St Marks</td><td>Fiorella's</td><td class="num" style="color:var(--risk)">105%</td><td><div class="load r"><i style="width:100%"></i></div></td></tr>
+            <tr><td class="job">Finish booth</td><td>Bred Gourmet (Thu)</td><td>Seamark</td><td class="num">60%</td><td><div class="load"><i style="width:60%"></i></div></td></tr>
+            <tr><td class="job">Crating / ship</td><td>Miltons</td><td>MANGO Bethesda</td><td class="num">45%</td><td><div class="load"><i style="width:45%"></i></div></td></tr>
+          </tbody>
+        </table></div>
+        <p class="sum" style="margin-top:10px">Assembly is the bottleneck this week. The schedule knows it before the floor does, because it's reading the same hours the guys are clocking.</p>
+      </section>
+
+      <!-- INSTALL -->
+      <section class="panel" id="ins">
+        <h3 class="sec">Install · 1 unassigned</h3>
+        <p class="sum">Installs this month <b>4</b> · Crews out <b>2</b> · Unassigned <b style="color:var(--risk)">1</b></p>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Job</th><th>Site</th><th>Crew</th><th>Date</th><th>Site ready</th></tr></thead>
+          <tbody>
+            <tr><td class="job">MANGO Bethesda<small>retail</small></td><td>Bethesda, MD</td><td style="color:var(--risk)">Unassigned</td><td class="num">TBD</td><td><span class="fl r">GC needs date Thu</span></td></tr>
+            <tr><td class="job">Miltons Burlington<small>retail</small></td><td>Burlington, MA</td><td>Rodriguez +2</td><td class="num">Tue Jul 14</td><td><span class="fl g">Confirmed ready</span></td></tr>
+            <tr><td class="job">South Shore Mammography<small>healthcare</small></td><td>Weymouth, MA</td><td>Silva +1</td><td class="num">Punch Jul 16</td><td><span class="fl w">3 punch items</span></td></tr>
+            <tr><td class="job">Faraway<small>hospitality</small></td><td>Martha's Vineyard</td><td>complete</td><td class="num">Jun 27</td><td><span class="fl g">Closed out</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="sum" style="margin-top:10px">Crew, site readiness and the GC's date in one row. No van sent to a site that isn't ready.</p>
+      </section>
+
+      <!-- JOB COSTING -->
+      <section class="panel" id="cost">
+        <h3 class="sec">Job costing · 3 over estimate</h3>
+        <p class="sum">Margin at risk <b style="color:var(--risk)">$14,200</b> · Jobs over estimate <b>3 of 12</b> · Avg <b>97%</b> of est. hours</p>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Job</th><th>Est hrs</th><th>Actual</th><th>%</th><th>Margin at risk</th><th></th></tr></thead>
+          <tbody>
+            <tr><td class="job">Seamark Restaurant<small>Boston, MA</small></td><td class="num">640</td><td class="num">717</td><td class="num" style="color:var(--risk)">112%</td><td class="num" style="color:var(--risk)">$9,400</td><td><span class="fl r">Rising</span></td></tr>
+            <tr><td class="job">South Shore Mammography<small>Weymouth, MA</small></td><td class="num">380</td><td class="num">391</td><td class="num" style="color:var(--wait)">103%</td><td class="num" style="color:var(--wait)">$2,100</td><td><span class="fl w">Punch phase</span></td></tr>
+            <tr><td class="job">Bred Gourmet<small>Cambridge, MA</small></td><td class="num">140</td><td class="num">147</td><td class="num" style="color:var(--wait)">105%</td><td class="num" style="color:var(--wait)">$2,700</td><td><span class="fl w">In finish</span></td></tr>
+            <tr><td class="job">MANGO Bethesda<small>Bethesda, MD</small></td><td class="num">520</td><td class="num">510</td><td class="num">98%</td><td class="num">—</td><td><span class="fl g">On est.</span></td></tr>
+            <tr><td class="job">St Marks<small>education</small></td><td class="num">300</td><td class="num">282</td><td class="num">94%</td><td class="num">—</td><td><span class="fl g">Under</span></td></tr>
+            <tr><td class="job">Fiorella's Cocina<small>Burlington, MA</small></td><td class="num">210</td><td class="num">185</td><td class="num">88%</td><td class="num">—</td><td><span class="fl g">Under</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="sum" style="margin-top:10px">Hours come off the floor against the estimate that won the bid. You find out at 112%, not at closeout.</p>
+      </section>
+
+      <!-- BILLING -->
+      <section class="panel" id="bill">
+        <h3 class="sec">Billing &amp; change orders · 4 unbilled</h3>
+        <p class="sum">Unbilled COs <b style="color:var(--risk)">$31,200</b> · Retainage held <b>$74K</b> · Ready to bill <b>$205K</b></p>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Job</th><th>Change order</th><th>Amount</th><th>Raised</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="job">Tobey Hospital ED<small>Wareham, MA</small></td><td>CO 1 · added casework run</td><td class="num" style="color:var(--risk)">$12,300</td><td class="num">Jun 11</td><td><span class="fl r">Unbilled 29d</span></td></tr>
+            <tr><td class="job">Seamark Restaurant<small>Boston, MA</small></td><td>CO 3 · bar millwork revision</td><td class="num" style="color:var(--risk)">$8,400</td><td class="num">Jun 24</td><td><span class="fl r">Unbilled 16d</span></td></tr>
+            <tr><td class="job">Vero Apartments<small>community living</small></td><td>CO 2 · finish upgrade</td><td class="num" style="color:var(--risk)">$8,350</td><td class="num">Jul 01</td><td><span class="fl r">Unbilled 9d</span></td></tr>
+            <tr><td class="job">Seamark Restaurant<small>Boston, MA</small></td><td>CO 4 · shelving detail</td><td class="num" style="color:var(--risk)">$2,150</td><td class="num">Jul 07</td><td><span class="fl r">Unbilled 3d</span></td></tr>
+            <tr><td class="job">Faraway<small>Martha's Vineyard</small></td><td>Final application</td><td class="num">$205K</td><td class="num">Jun 27</td><td><span class="fl g">Ready to bill</span></td></tr>
+            <tr><td class="job">Seamark Restaurant<small>Boston, MA</small></td><td>CO 1 &amp; CO 2</td><td class="num">$14,600</td><td class="num">May</td><td><span class="fl g">Billed</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="sum" style="margin-top:10px">A CO raised on the floor lands here the same day. That $31,200 is work you already did.</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="note">
+    <p><b>What this is.</b> A concept mockup built from your public project list ahead of our call. The structure is real, the job data is illustrative. Yours would replace it.</p>
+    <p><b>What it isn't.</b> A rip and replace. Your CAD and your books stay. This is the layer that ties the job together, and it gets built around how Woodcraft already runs, not the other way round.</p>
+    <p><b>And you'd own it outright.</b> No per seat rent, no waiting on a vendor's roadmap to change a field.</p>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.rail button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.rail button').forEach(function(x){x.classList.remove('on');});
+      document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+      b.classList.add('on');
+      var el = document.getElementById(b.dataset.p);
+      if(el) el.classList.add('on');
+    });
+  });
+</script>
