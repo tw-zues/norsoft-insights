@@ -181,6 +181,14 @@
   }
   function soundRect() { return { x: W / 2 - 66, y: 652, w: 132, h: 26 }; }
 
+  var idxModal = document.getElementById("indexModal");
+  document.getElementById("idxClose").addEventListener("click", function () {
+    idxModal.style.display = "none";
+  });
+  idxModal.addEventListener("click", function (e) {
+    if (e.target === idxModal) idxModal.style.display = "none";
+  });
+
   /* ---------- sprites ---------- */
   function makeSprite(rows, palette, px) {
     var c = document.createElement("canvas");
