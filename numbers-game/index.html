@@ -1,0 +1,1717 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#060707">
+</head>
+<body>
+<title>NUMBERS GAME TD (tower defense mockup)</title>
+<style>
+  :root {
+    --phos: #39ff6e;
+    --amber: #ffb000;
+    --red: #ff5544;
+    --cyan: #4de8ff;
+    --grey: #8a9a8a;
+    --purple: #b26bff;
+    --bezel: #17181a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(900px 500px at 50% -10%, #14201a, #060707 65%), #060707;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    padding: 22px 12px 48px;
+    font-family: "Courier New", ui-monospace, monospace;
+    color: #cfe8d2;
+  }
+  .marquee { text-align: center; line-height: 1.1; }
+  .marquee .title {
+    font-size: clamp(26px, 6vw, 44px);
+    font-weight: bold;
+    letter-spacing: 6px;
+    color: var(--phos);
+    text-shadow: 0 0 18px rgba(57,255,110,.55), 0 0 2px rgba(57,255,110,.9);
+  }
+  .marquee .sub {
+    font-size: 12px; letter-spacing: 3px; color: var(--amber);
+    text-shadow: 0 0 10px rgba(255,176,0,.4); margin-top: 6px;
+  }
+  .cabinet {
+    background: var(--bezel);
+    border: 1px solid #26282b;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 30px 70px rgba(0,0,0,.7), inset 0 1px 0 #2e3134;
+    max-width: 100%;
+  }
+  .screen-wrap { position: relative; background: #000; border-radius: 8px; overflow: hidden; line-height: 0; }
+  canvas#game { image-rendering: pixelated; display: block; max-width: 100%; max-height: 82vh; width: auto; height: auto; margin: 0 auto; background: #000; touch-action: none; }
+  .scanlines {
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px);
+    mix-blend-mode: multiply;
+  }
+  .glow { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 90px rgba(20,255,120,.09); }
+  .under { max-width: 560px; width: 100%; font-size: 13px; line-height: 1.65; color: #91a893; }
+  .under b { color: #cfe8d2; }
+  .under .h { letter-spacing: 3px; color: var(--amber); font-weight: bold; margin: 18px 0 8px; }
+  .under p { margin: 0 0 10px; }
+  .mutebtn {
+    font-family: inherit; background: none; border: 1px solid #2b2e31;
+    color: #91a893; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer;
+  }
+  #initials {
+    position: absolute; left: 50%; top: 58%;
+    transform: translate(-50%, -50%);
+    width: 120px; font-family: inherit; font-size: 34px;
+    letter-spacing: 12px; text-align: center; text-transform: uppercase;
+    background: #000; color: var(--phos); border: 2px solid var(--phos);
+    outline: none; display: none; padding: 4px 0 4px 12px;
+  }
+  #email {
+    position: absolute; left: 50%; top: 58%;
+    transform: translate(-50%, -50%);
+    width: 300px; font-family: inherit; font-size: 17px;
+    text-align: center;
+    background: #000; color: var(--phos); border: 2px solid var(--phos);
+    outline: none; display: none; padding: 9px 6px;
+  }
+  #email::placeholder { color: #2c4433; }
+  /* the index */
+  .index { display: flex; flex-direction: column; gap: 7px; }
+  .irow { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,.03); border: 1px solid #1d211d; padding: 6px 10px; }
+  .irow img { image-rendering: pixelated; flex: none; }
+  .irow .it { font-size: 12px; line-height: 1.5; }
+  .irow .it b { display: block; letter-spacing: 1px; }
+  .isec { font-size: 10px; letter-spacing: 2.5px; color: #6f8672; margin-top: 8px; }
+  @media (prefers-reduced-motion: reduce) { .scanlines { background: none; } }
+</style>
+
+<div class="marquee">
+  <div class="title">NUMBERS GAME</div>
+  <div class="sub">COLD EMAIL TOWER DEFENSE Â· CONCEPT MOCKUP</div>
+</div>
+
+<div class="cabinet">
+  <div class="screen-wrap">
+    <canvas id="game" width="480" height="720"></canvas>
+    <div class="scanlines"></div>
+    <div class="glow"></div>
+    <input id="initials" maxlength="3" autocomplete="off" spellcheck="false" aria-label="Enter three initials">
+    <input id="email" type="email" autocomplete="email" spellcheck="false" placeholder="you@company.com" aria-label="Enter email to claim your leaderboard spot">
+  </div>
+</div>
+
+<div class="under">
+  <div class="h">THE INDEX (WHAT THE SHIT IS)</div>
+  <div class="index" id="index"></div>
+
+  <div class="h">WHY TOWER DEFENSE IS THE TRUE FORM</div>
+  <p><b>Cold email at scale is infrastructure, not aim.</b> You don't fire the emails. You build the machine that fires them: domains, inboxes on the domains, warmup so they land, personalization so the automation stops emailing fish. Then you watch it run, and you buy more domains when yours burn. That is the actual job, and now it's the game.</p>
+  <p><b>The teaching is in the mechanics.</b> Unpersonalized infrastructure targets whoever is closest, including the fish, and every fish it hits bleeds that domain's reputation until it's blacklisted. Personalization makes a domain skip the fish. Volume has a cost too: send too fast from one domain and it overheats into a timed cooldown, so the winning strategy is many warmed domains sending modestly, which is, word for word, how deliverability actually works.</p>
+  <p><b>Booth math:</b> a run is 2-4 minutes, ends at the initials screen, and the leaderboard is the lead capture. One HTML file, offline on a tablet, reskinnable per vendor. <button class="mutebtn" id="mute">SOUND: ON</button></p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var cv = document.getElementById("game");
+  var cx = cv.getContext("2d");
+  var W = 480, H = 720;
+  var UIY = H - 122; // shop bar top
+
+  /* ---------- audio ---------- */
+  var AC = null, muted = false;
+  function beep(freq, dur, type, vol) {
+    if (muted) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      var o = AC.createOscillator(), g = AC.createGain();
+      o.type = type || "square";
+      o.frequency.value = freq;
+      g.gain.value = vol || 0.04;
+      o.connect(g); g.connect(AC.destination);
+      o.start();
+      g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime + (dur || 0.08));
+      o.stop(AC.currentTime + (dur || 0.08) + 0.02);
+    } catch (e) {}
+  }
+  document.getElementById("mute").addEventListener("click", function () {
+    muted = !muted;
+    this.textContent = muted ? "SOUND: OFF" : "SOUND: ON";
+  });
+
+  /* ---------- sprites ---------- */
+  function makeSprite(rows, palette, px) {
+    var c = document.createElement("canvas");
+    px = px || 3;
+    c.width = rows[0].length * px;
+    c.height = rows.length * px;
+    var g = c.getContext("2d");
+    for (var y = 0; y < rows.length; y++)
+      for (var x = 0; x < rows[y].length; x++) {
+        var ch = rows[y][x];
+        if (ch !== ".") { g.fillStyle = palette[ch]; g.fillRect(x * px, y * px, px, px); }
+      }
+    return c;
+  }
+  var SKIN = "#f0c8a0", HAIR = "#3a2a18";
+
+  var SPR = {
+    ceo: makeSprite([
+      "....HHHH....",
+      "...HFFFFH...",
+      "....FFFF....",
+      ".....FF.....",
+      "..SSSTTSSS..",
+      ".SS.STTS.SS.",
+      ".SS.STTS.SS.",
+      "..SSSTTSSS..",
+      "....S..S....",
+      "..BB.....BB."
+    ], { H: HAIR, F: SKIN, S: "#26343f", T: "#ff5544", B: "#6b4a2a" }),
+    ops: makeSprite([
+      "...YYYYYY...",
+      "..YYYYYYYY..",
+      "....FFFF....",
+      ".....FF.....",
+      "..VVVVVVVV..",
+      ".VV.VVVV.VV.",
+      ".VV.VVVV.VV.",
+      "..VVVVVVVV..",
+      "....V..V....",
+      "...VV..VV..."
+    ], { Y: "#ffb000", F: SKIN, V: "#ff8c1a" }),
+    gate: makeSprite([
+      "....HHHH....",
+      "...EFFFFE...",
+      "....FFFF....",
+      ".....FF.....",
+      "..CCCCCCCC..",
+      ".CC.CCCC.CC.",
+      ".CC.CCCC.CC.",
+      "..CCCCCCCC..",
+      "....C..C....",
+      "...CC..CC..."
+    ], { H: HAIR, F: SKIN, E: "#4de8ff", C: "#2e7d8f" }),
+    fish: makeSprite([
+      "............",
+      "....GGGG....",
+      "G..GGGGGG...",
+      "GG.GG.GGGG..",
+      "GGGGGGGGGGG.",
+      "G..GGTGGG...",
+      "....GTGG....",
+      "......T....."
+    ], { G: "#8a9a8a", T: "#ff5544" }),
+    committee: makeSprite([
+      ".HHH....HHH....HHH.....",
+      ".FFF....FFF....FFF.....",
+      "SSSSS..SSSSS..SSSSS....",
+      "S.T.S..S.T.S..S.T.S....",
+      "S.T.S..S.T.S..S.T.S....",
+      "SSSSS..SSSSS..SSSSS....",
+      ".S.S....S.S....S.S.....",
+      ".S.S....S.S....S.S....."
+    ], { H: HAIR, F: SKIN, S: "#26343f", T: "#ff5544" }),
+    algorithm: makeSprite([
+      "PPPPPPPPPPPPPPPP",
+      "PP............PP",
+      "P.P..........P.P",
+      "P..P........P..P",
+      "P...PPPPPPPP...P",
+      "P..............P",
+      "P.....WWWW.....P",
+      "P....WWPPWW....P",
+      "P.....WWWW.....P",
+      "PPPPPPPPPPPPPPPP"
+    ], { P: "#b26bff", W: "#ffffff" }),
+    // domain: little computer desk with someone typing (2 frames)
+    compA: makeSprite([
+      "......MMMMMMM.",
+      "......MssSSsM.",
+      ".HH...MSSsSSM.",
+      ".FF...MsSSSsM.",
+      ".BB...MMMMMMM.",
+      ".BBA.....MM...",
+      ".BB...KKKKKK..",
+      "DDDDDDDDDDDDDD",
+      ".DD........DD."
+    ], { M: "#26343f", S: "#0e2a19", s: "#39ff6e", H: HAIR, F: SKIN, B: "#2e7d8f", A: SKIN, K: "#3d4045", D: "#8a6a3a" }),
+    compB: makeSprite([
+      "......MMMMMMM.",
+      "......MSsSsSM.",
+      ".HH...MsSSSsM.",
+      ".FF...MSSsSSM.",
+      ".BB...MMMMMMM.",
+      ".BB......MM...",
+      ".BBA..KKKKKK..",
+      "DDDDDDDDDDDDDD",
+      ".DD........DD."
+    ], { M: "#26343f", S: "#0e2a19", s: "#39ff6e", H: HAIR, F: SKIN, B: "#2e7d8f", A: SKIN, K: "#3d4045", D: "#8a6a3a" }),
+    compDead: makeSprite([
+      "......MMMMMMM.",
+      "......MRRRRRM.",
+      ".HH...MRRRRRM.",
+      ".FF...MRRRRRM.",
+      ".BB...MMMMMMM.",
+      ".BB......MM...",
+      ".BB...KKKKKK..",
+      "DDDDDDDDDDDDDD",
+      ".DD........DD."
+    ], { M: "#26343f", R: "#3a1210", H: HAIR, F: SKIN, B: "#233c44", K: "#2c2e31", D: "#5c4726" }),
+    // the classic envelope: white with the red M
+    mail: makeSprite([
+      "RRRRRRRRRR",
+      "RRWWWWWWRR",
+      "RWRWWWWRWR",
+      "RWWRWWRWWR",
+      "RWWWRRWWWR",
+      "RWWWWWWWWR",
+      "RRRRRRRRRR"
+    ], { W: "#ffffff", R: "#ff5544" }, 2)
+  };
+
+  /* ---------- word banks ---------- */
+  var SUBJECTS = ["just circling back", "quick question", "per my last email", "bumping this", "thoughts?", "re: re: quick question", "I'll keep this short", "following up"];
+  var SPEECH = {
+    any: ["who is this", "how did you get this", "not interested", "we have a guy", "unsubscribe.", "again??", "marked as spam", "who gave you this email", "STOP", "circle back in Q3", "looks great, send more info"],
+    ceo: ["my assistant filters these", "take me off the list", "who let this through", "looping in sarah, who owns this"],
+    ops: ["i'm in a meeting", "the line is down again", "ask procurement"],
+    gate: ["he's unavailable", "do you have an appointment", "there is no decision maker"],
+    fish: ["blub", "i am a fish"],
+    committee: ["let's take this offline", "we need buy-in", "circle back next quarter", "who owns this?"],
+    algorithm: ["promotions tab.", "your patterns are noticed", "sender score: declining"]
+  };
+  var WAVE_CARDS = [
+    "You tell the team it's a numbers game. Nobody asks which numbers.",
+    "You bought another domain. This is normal. This is fine.",
+    "The new inbox is named after you. Again.",
+    "Someone replied UNSUBSCRIBE in all caps. You logged it as engagement.",
+    "You said 'per my last email' out loud. At home.",
+    "Your open rate is 74%. Apple made most of it up.",
+    "The warmup pool is complimenting itself again.",
+    "A prospect replied STOP. Wrong protocol. Message received.",
+    "Quota reset overnight. It does that."
+  ];
+  var OVER_QUOTA = ["END OF QUARTER", "They went with the guy.", "All of them. The guy."];
+
+  /* ---------- path & spots ---------- */
+  var PATH = [
+    [56, -20], [56, 120], [400, 120], [400, 250], [80, 250], [80, 380], [400, 380], [400, 510], [180, 510], [180, 596]
+  ];
+  var SEGLEN = [], TOTLEN = 0;
+  (function () {
+    for (var i = 0; i < PATH.length - 1; i++) {
+      var l = Math.hypot(PATH[i + 1][0] - PATH[i][0], PATH[i + 1][1] - PATH[i][1]);
+      SEGLEN.push(l); TOTLEN += l;
+    }
+  })();
+  function pointAt(dist) {
+    var d = dist;
+    for (var i = 0; i < SEGLEN.length; i++) {
+      if (d <= SEGLEN[i]) {
+        var t = d / SEGLEN[i];
+        return {
+          x: PATH[i][0] + (PATH[i + 1][0] - PATH[i][0]) * t,
+          y: PATH[i][1] + (PATH[i + 1][1] - PATH[i][1]) * t
+        };
+      }
+      d -= SEGLEN[i];
+    }
+    return { x: PATH[PATH.length - 1][0], y: PATH[PATH.length - 1][1] };
+  }
+
+  var SPOTS = [
+    { x: 180, y: 72 }, { x: 320, y: 72 },
+    { x: 150, y: 185 }, { x: 300, y: 185 },
+    { x: 240, y: 315 }, { x: 120, y: 315 },
+    { x: 240, y: 445 }, { x: 340, y: 445 },
+    { x: 80, y: 545 }, { x: 330, y: 560 }
+  ];
+
+  var COST = { domain: 150, inbox: 75, warmup: 100, target: 100, pers: 125, swap: 100 };
+
+  /* ---------- certifications (skill-gated unlocks) ---------- */
+  var certs = { target: false, pers: false, seq: false };
+  var QUIZZES = [
+    {
+      key: "target", day: 3, title: "CERTIFICATION 1: TARGETING",
+      q: "Your list has 5,000 contacts. What matters most before anything sends?",
+      opts: ["That every single one gets the email", "That the people on it actually match your ICP", "A catchier subject line"],
+      correct: 1,
+      reward: "TARGETING unlocked: domains can learn to skip the fish"
+    },
+    {
+      key: "pers", day: 5, title: "CERTIFICATION 2: PERSONALIZATION",
+      q: "What makes personalization actually land?",
+      opts: ["Their first name in every sentence", "A detail that proves you looked at their business", "Sending the same email twice"],
+      correct: 1,
+      reward: "PERSONALIZE unlocked: critical hits enabled"
+    },
+    {
+      key: "seq", day: 7, title: "CERTIFICATION 3: FOLLOW-UPS",
+      q: "Where do most replies actually come from?",
+      opts: ["The first email, if it's good enough", "The follow-ups after the first email", "The unsubscribe link"],
+      correct: 1,
+      reward: "AUTO FOLLOW-UP granted free: every send has a 25% chance to fire a follow-up"
+    }
+  ];
+  var quiz = null, quizFeedback = null, quizT = 0, gateIdx = 0, warnT = 0;
+
+  // end-of-day review questions, easy -> hard (all technically accurate)
+  var GATES = [
+    { title: "END OF DAY REVIEW", q: "Should you send cold email from your main company domain?",
+      opts: ["Yes. It shows confidence", "No. Use lookalike domains so the damage never touches it", "Only for the breakup email"],
+      correct: 1, why: "the real domain is the one asset too valuable to burn" },
+    { title: "END OF DAY REVIEW", q: "'Verified' on a purchased lead list means...",
+      opts: ["It has a first name and an @ in it", "The tool charged you a credit for it", "SMTP-checked, low bounce risk. Some bounce anyway"],
+      correct: 2, why: "verified is a level of optimism, not a guarantee" },
+    { title: "END OF DAY REVIEW", q: "Safe daily cold sends per inbox?",
+      opts: ["Roughly 20-50, and that includes warmup emails", "500. The plan says unlimited", "No limit if you believe in your offer"],
+      correct: 0, why: "20-50 a day. the tool will physically let you do 500. once" },
+    { title: "END OF DAY REVIEW", q: "How long do you warm up a brand-new domain?",
+      opts: ["Zero days. Warmup is a scam", "14-21 days minimum", "You buy pre-warmed ones from a guy"],
+      correct: 1, why: "14-21 days of robots complimenting each other's fake emails" },
+    { title: "END OF DAY REVIEW", q: "Your bounce rate hits 4%. You...",
+      opts: ["Stop and re-verify the list. Over 2% is already damage", "Keep going. Bounces are no's you didn't have to read", "Nothing. The tool would have said something"],
+      correct: 0, why: "the tool did say something. it was a small yellow triangle" },
+    { title: "END OF DAY REVIEW", q: "How many follow-ups before you stop?",
+      opts: ["Nine. The breakup email is number seven", "2-3, then stop. Returns collapse after that", "You never stop. You change domains"],
+      correct: 1, why: "2-3. 'you never stop' is a description of the industry, which is why it's wrong" },
+    { title: "END OF DAY REVIEW", q: "Why is your open rate unreliable?",
+      opts: ["Prospects open emails with their eyes closed", "It isn't. Mine is 92% and things are going great", "Apple preloads tracking pixels, firing opens no human made"],
+      correct: 2, why: "Apple MPP inflates opens 15-35%. the metric everyone reports is partly Apple's servers" },
+    { title: "END OF DAY REVIEW", q: "A 'catch-all' address means...",
+      opts: ["The server accepts everything. Validity is unknowable until it bounces", "The whole company reads every email together", "Send more. Someone's bound to get it"],
+      correct: 0, why: "the only test for a catch-all is the consequence" },
+    { title: "END OF DAY REVIEW", q: "Under the 2024 Gmail rules, what complaint rate ends you?",
+      opts: ["3%. One decimal place is basically a rounding error", "No threshold if you never open Postmaster Tools", "0.3% is the hard line. Stay under 0.1%"],
+      correct: 2, why: "three angry people per thousand sends. that's the whole margin" },
+    { title: "END OF DAY REVIEW", q: "A spam trap is...",
+      opts: ["An address with no human behind it, built to catch bad lists", "A prospect who says 'interested!' then ghosts forever", "The unibox"],
+      correct: 0, why: "an email address whose entire job is to punish whoever sent to it" }
+  ];
+
+  /* ---------- state ---------- */
+  var state = "title"; // title | build | playing | gameover | initials | email | scores
+  var money = 250, quota = 10, quotaMax = 10, day = 0, pendingDay = 1, meetings = 0, sentCount = 0, conversions = 0, burnedCount = 0, oversends = 0, bossesDown = 0;
+  var quotaFlash = 0, dayClearT = 0, dayClearN = 0, dayT = 0;
+  var fishIntroDone = false, complaintTaught = false;
+  var domains = [], creeps = [], shots = [], floats = [];
+  var spawnQueue = [], spawnTimer = 0;
+  var stateTimer = 0, waveCardText = "";
+  var selected = null, placing = false;
+  var bubble = null, bubbleTimer = 2, promoTimer = 4;
+  var subjIdx = 0;
+  var last = 0, blink = 0;
+  // v3: active layer + streak + draft
+  var streak = 0, scorePts = 0, founderCd = 0, replyDrops = [], extraFish = 0, speedMult = 1;
+  var todayMods = { rate: 1, speed: 1, score: 1, reply: 1 };
+  var perm = { spintax: false, founderFast: false };
+  var draft = null, pendingInitials = "AAA", briefing = false;
+
+  function resetTodayMods() { todayMods = { rate: 1, speed: 1, score: 1, reply: 1 }; }
+  function mult() { return 1 + Math.min(2, streak * 0.1); }
+  function breakStreak(x, y, why) {
+    if (streak >= 2) floatText(x, y, "STREAK RESET. " + why, "#ff5544");
+    streak = 0;
+  }
+
+  var CARDS = [
+    { t: "CAFFEINE", d: "all inboxes send 25% faster today", f: function () { todayMods.rate = 0.8; } },
+    { t: "DELIVERABILITY CONSULTANT", d: "+20 rep on every domain. he said the thing about subdomains", f: function () { domains.forEach(function (d) { if (!d.burned) d.rep = Math.min(100, d.rep + 20); }); } },
+    { t: "VERIFIED LIST", d: "+$100 now. some of it bounced anyway", f: function () { money += 100; } },
+    { t: "SCRAPED LIST", d: "+$200 now. +2 fish tomorrow. you knew what it was", f: function () { money += 200; extraFish += 2; } },
+    { t: "SPINTAX", d: "crits splash 1 damage to a nearby prospect. permanent", f: function () { perm.spintax = true; } },
+    { t: "SECOND MONITOR", d: "founder send cooldown 8s becomes 5s. permanent", f: function () { perm.founderFast = true; } },
+    { t: "HOLIDAY WEEKEND", d: "prospects walk 20% slower today. they are 'out of office'", f: function () { todayMods.speed = 0.8; } },
+    { t: "QUOTA PRESSURE", d: "kills score x1.5 today. quota -1. leadership sends their regards", f: function () { todayMods.score = 1.5; if (quota > 1) { quota--; quotaFlash = 0.8; floatText(W - 40, 44, "-1", "#ff5544", 1.2, 13); } } },
+    { t: "AN INTERN", d: "reply bubbles worth double today. he is 'learning the ropes'", f: function () { todayMods.reply = 2; } }
+  ];
+  function deal3() {
+    var pool = CARDS.filter(function (c) {
+      if (c.t === "SPINTAX" && perm.spintax) return false;
+      if (c.t === "SECOND MONITOR" && perm.founderFast) return false;
+      return true;
+    });
+    var out = [];
+    while (out.length < 3 && pool.length) out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    return out;
+  }
+  function calFor(n) {
+    var out = [
+      { type: "gate", n: 4 + n },
+      { type: "ops", n: 2 + n },
+      { type: "ceo", n: n >= 2 ? Math.min(4, n - 1) : 0 },
+      { type: "fish", n: (n >= 2 ? Math.min(5, n) : 1) + extraFish }
+    ];
+    if (isBossDay(n)) out.push({ type: bossTypeFor(n), n: 1 });
+    return out.filter(function (r) { return r.n > 0; });
+  }
+
+  function floatText(x, y, txt, color, dur, size) {
+    if (floats.length >= 12) floats.shift();
+    floats.push({ x: x, y: y, txt: txt, color: color, t: dur || 1.2, size: size || 11 });
+  }
+
+  var CREEP_DEF = {
+    gate: { hp: 3, speed: 38, bounty: 40 },
+    ops: { hp: 4, speed: 40, bounty: 60 },
+    ceo: { hp: 6, speed: 52, bounty: 120 },
+    fish: { hp: 3, speed: 44, bounty: 0 },
+    committee: { hp: 0, speed: 22, bounty: 400 },
+    algorithm: { hp: 0, speed: 26, bounty: 350 }
+  };
+
+  function isBossDay(n) { return n % 4 === 0; }
+  function bossTypeFor(n) { return (n / 4) % 2 === 1 ? "committee" : "algorithm"; }
+
+  function buildDay(n) {
+    var q = [];
+    var gates = 4 + n, ops = 2 + n, ceos = n >= 2 ? Math.min(4, n - 1) : 0, fish = (n >= 2 ? Math.min(5, n) : 1) + extraFish;
+    extraFish = 0;
+    for (var i = 0; i < gates; i++) q.push("gate");
+    for (i = 0; i < ops; i++) q.push("ops");
+    for (i = 0; i < ceos; i++) q.push("ceo");
+    for (i = 0; i < fish; i++) q.push("fish");
+    for (i = q.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = q[i]; q[i] = q[j]; q[j] = t;
+    }
+    if (isBossDay(n)) q.push(bossTypeFor(n));
+    spawnQueue = q;
+    spawnTimer = 0.5;
+  }
+
+  function cardFor(n) {
+    if (n === 1) return "Prospects are walking to your competitor. Build inboxes. Convert them first. Do not email the fish.";
+    if (isBossDay(n)) {
+      return bossTypeFor(n) === "committee"
+        ? "THE COMMITTEE wants a demo. All of them. At once."
+        : "THE ALGORITHM has noticed your sending patterns.";
+    }
+    return WAVE_CARDS[(n - 2) % WAVE_CARDS.length];
+  }
+
+  function enterBuild(nextDay) {
+    pendingDay = nextDay;
+    waveCardText = cardFor(nextDay);
+    quiz = null; quizFeedback = null; quizT = 0;
+    for (var i = 0; i < QUIZZES.length; i++) {
+      if (nextDay >= QUIZZES[i].day && !certs[QUIZZES[i].key]) { quiz = QUIZZES[i]; break; }
+    }
+    if (!quiz && nextDay >= 2) quiz = GATES[Math.min(gateIdx, GATES.length - 1)];
+    draft = nextDay >= 2 ? { cards: deal3(), picked: false } : null;
+    resetTodayMods();
+    briefing = true;
+    state = "build";
+  }
+
+  function startPending() {
+    day = pendingDay;
+    buildDay(day);
+    dayT = 0;
+    warnT = 2.0;
+    state = "playing";
+    beep(520, 0.1, "square", 0.04);
+  }
+
+  function endDay() {
+    money += 100;
+    dayClearT = 1.4;
+    dayClearN = day;
+    enterBuild(day + 1);
+  }
+
+  function gameOver() {
+    state = "gameover";
+    stateTimer = 2.6;
+    bubble = null;
+    beep(80, 0.5, "sawtooth", 0.06);
+  }
+
+  /* ---------- leaderboard ---------- */
+  function getScores() {
+    try { return JSON.parse(localStorage.getItem("numbers-game-td-scores") || "[]"); } catch (e) { return []; }
+  }
+  function saveScore(initials, email) {
+    var list = getScores();
+    list.push({ n: initials, s: scorePts + meetings * 400 + bossesDown * 1000, d: day, e: email || "" });
+    list.sort(function (a, b) { return b.s - a.s; });
+    try { localStorage.setItem("numbers-game-td-scores", JSON.stringify(list.slice(0, 5))); } catch (e) {}
+  }
+  var initialsEl = document.getElementById("initials");
+  var emailEl = document.getElementById("email");
+  function promptInitials() {
+    state = "initials";
+    initialsEl.style.display = "block";
+    initialsEl.value = "";
+    setTimeout(function () { initialsEl.focus(); }, 50);
+  }
+  initialsEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      pendingInitials = (initialsEl.value || "AAA").toUpperCase().padEnd(3, "A").slice(0, 3);
+      initialsEl.style.display = "none";
+      state = "email";
+      emailEl.style.display = "block";
+      emailEl.value = "";
+      setTimeout(function () { emailEl.focus(); }, 50);
+      e.preventDefault();
+    }
+    e.stopPropagation();
+  });
+  emailEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      saveScore(pendingInitials, emailEl.value.trim());
+      emailEl.style.display = "none";
+      state = "scores";
+      e.preventDefault();
+    }
+    e.stopPropagation();
+  });
+
+  /* ---------- input ---------- */
+  window.addEventListener("keydown", function (e) {
+    if (e.target === initialsEl) return;
+    if (e.code === "Space") { e.preventDefault(); advance(); }
+  });
+  cv.addEventListener("pointerdown", function (e) {
+    var r = cv.getBoundingClientRect();
+    var x = (e.clientX - r.left) * (W / r.width);
+    var y = (e.clientY - r.top) * (H / r.height);
+    tap(x, y);
+  });
+
+  function advance() {
+    if (state === "title" || state === "scores") { reset(); enterBuild(1); return; }
+    if (state === "build") {
+      if (quiz) return;
+      if (briefing) { briefing = false; beep(520, 0.08, "square", 0.04); return; }
+      if (domains.length === 0) { floatText(W / 2, UIY - 16, "no infrastructure. buy a domain first.", "#ff5544"); return; }
+      startPending();
+      return;
+    }
+    if (state === "gameover" && stateTimer <= 0) { promptInitials(); return; }
+  }
+
+  function reset() {
+    money = 250; quota = 10; quotaMax = 10; day = 0; meetings = 0; sentCount = 0; conversions = 0; burnedCount = 0; oversends = 0; bossesDown = 0;
+    domains = []; creeps = []; shots = []; floats = []; selected = null; placing = false;
+    certs = { target: false, pers: false, seq: false };
+    streak = 0; scorePts = 0; founderCd = 0; replyDrops = []; extraFish = 0; speedMult = 1; gateIdx = 0;
+    quotaFlash = 0; dayClearT = 0; dayT = 0;
+    fishIntroDone = false; complaintTaught = false;
+    perm = { spintax: false, founderFast: false };
+    resetTodayMods(); draft = null;
+  }
+
+  var SHOP = [
+    { key: "domain", label: "DOMAIN", cost: COST.domain },
+    { key: "inbox", label: "INBOX", cost: COST.inbox },
+    { key: "warmup", label: "WARMUP", cost: COST.warmup },
+    { key: "target", label: "TARGET", cost: COST.target, cert: "target" },
+    { key: "pers", label: "PERSNL", cost: COST.pers, cert: "pers" },
+    { key: "swap", label: "SWAP", cost: COST.swap }
+  ];
+  function shopRects() {
+    var bw = (W - 24) / SHOP.length;
+    return SHOP.map(function (s, i) {
+      return { key: s.key, x: 12 + i * bw + 3, y: UIY + 28, w: bw - 6, h: 56 };
+    });
+  }
+  function startRect() { return { x: 12, y: UIY + 90, w: W - 24, h: 28 }; }
+  function quizRect(i) { return { x: 30, y: 258 + i * 62, w: W - 60, h: 52 }; }
+
+  function tap(x, y) {
+    if (state !== "playing" && state !== "build") { advance(); return; }
+
+    if (state === "build" && dayClearT > 0.7) return;
+
+    if (state === "build" && briefing && !quiz) {
+      if (draft && !draft.picked) {
+        for (var di = 0; di < draft.cards.length; di++) {
+          var dr = draftRect(di);
+          if (x >= dr.x && x <= dr.x + dr.w && y >= dr.y && y <= dr.y + dr.h) {
+            draft.cards[di].f();
+            draft.picked = true;
+            briefing = false;
+            floatText(W / 2, 250, draft.cards[di].t + " taken", "#39ff6e");
+            beep(660, 0.1, "square", 0.04);
+            return;
+          }
+        }
+      }
+      var br = briefRect();
+      if (x >= br.x && x <= br.x + br.w && y >= br.y && y <= br.y + br.h) {
+        briefing = false;
+        beep(520, 0.08, "square", 0.04);
+      }
+      return;
+    }
+
+    if (state === "build" && quiz) {
+      // quiz modal owns all taps
+      for (var qi = 0; qi < quiz.opts.length; qi++) {
+        var qr = quizRect(qi);
+        if (x >= qr.x && x <= qr.x + qr.w && y >= qr.y && y <= qr.y + qr.h && !quizFeedback) {
+          if (qi === quiz.correct) {
+            if (quiz.key) {
+              certs[quiz.key] = true;
+              quizFeedback = { ok: true, txt: "CERTIFIED. " + quiz.reward };
+            } else {
+              money += 25;
+              gateIdx++;
+              quizFeedback = { ok: true, txt: "correct. +$25 education budget." };
+            }
+            beep(990, 0.2, "square", 0.05);
+          } else {
+            if (quiz.key) {
+              quizFeedback = { ok: false, txt: "Not yet. Study the floor. Same question tomorrow." };
+            } else {
+              money = Math.max(0, money - 50);
+              quizFeedback = { ok: false, retry: true, txt: "wrong. " + quiz.why + " Â· -$50. try again." };
+            }
+            beep(120, 0.3, "sawtooth", 0.05);
+          }
+          quizT = quizFeedback.ok ? 2.2 : 3.4;
+          return;
+        }
+      }
+      return;
+    }
+
+    if (state === "build") {
+      var sr = startRect();
+      if (x >= sr.x && x <= sr.x + sr.w && y >= sr.y && y <= sr.y + sr.h) {
+        if (domains.length === 0) {
+          floatText(W / 2, UIY - 16, "no infrastructure. buy a domain first.", "#ff5544");
+          return;
+        }
+        startPending();
+        return;
+      }
+    }
+
+    if (y >= UIY) {
+      var rects = shopRects();
+      for (var i = 0; i < rects.length; i++) {
+        var rc = rects[i];
+        if (x >= rc.x && x <= rc.x + rc.w && y >= rc.y && y <= rc.y + rc.h) {
+          shopTap(rc.key);
+          return;
+        }
+      }
+      return;
+    }
+
+    if (placing) {
+      for (var s = 0; s < SPOTS.length; s++) {
+        var sp = SPOTS[s];
+        if (Math.hypot(x - sp.x, y - sp.y) >= 30) continue;
+        var host = null;
+        domains.forEach(function (d) { if (d.spot === s) host = d; });
+        if (host) {
+          // stack another domain on the same desk: price scales with the stack
+          var stackCost = COST.domain * (host.stack + 1);
+          if (money >= stackCost) {
+            money -= stackCost;
+            host.stack++;
+            selected = host;
+            placing = false;
+            floatText(host.x, host.y - 36, "domain #" + host.stack + " stacked Â· bigger sends, longer reach", "#4de8ff");
+            beep(520, 0.1, "square", 0.04);
+          } else floatText(W / 2, UIY - 16, "need $" + stackCost, "#ff5544");
+          return;
+        }
+        {
+          if (money >= COST.domain) {
+            money -= COST.domain;
+            var idx = domains.length + 1;
+            var dom = { spot: s, x: sp.x, y: sp.y, inboxes: 1, stack: 1, warm: false, pers: false, target: false, rep: 100, burned: false, heat: 0, cooling: 0, promo: 0, bornT: 0.8, name: "yourco" + (idx > 1 ? idx : "") + ".net", cds: [Math.random() * 0.6] };
+            domains.push(dom);
+            selected = dom;
+            placing = false;
+            floatText(sp.x, sp.y - 30, dom.name + " is live", "#4de8ff");
+            beep(520, 0.1, "square", 0.04);
+          }
+          return;
+        }
+      }
+      placing = false;
+      return;
+    }
+
+    // speed toggle
+    if (state === "playing" && x >= W - 102 && x <= W - 12 && y >= UIY - 46 && y <= UIY - 22) {
+      speedMult = speedMult === 1 ? 2 : speedMult === 2 ? 3 : 1;
+      floatText(W - 57, UIY - 54, "x" + speedMult, "#39ff6e");
+      beep(400 + speedMult * 100, 0.05, "square", 0.03);
+      return;
+    }
+
+    // reply bubbles: tap to bank
+    if (state === "playing") {
+      for (var r = replyDrops.length - 1; r >= 0; r--) {
+        var rd = replyDrops[r];
+        if (Math.hypot(x - rd.x, y - rd.y) < 28) {
+          money += rd.val;
+          floatText(rd.x, rd.y - 12, "REPLY BANKED +$" + rd.val, rd.gold ? "#ffb000" : "#39ff6e");
+          replyDrops.splice(r, 1);
+          beep(1100, 0.07, "square", 0.05);
+          return;
+        }
+      }
+    }
+
+    for (var d = 0; d < domains.length; d++) {
+      if (Math.hypot(x - domains[d].x, y - domains[d].y) < 30) {
+        selected = domains[d];
+        beep(300, 0.04, "square", 0.02);
+        return;
+      }
+    }
+
+    // founder send: tap a prospect directly
+    if (state === "playing") {
+      for (var ci = 0; ci < creeps.length; ci++) {
+        var cc = creeps[ci];
+        if (cc.alive && Math.hypot(x - cc.x, y - cc.y) < 28) {
+          if (founderCd > 0) {
+            floatText(cc.x, cc.y - 14, "founder cooling", "#8a9a8a");
+            return;
+          }
+          founderCd = perm.founderFast ? 5 : 8;
+          if (cc.type === "fish") {
+            breakStreak(cc.x, cc.y, "spam complaint");
+            floatText(cc.x, cc.y - 14, "you personally emailed a fish", "#8a9a8a");
+          } else {
+            floatText(cc.x, cc.y - 30, "FOUNDER EMAIL. from the real domain.", "#ffffff");
+            hitCreep(cc, { dmg: 3, dom: null });
+          }
+          beep(760, 0.12, "square", 0.05);
+          return;
+        }
+      }
+    }
+    selected = null;
+  }
+  function draftRect(i) { return { x: 24, y: 306 + i * 64, w: W - 48, h: 54 }; }
+  function briefRect() { return { x: 90, y: 530, w: W - 180, h: 32 }; }
+
+  function shopTap(key) {
+    if (key === "domain") {
+      if (money >= COST.domain) { placing = true; selected = null; beep(400, 0.05, "square", 0.03); }
+      else floatText(W / 2, UIY - 16, "need $" + COST.domain, "#ff5544");
+      return;
+    }
+    // locked certs explain themselves even without a selection
+    if (key === "target" && !certs.target) {
+      floatText(selected ? selected.x : W / 2, selected ? selected.y - 30 : UIY - 16, "pass certification 1 first", "#8a9a8a");
+      return;
+    }
+    if (key === "pers" && !certs.pers) {
+      floatText(selected ? selected.x : W / 2, selected ? selected.y - 30 : UIY - 16, "pass certification 2 first", "#8a9a8a");
+      return;
+    }
+    if (!selected) { floatText(W / 2, UIY - 16, "select a domain first", "#8a9a8a"); return; }
+    var d = selected;
+    if (key === "inbox") {
+      if (d.inboxes >= d.stack * 3) { floatText(d.x, d.y - 30, "location full Â· stack another domain here", "#8a9a8a"); return; }
+      if (money >= COST.inbox) {
+        money -= COST.inbox; d.inboxes++; d.cds.push(Math.random() * 0.6);
+        floatText(d.x, d.y - 30, "inbox added", "#4de8ff");
+        beep(520, 0.08, "square", 0.04);
+      } else floatText(W / 2, UIY - 16, "need $" + COST.inbox, "#ff5544");
+    }
+    if (key === "warmup") {
+      if (d.warm) { floatText(d.x, d.y - 30, "already warm", "#8a9a8a"); return; }
+      if (money >= COST.warmup) {
+        money -= COST.warmup; d.warm = true;
+        floatText(d.x, d.y - 30, "warming up...", "#4de8ff");
+        beep(600, 0.08, "square", 0.04);
+      } else floatText(W / 2, UIY - 16, "need $" + COST.warmup, "#ff5544");
+    }
+    if (key === "target") {
+      if (d.target) { floatText(d.x, d.y - 30, "list already cleaned", "#8a9a8a"); return; }
+      if (money >= COST.target) {
+        money -= COST.target; d.target = true;
+        floatText(d.x, d.y - 30, "the list has been cleaned", "#4de8ff");
+        beep(700, 0.08, "square", 0.04);
+      } else floatText(W / 2, UIY - 16, "need $" + COST.target, "#ff5544");
+    }
+    if (key === "pers") {
+      if (d.pers) { floatText(d.x, d.y - 30, "already personalized", "#8a9a8a"); return; }
+      if (money >= COST.pers) {
+        money -= COST.pers; d.pers = true;
+        floatText(d.x, d.y - 30, "crits enabled. it says their name now", "#39ff6e");
+        beep(700, 0.08, "square", 0.04);
+      } else floatText(W / 2, UIY - 16, "need $" + COST.pers, "#ff5544");
+    }
+    if (key === "swap") {
+      if (!d.burned) { floatText(d.x, d.y - 30, "not burned (yet)", "#8a9a8a"); return; }
+      if (money >= COST.swap) {
+        money -= COST.swap; d.burned = false; d.rep = 60; d.heat = 0;
+        floatText(d.x, d.y - 30, "fresh domain, same everything", "#4de8ff");
+        beep(520, 0.1, "square", 0.04);
+      } else floatText(W / 2, UIY - 16, "need $" + COST.swap, "#ff5544");
+    }
+  }
+
+  /* ---------- update ---------- */
+  function domainMaintenance(dt, canFire) {
+    var algoAlive = creeps.some(function (c) { return c.alive && c.type === "algorithm"; });
+
+    domains.forEach(function (d) {
+      if (d.bornT > 0) d.bornT -= dt;
+      if (d.burned) return;
+      if (d.promo > 0) d.promo -= dt;
+      if (d.cooling > 0) {
+        d.cooling -= dt;
+        if (d.cooling <= 0) {
+          d.cooling = 0;
+          d.heat = 30;
+          floatText(d.x, d.y - 30, "deliverability restored", "#4de8ff");
+          beep(520, 0.1, "square", 0.04);
+        }
+        return;
+      }
+      var decay = (d.warm ? 14 : 10) * (algoAlive ? 0.5 : 1);
+      d.heat = Math.max(0, d.heat - decay * dt);
+      if (d.warm && d.rep < 100) d.rep = Math.min(100, d.rep + 2 * dt);
+
+      if (!canFire || d.promo > 0) return;
+      var rate = d.warm ? 0.85 : 1.15;
+      for (var i = 0; i < d.inboxes; i++) {
+        d.cds[i] -= dt;
+        if (d.cds[i] <= 0) {
+          var target = acquire(d);
+          if (target) {
+            d.cds[i] = rate * todayMods.rate;
+            sentCount++;
+            d.heat += ((d.warm ? 4 : 7) / d.stack) * (algoAlive ? 1.5 : 1);
+            var crit = d.pers && Math.random() < 0.25;
+            shots.push({
+              x: d.x, y: d.y - 12, target: target,
+              dmg: (crit ? 3 : 1) * d.stack, crit: crit, dom: d,
+              scale: 1 + (d.stack - 1) * 0.5,
+              subj: SUBJECTS[subjIdx++ % SUBJECTS.length],
+              showSubj: Math.random() < 0.33
+            });
+            if (certs.seq && Math.random() < 0.25) {
+              shots.push({
+                x: d.x + 6, y: d.y - 8, target: target,
+                dmg: 1, dom: d, subj: "the follow-up",
+                showSubj: Math.random() < 0.33
+              });
+            }
+            beep(880, 0.03, "square", 0.02);
+            if (d.heat >= 100) {
+              d.heat = 100;
+              d.cooling = 12;
+              oversends++;
+              breakStreak(d.x, d.y - 44, "oversent");
+              floatText(d.x, d.y - 30, "OVERSENT. COOLING OFF.", "#ffb000");
+              beep(140, 0.3, "sawtooth", 0.05);
+              break;
+            }
+          } else {
+            d.cds[i] = 0.15;
+          }
+        }
+      }
+    });
+
+    // the algorithm sends things to promotions
+    if (algoAlive && canFire) {
+      promoTimer -= dt;
+      if (promoTimer <= 0) {
+        promoTimer = 4;
+        var live = domains.filter(function (d) { return !d.burned && d.cooling <= 0 && d.promo <= 0; });
+        if (live.length) {
+          var v = live[Math.floor(Math.random() * live.length)];
+          v.promo = 2.5;
+          floatText(v.x, v.y - 30, "SENT TO PROMOTIONS TAB", "#b26bff");
+          beep(200, 0.2, "sawtooth", 0.04);
+        }
+      }
+    }
+  }
+
+  function acquire(d) {
+    var best = null, bestDist = 1e9;
+    creeps.forEach(function (c) {
+      if (!c.alive) return;
+      if (d.target && c.type === "fish") return;
+      var dist = Math.hypot(c.x - d.x, c.y - d.y);
+      if (dist < rangeOf(d) && dist < bestDist) { best = c; bestDist = dist; }
+    });
+    return best;
+  }
+
+  function update(dt) {
+    blink += dt;
+    if (quotaFlash > 0) quotaFlash -= dt;
+
+    if (state === "build") {
+      if (dayClearT > 0) dayClearT -= dt;
+      domainMaintenance(dt, false);
+      if (quizFeedback) {
+        quizT -= dt;
+        if (quizT <= 0) {
+          if (quizFeedback.retry) { quizFeedback = null; }
+          else { quiz = null; quizFeedback = null; }
+        }
+      }
+      floats.forEach(function (f) { f.t -= dt; f.y -= 24 * dt; });
+      floats = floats.filter(function (f) { return f.t > 0; });
+      return;
+    }
+    if (state === "gameover") { stateTimer -= dt; return; }
+    if (state !== "playing") return;
+
+    dayT += dt;
+
+    // incoming warning holds the wave for a beat
+    if (warnT > 0) warnT -= dt;
+
+    // spawn
+    if (warnT <= 0 && spawnQueue.length) {
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        var type = spawnQueue.shift();
+        var def = CREEP_DEF[type];
+        var hp = def.hp;
+        if (type === "committee") hp = 24 + day * 3;
+        if (type === "algorithm") hp = 20 + day * 2;
+        var nc = { type: type, hp: hp, maxhp: hp, speed: def.speed * (0.9 + Math.random() * 0.2), dist: 0, x: PATH[0][0], y: PATH[0][1], alive: true };
+        if (type === "fish" && !fishIntroDone) {
+          fishIntroDone = true;
+          nc.introT = 2.5;
+          floatText(nc.x, Math.max(40, nc.y), "THE FISH Â· DO NOT EMAIL", "#ff5544", 2.5);
+        }
+        creeps.push(nc);
+        spawnTimer = type === "committee" || type === "algorithm" ? 1.6 : 1.15;
+      }
+    }
+
+    // move creeps (CEOs stop to check their phone: 2x damage window)
+    creeps.forEach(function (c) {
+      if (!c.alive) return;
+      if (c.introT) c.introT -= dt;
+      if (c.type === "ceo") {
+        c.pt = (c.pt || 0) + dt;
+        c.paused = (c.pt % 5) > 3.8;
+      }
+      if (!c.paused) c.dist += c.speed * dt;
+      var p = pointAt(c.dist);
+      c.x = p.x; c.y = p.y;
+      if (c.dist >= TOTLEN) {
+        c.alive = false;
+        if (c.type === "fish") {
+          floatText(c.x, c.y - 14, "the fish swims away. correctly.", "#8a9a8a");
+        } else if (c.type === "committee" || c.type === "algorithm") {
+          quota -= 3;
+          quotaFlash = 0.8;
+          floatText(W - 40, 44, "-3", "#ff5544", 1.2, 13);
+          floatText(c.x, c.y - 14, "THE BOSS WALKED. -3 QUOTA", "#ff5544");
+          beep(90, 0.4, "sawtooth", 0.06);
+          if (quota <= 0) { quota = 0; gameOver(); }
+        } else {
+          quota--;
+          quotaFlash = 0.8;
+          floatText(W - 40, 44, "-1", "#ff5544", 1.2, 13);
+          breakStreak(c.x, c.y - 30, "they walked");
+          floatText(c.x, c.y - 14, "WENT WITH THE GUY. -1 QUOTA", "#ff5544");
+          beep(110, 0.25, "sawtooth", 0.05);
+          if (quota <= 0) { quota = 0; gameOver(); }
+        }
+      }
+    });
+    creeps = creeps.filter(function (c) { return c.alive; });
+
+    domainMaintenance(dt, true);
+
+    founderCd = Math.max(0, founderCd - dt);
+    replyDrops.forEach(function (rd) { rd.t -= dt; });
+    replyDrops = replyDrops.filter(function (rd) { return rd.t > 0; });
+
+    // shots home in
+    shots.forEach(function (s) {
+      var t = s.target;
+      var tx = t && t.alive ? t.x : s.lx || s.x;
+      var ty = t && t.alive ? t.y : s.ly || s.y - 40;
+      s.lx = tx; s.ly = ty;
+      var dx = tx - s.x, dy = ty - s.y;
+      var dist = Math.hypot(dx, dy) || 1;
+      var sp = 300 * dt;
+      s.x += (dx / dist) * sp;
+      s.y += (dy / dist) * sp;
+      if (dist < 10) {
+        s.hit = true;
+        if (t && t.alive) hitCreep(t, s);
+      }
+    });
+    shots = shots.filter(function (s) { return !s.hit && s.y > -20 && s.y < H && s.x > -20 && s.x < W + 20; });
+
+    // speech bubbles
+    bubbleTimer -= dt;
+    if (bubble) {
+      bubble.t -= dt;
+      if (bubble.t <= 0 || !bubble.c.alive) bubble = null;
+    } else if (bubbleTimer <= 0) {
+      var bossUp = creeps.some(function (c) { return c.alive && (c.type === "committee" || c.type === "algorithm"); });
+      if (!bossUp) {
+        var alive = creeps.filter(function (c) { return c.alive && c.y > 20 && c.y < UIY - 60; });
+        if (alive.length) {
+          var c = alive[Math.floor(Math.random() * alive.length)];
+          var bank = SPEECH[c.type] && (c.type === "fish" || c.type === "committee" || c.type === "algorithm" || Math.random() < 0.5)
+            ? SPEECH[c.type] : SPEECH.any;
+          bubble = { c: c, txt: bank[Math.floor(Math.random() * bank.length)], t: 1.7 };
+        }
+      }
+      bubbleTimer = 2.6 + Math.random() * 1.6;
+    }
+
+    // day cleared
+    if (!spawnQueue.length && !creeps.some(function (c) { return c.alive; })) {
+      endDay();
+    }
+
+    floats.forEach(function (f) { f.t -= dt; f.y -= 24 * dt; });
+    floats = floats.filter(function (f) { return f.t > 0; });
+  }
+
+  function hitCreep(c, s) {
+    if (c.type === "fish") {
+      breakStreak(c.x, c.y + 12, "spam complaint");
+      if (s.dom) {
+        s.dom.rep -= 15;
+        floatText(c.x, c.y - 16, "SPAM COMPLAINT -15 REP", "#ff5544");
+        if (!complaintTaught) {
+          complaintTaught = true;
+          floatText(W / 2, 220, "untargeted domains email everyone Â· TARGETING (CERT 1) fixes this", "#8a9a8a", 3, 10);
+        }
+        beep(120, 0.15, "sawtooth", 0.04);
+        c.hp -= s.dmg;
+        if (c.hp <= 0) {
+          c.alive = false;
+          s.dom.rep -= 20;
+          floatText(c.x, c.y, "you emailed a fish to death. -20 REP", "#8a9a8a");
+        }
+        if (s.dom.rep <= 0) {
+          s.dom.rep = 0;
+          s.dom.burned = true;
+          burnedCount++;
+          floatText(s.dom.x, s.dom.y - 30, "DOMAIN BLACKLISTED", "#ff5544");
+          beep(80, 0.4, "sawtooth", 0.06);
+        }
+      }
+      return;
+    }
+    var dmg = s.dmg;
+    if (c.type === "ops" && s.dom && !s.dom.warm) {
+      dmg = dmg * 0.5;
+      if (!c.spf) { c.spf = true; floatText(c.x, c.y - 26, "their filter checked your SPF", "#8a9a8a"); }
+    }
+    if (c.type === "ceo" && c.paused) {
+      dmg *= 2;
+      floatText(c.x, c.y - 26, "CAUGHT ON THEIR PHONE x2", "#4de8ff");
+    }
+    if (s.crit) {
+      floatText(c.x, c.y - 38, "IT SAID THEIR NAME. x3", "#39ff6e");
+      if (perm.spintax) {
+        var near = null, nd = 60;
+        creeps.forEach(function (o) {
+          if (o.alive && o !== c) {
+            var dd = Math.hypot(o.x - c.x, o.y - c.y);
+            if (dd < nd) { near = o; nd = dd; }
+          }
+        });
+        if (near) hitCreep(near, { dmg: 1, dom: s.dom });
+      }
+    }
+    s = { dmg: dmg, crit: s.crit, dom: s.dom };
+    c.hp -= s.dmg;
+    if (c.hp <= 0) {
+      c.alive = false;
+      conversions++;
+      streak++;
+      var b = CREEP_DEF[c.type].bounty;
+      money += b;
+      var pts = Math.round(b * mult() * todayMods.score);
+      scorePts += pts;
+      floatText(c.x, c.y - 14, "+" + pts + " PTS", "#ffb000");
+      replyDrops.push({ x: c.x, y: c.y, val: Math.max(10, Math.round(b * 0.4 * todayMods.reply)), t: 3.2, gold: c.type === "ceo" || c.type === "committee" || c.type === "algorithm" });
+      if (c.type === "ceo") { meetings++; floatText(c.x, c.y, "MEETING BOOKED +$" + b, "#39ff6e"); }
+      else if (c.type === "committee") {
+        meetings += 2; bossesDown++;
+        floatText(c.x, c.y - 10, "COMMITTEE CONVERTED +$" + b, "#39ff6e");
+        floatText(c.x, c.y + 8, "it disbands into stakeholders", "#ffb000");
+        for (var i = 0; i < 3; i++) {
+          creeps.push({ type: "ops", hp: 2, maxhp: 2, speed: 52, dist: Math.max(0, c.dist - i * 14), x: c.x, y: c.y, alive: true });
+        }
+        beep(990, 0.25, "square", 0.05);
+      }
+      else if (c.type === "algorithm") {
+        bossesDown++;
+        floatText(c.x, c.y, "THE ALGORITHM RELENTS +$" + b, "#b26bff");
+        beep(990, 0.25, "square", 0.05);
+      }
+      else floatText(c.x, c.y, "CONVERTED +$" + b, c.type === "ops" ? "#39ff6e" : "#4de8ff");
+      if (c.type !== "committee" && c.type !== "algorithm") beep(660, 0.08, "square", 0.04);
+    } else {
+      if (c.type === "committee" || c.type === "algorithm") {
+        if (Math.random() < 0.25) floatText(c.x, c.y - 26, "OPENED. NO REPLY.", "#8a9a8a");
+      } else if (!c.openedShown) {
+        c.openedShown = true;
+        floatText(c.x + (Math.random() * 16 - 8), c.y - 14, "OPENED", "#8a9a8a");
+      }
+    }
+  }
+
+  /* ---------- draw ---------- */
+  function fs(s) { return Math.round((s || 14) * 1.25); }
+  function text(t, x, y, size, color, align) {
+    cx.fillStyle = color || "#cfe8d2";
+    cx.font = "bold " + fs(size) + "px 'Courier New', monospace";
+    cx.textAlign = align || "center";
+    cx.fillText(t, x, y);
+  }
+  function drawSprite(img, x, y, scale) {
+    var sc = scale || 1;
+    cx.drawImage(img, Math.round(x - (img.width * sc) / 2), Math.round(y - (img.height * sc) / 2), img.width * sc, img.height * sc);
+  }
+  function rangeOf(d) { return 150 + (d.stack - 1) * 30; }
+  function wrapText(t, x, y, maxW, size, color) {
+    cx.font = "bold " + fs(size) + "px 'Courier New', monospace";
+    var words = t.split(" "), line = "", lines = [];
+    words.forEach(function (w) {
+      var test = line ? line + " " + w : w;
+      if (cx.measureText(test).width > maxW) { lines.push(line); line = w; }
+      else line = test;
+    });
+    lines.push(line);
+    lines.forEach(function (l, i) { text(l, x, y + i * (fs(size) + 7), size, color); });
+  }
+
+  function drawPath() {
+    cx.strokeStyle = "#101a12";
+    cx.lineWidth = 26;
+    cx.lineJoin = "round";
+    cx.beginPath();
+    cx.moveTo(PATH[0][0], PATH[0][1]);
+    for (var i = 1; i < PATH.length; i++) cx.lineTo(PATH[i][0], PATH[i][1]);
+    cx.stroke();
+    cx.strokeStyle = "#1e2f22";
+    cx.lineWidth = 2;
+    cx.setLineDash([6, 8]);
+    cx.beginPath();
+    cx.moveTo(PATH[0][0], PATH[0][1]);
+    for (i = 1; i < PATH.length; i++) cx.lineTo(PATH[i][0], PATH[i][1]);
+    cx.stroke();
+    cx.setLineDash([]);
+    // entrance marker (blinks 2Hz for the first 5s of each playing day)
+    var showEntrance = true;
+    if (state === "playing" && dayT < 5) showEntrance = Math.floor(blink * 2) % 2 === 1;
+    if (showEntrance) {
+      text("â–¼", 56, 14, 9, "#ff5544");
+      text("PROSPECTS", 66, 14, 9, "#cfe8d2", "left");
+    }
+    text("EXIT: 'THE GUY'", PATH[PATH.length - 1][0] + 20, PATH[PATH.length - 1][1] - 8, 11, "#ff5544", "left");
+    if (Math.floor(blink * 2) % 2) text("â–¼", 180, 596, 11, "#ff5544");
+  }
+
+  function drawDomain(d) {
+    var img = d.burned ? SPR.compDead : (Math.floor(blink * 4) % 2 ? SPR.compA : SPR.compB);
+    drawSprite(img, d.x, d.y);
+    if (d.stack > 1) text("Ã—" + d.stack + " Â· " + d.inboxes + "/" + d.stack * 3, d.x + 26, d.y + 27, 8, "#4de8ff", "left");
+    if (placing) text("STACK +$" + COST.domain * (d.stack + 1), d.x, d.y - 36, 9, "#4de8ff");
+    if (d === selected) {
+      cx.lineWidth = 2;
+      cx.strokeStyle = "#ffffff";
+      cx.strokeRect(d.x - 23.5, d.y - 17.5, 47, 35);
+    }
+    var coolBlink = d.cooling > 0 && Math.floor(blink * 3) % 2 === 0;
+    for (var i = 0; i < 3; i++) {
+      cx.fillStyle = i < d.inboxes
+        ? (d.burned ? "#5a2a22" : coolBlink ? "#ffb000" : d.cooling > 0 ? "#4a3a10" : "#39ff6e")
+        : "#1c2a20";
+      cx.fillRect(d.x - 14 + i * 10, d.y + 20, 7, 5);
+    }
+    if (d.warm) text("W", d.x - 26, d.y + 4, 9, "#ffb000");
+    if (d.pers) text("P", d.x + 26, d.y + 4, 9, "#39ff6e");
+    if (d.target) text("T", d.x + 26, d.y - 8, 9, "#4de8ff");
+    if (d.burned) text("BLACKLISTED", d.x, d.y - 26, 8, "#ff5544");
+    else if (d.promo > 0) text("PROMOTIONS TAB", d.x, d.y - 26, 8, "#b26bff");
+    else if (d.cooling > 0) text("COOLING 0:" + String(Math.ceil(d.cooling)).padStart(2, "0"), d.x, d.y - 26, 8, "#ffb000");
+    else if (d.heat >= 75) text("SENDING TOO FAST", d.x, d.y - 26, 8, "#ffb000");
+    // heat bar
+    cx.strokeStyle = "#3a2f10";
+    cx.strokeRect(d.x - 20, d.y + 34, 40, 4);
+    cx.fillStyle = d.heat >= 75 ? "#ff5544" : "#ffb000";
+    cx.fillRect(d.x - 20, d.y + 34, Math.max(0, Math.min(100, d.heat)) * 0.4, 4);
+    // rep bar
+    cx.strokeStyle = "#2c4433";
+    cx.strokeRect(d.x - 20, d.y + 28, 40, 5);
+    cx.fillStyle = d.rep > 50 ? "#39ff6e" : d.rep > 25 ? "#ffb000" : "#ff5544";
+    cx.fillRect(d.x - 20, d.y + 28, Math.max(0, d.rep) * 0.4, 5);
+    if (!d.burned && (d === selected || d.bornT > 0)) {
+      var ringA = d.bornT > 0 ? 0.25 + 0.25 * (d.bornT / 0.8) : 0.40;
+      cx.strokeStyle = "rgba(57,255,110," + ringA.toFixed(3) + ")";
+      cx.beginPath();
+      cx.arc(d.x, d.y, rangeOf(d), 0, Math.PI * 2);
+      cx.stroke();
+    }
+  }
+
+  function drawBubble(b) {
+    var pad = 7, size = 13;
+    cx.font = "bold " + size + "px 'Courier New', monospace";
+    var w = cx.measureText(b.txt).width + pad * 2;
+    var x = Math.max(6, Math.min(W - 6 - w, b.c.x - w / 2));
+    var y = b.c.y - 48;
+    cx.fillStyle = "#000";
+    cx.fillRect(x, y, w, 24);
+    cx.strokeStyle = "#8a9a8a";
+    cx.strokeRect(x + 0.5, y + 0.5, w, 24);
+    cx.fillStyle = "#8a9a8a";
+    cx.fillRect(b.c.x - 1, y + 24, 2, 5);
+    cx.textAlign = "left";
+    cx.fillText(b.txt, x + pad, y + 17);
+  }
+
+  function domainStatusLine(d) {
+    return d.name + (d.stack > 1 ? " Ã—" + d.stack : "") + " Â· INBOX " + d.inboxes + "/" + d.stack * 3 + " Â· " +
+      (d.warm ? "Wâœ“" : "Wâœ—") + " " + (d.target ? "Tâœ“" : "Tâœ—") + " " + (d.pers ? "Pâœ“" : "Pâœ—") +
+      " Â· REP " + Math.round(Math.max(0, d.rep)) + "%";
+  }
+
+  function drawShop() {
+    cx.fillStyle = "#0c0f0d";
+    cx.fillRect(0, UIY, W, H - UIY);
+    cx.strokeStyle = "#1e2f22";
+    cx.strokeRect(0.5, UIY + 0.5, W - 1, H - UIY - 1);
+    var pulse = Math.floor(blink * 2) % 2;
+    var anyBurned = domains.some(function (d) { return d.burned; });
+    var hint, hintColor = "#8a9a8a";
+    if (placing) {
+      hint = "TAP A DESK SPACE TO PLACE THE DOMAIN Â· TAP ELSEWHERE TO CANCEL";
+    } else if (selected) {
+      if (selected.burned) hint = "DOMAIN BLACKLISTED. SWAP TO REVIVE.";
+      else { hint = domainStatusLine(selected); hintColor = "#cfe8d2"; }
+    } else if (state === "build" && domains.length === 0) {
+      hint = "â–¼ BUY A DOMAIN ($150) TO BEGIN"; hintColor = "#ffb000";
+    } else if (anyBurned) {
+      hint = "A DOMAIN IS BLACKLISTED. TAP IT, THEN SWAP"; hintColor = "#ff5544";
+    } else {
+      hint = "BUY A DOMAIN, THEN TAP IT TO UPGRADE";
+    }
+    text(hint, W / 2, UIY + 16, 9, hintColor);
+    shopRects().forEach(function (rc, i) {
+      var s = SHOP[i];
+      var locked = s.cert && !certs[s.cert];
+      var afford = money >= s.cost && !locked;
+      var owned = false;
+      if (selected) {
+        if (s.key === "inbox" && selected.inboxes >= selected.stack * 3) owned = true;
+        if (s.key === "warmup" && selected.warm) owned = true;
+        if (s.key === "target" && selected.target) owned = true;
+        if (s.key === "pers" && selected.pers) owned = true;
+      }
+      cx.fillStyle = "#101715";
+      cx.fillRect(rc.x, rc.y, rc.w, rc.h);
+      var edge = afford ? "#2c4433" : "#26221e";
+      if (s.key === "domain" && state === "build" && domains.length === 0 && pulse) edge = "#39ff6e";
+      if (s.key === "swap" && anyBurned && pulse) edge = "#ff5544";
+      cx.strokeStyle = edge;
+      cx.strokeRect(rc.x + 0.5, rc.y + 0.5, rc.w, rc.h);
+      var label = owned ? (s.key === "inbox" ? "FULL" : "OWNED") : s.label;
+      text(label, rc.x + rc.w / 2, rc.y + 23, 10, afford ? "#cfe8d2" : "#555");
+      var priceTxt = locked ? (s.cert === "target" ? "CERT 1" : "CERT 2") : "$" + s.cost;
+      var priceColor = locked ? "#8a9a8a" : owned ? "#3d5544" : afford ? "#39ff6e" : "#555";
+      text(priceTxt, rc.x + rc.w / 2, rc.y + 42, 10, priceColor);
+    });
+    var sr = startRect();
+    if (state === "build") {
+      if (quiz) {
+        text("CERTIFICATION IN PROGRESS", W / 2, sr.y + 19, 10, "#ffb000");
+      } else if (briefing) {
+        text("MORNING BRIEFING", W / 2, sr.y + 19, 10, "#ffb000");
+      } else if (domains.length === 0) {
+        cx.fillStyle = "#101715";
+        cx.fillRect(sr.x, sr.y, sr.w, sr.h);
+        cx.strokeStyle = "#26221e";
+        cx.strokeRect(sr.x + 0.5, sr.y + 0.5, sr.w, sr.h);
+        text("BUILD FIRST Â· NO DOMAINS LIVE", W / 2, sr.y + 19, 10, "#8a9a8a");
+      } else {
+        cx.fillStyle = pulse ? "#183a24" : "#12291a";
+        cx.fillRect(sr.x, sr.y, sr.w, sr.h);
+        cx.strokeStyle = "#39ff6e";
+        cx.strokeRect(sr.x + 0.5, sr.y + 0.5, sr.w, sr.h);
+        text("â–¶ START DAY " + pendingDay, W / 2, sr.y + 19, 13, "#39ff6e");
+      }
+    } else {
+      text("DAY " + day + " IN PROGRESS", W / 2, sr.y + 19, 10, "#3d5544");
+    }
+  }
+
+  function drawHud() {
+    text("PIPELINE $" + money, 12, 24, 13, "#39ff6e", "left");
+    text(state === "build" ? "DAY " + pendingDay + " PREP" : "DAY " + day, W / 2, 24, 13, "#ffb000");
+    if (quotaFlash > 0)
+      text("QUOTA " + quota + "/" + quotaMax, W - 12 + Math.sin(blink * 40) * 2, 24, 15, "#ff5544", "right");
+    else
+      text("QUOTA " + quota + "/" + quotaMax, W - 12, 24, 13, quota <= 3 ? "#ff5544" : "#cfe8d2", "right");
+    text("MTGS " + meetings + " Â· SENT " + sentCount, W - 12, 40, 9, "#8a9a8a", "right");
+    text("SCORE " + scorePts, 12, 40, 11, "#cfe8d2", "left");
+    if (streak >= 1 && state === "playing") text("STREAK x" + mult().toFixed(1), W / 2, 42, 10, "#ffb000");
+    // boss bar
+    var boss = creeps.find(function (c) { return c.alive && (c.type === "committee" || c.type === "algorithm"); });
+    if (boss) {
+      var name = boss.type === "committee" ? "THE COMMITTEE" : "THE ALGORITHM";
+      text(name, 12, 56, 10, "#b26bff", "left");
+      cx.strokeStyle = "#3a2a4a";
+      cx.strokeRect(135, 48, W - 147, 8);
+      cx.fillStyle = "#b26bff";
+      cx.fillRect(135, 48, (W - 147) * (boss.hp / boss.maxhp), 8);
+    }
+  }
+
+  function draw() {
+    cx.fillStyle = "#000";
+    cx.fillRect(0, 0, W, H);
+
+    if (state === "title") {
+      text("NUMBERS GAME", W / 2, 110, 34, "#39ff6e");
+      text("COLD EMAIL TOWER DEFENSE", W / 2, 142, 12, "#ffb000");
+      text("PROSPECTS ARE WALKING TO YOUR COMPETITOR.", W / 2, 190, 12, "#ffffff");
+      text("BUILD THE MACHINE THAT STOPS THEM.", W / 2, 210, 12, "#ffffff");
+
+      drawSprite(SPR.ceo, 90, 268); text("CEO Â· $120 Â· BOOKS THE MEETING", 125, 273, 11, "#39ff6e", "left");
+      drawSprite(SPR.ops, 90, 312); text("OPS MANAGER Â· $60", 125, 317, 11, "#ffb000", "left");
+      drawSprite(SPR.gate, 90, 356); text("GATEKEEPER Â· $40", 125, 361, 11, "#4de8ff", "left");
+      drawSprite(SPR.fish, 90, 400); text("A FISH Â· NOT ICP Â· $0 + A COMPLAINT", 125, 405, 11, "#8a9a8a", "left");
+
+      text("DOMAINS HOLD 3 INBOXES. INBOXES SEND ON THEIR OWN.", W / 2, 448, 10, "#cfe8d2");
+      text("UNTARGETED DOMAINS WILL EMAIL THE FISH.", W / 2, 466, 10, "#cfe8d2");
+      text("SEND TOO FAST AND THE DOMAIN COOLS OFF. SPREAD THE LOAD.", W / 2, 484, 10, "#cfe8d2");
+      text("EVERY 4TH DAY: A BOSS.", W / 2, 502, 10, "#b26bff");
+      text("SURVIVE, PASS CERTIFICATIONS, UNLOCK SKILLS.", W / 2, 520, 10, "#ffb000");
+      text("FULL INDEX BELOW THE CABINET.", W / 2, 538, 10, "#8a9a8a");
+
+      if (Math.floor(blink * 2) % 2) text("TAP / PRESS SPACE TO START", W / 2, 574, 15, "#ffffff");
+      var hs = getScores();
+      if (hs.length) text("TOP CLOSER: " + hs[0].n + " Â· DAY " + hs[0].d, W / 2, 606, 11, "#b26bff");
+      return;
+    }
+
+    if (state === "gameover" || state === "initials" || state === "email" || state === "scores") {
+      text(OVER_QUOTA[0], W / 2, 140, 26, "#ff5544");
+      text(OVER_QUOTA[1], W / 2, 178, 13, "#cfe8d2");
+      text(OVER_QUOTA[2], W / 2, 200, 13, "#cfe8d2");
+      text("FINAL SCORE ..... " + (scorePts + meetings * 400 + bossesDown * 1000), W / 2, 232, 15, "#ffb000");
+      text("DAYS SURVIVED ..... " + day, W / 2, 256, 13, "#cfe8d2");
+      text("EMAILS SENT ....... " + sentCount, W / 2, 278, 13, "#cfe8d2");
+      text("CONVERSIONS ....... " + conversions, W / 2, 300, 13, "#cfe8d2");
+      text("MEETINGS .......... " + meetings, W / 2, 322, 13, "#39ff6e");
+      text("BOSSES CONVERTED .. " + bossesDown, W / 2, 344, 13, "#b26bff");
+      text("DOMAINS BURNED .... " + burnedCount, W / 2, 366, 13, "#ff5544");
+      text("TIMES OVERSENT .... " + oversends, W / 2, 388, 13, "#ffb000");
+      text("CERTS PASSED ...... " + (certs.target + certs.pers + certs.seq | 0), W / 2, 410, 13, "#4de8ff");
+      if (state === "gameover" && stateTimer <= 0)
+        text("TAP FOR THE LEADERBOARD", W / 2, 442, 13, Math.floor(blink * 2) % 2 ? "#ffffff" : "#666");
+      if (state === "initials")
+        text("ENTER YOUR INITIALS", W / 2, 420, 15, "#ffb000");
+      if (state === "email") {
+        text("ENTER EMAIL TO CLAIM YOUR SPOT", W / 2, 400, 14, "#ffb000");
+        text("we will absolutely cold email you.", W / 2, 478, 11, "#8a9a8a");
+        text("(enter with it empty to stay a mystery)", W / 2, 498, 9, "#3d5544");
+      }
+      if (state === "scores") {
+        text("TOP CLOSERS", W / 2, 428, 16, "#b26bff");
+        var list = getScores();
+        for (var i = 0; i < list.length; i++)
+          text((i + 1) + ". " + list[i].n + "  " + list[i].s + " pts  (day " + list[i].d + ")", W / 2, 456 + i * 22, 13, i === 0 ? "#39ff6e" : "#cfe8d2");
+        text("IN THE BOOTH: THIS SCREEN CAPTURES THE LEAD", W / 2, 588, 11, "#8a9a8a");
+        if (Math.floor(blink * 2) % 2) text("TAP TO PLAY AGAIN", W / 2, 616, 13, "#ffffff");
+      }
+      return;
+    }
+
+    // build + playing share the playfield
+    drawPath();
+
+    SPOTS.forEach(function (sp, i) {
+      if (domains.some(function (d) { return d.spot === i; })) return;
+      cx.strokeStyle = placing ? "#39ff6e" : "#24382a";
+      cx.setLineDash([4, 4]);
+      cx.strokeRect(sp.x - 18, sp.y - 14, 36, 28);
+      cx.setLineDash([]);
+      if (placing) {
+        text("+", sp.x, sp.y + 5, 14, "#39ff6e");
+        text("$150", sp.x, sp.y + 26, 9, "#39ff6e");
+        cx.strokeStyle = "rgba(57,255,110,.08)";
+        cx.beginPath();
+        cx.arc(sp.x, sp.y, 150, 0, Math.PI * 2);
+        cx.stroke();
+      }
+    });
+
+    domains.forEach(drawDomain);
+
+    creeps.forEach(function (c) {
+      if (!c.alive) return;
+      drawSprite(SPR[c.type], c.x, c.y);
+      if (c.type === "fish" && c.introT > 0) {
+        cx.setLineDash([3, 3]);
+        cx.strokeStyle = "#ff5544";
+        cx.beginPath();
+        cx.arc(c.x, c.y, 18, 0, Math.PI * 2);
+        cx.stroke();
+        cx.setLineDash([]);
+      }
+      if (c.paused) text("...", c.x + 22, c.y - 12, 11, "#ffffff", "left");
+      if (c.type === "fish") text("NOT ICP", c.x, c.y + 20, 8, "#8a9a8a");
+      if (c.type === "committee") text("THE COMMITTEE", c.x, c.y - 20, 8, "#b26bff");
+      if (c.type === "algorithm") text("THE ALGORITHM", c.x, c.y - 24, 8, "#b26bff");
+      if (c.hp < c.maxhp && c.type !== "committee" && c.type !== "algorithm") {
+        cx.strokeStyle = "#2c4433";
+        cx.strokeRect(c.x - 14, c.y - 24, 28, 4);
+        cx.fillStyle = "#39ff6e";
+        cx.fillRect(c.x - 14, c.y - 24, 28 * (c.hp / c.maxhp), 4);
+      }
+    });
+
+    shots.forEach(function (s) {
+      drawSprite(SPR.mail, s.x, s.y, s.scale || 1);
+      if (s.showSubj) {
+        cx.globalAlpha = 0.45;
+        text(s.subj, Math.min(W - 8, s.x + 12), s.y + 3, 8, "#8a9a8a", "left");
+        cx.globalAlpha = 1;
+      }
+    });
+
+    // reply bubbles (tap to bank)
+    replyDrops.forEach(function (rd) {
+      var pulse = 1 + 0.12 * Math.sin(blink * 8);
+      cx.globalAlpha = Math.min(1, rd.t / 0.7);
+      cx.fillStyle = rd.gold ? "rgba(255,176,0,.13)" : "rgba(57,255,110,.13)";
+      cx.beginPath(); cx.arc(rd.x, rd.y, 22 * pulse, 0, Math.PI * 2); cx.fill();
+      cx.lineWidth = 2;
+      cx.strokeStyle = rd.gold ? "#ffb000" : "#39ff6e";
+      cx.beginPath(); cx.arc(rd.x, rd.y, 17 * pulse, 0, Math.PI * 2); cx.stroke();
+      drawSprite(SPR.mail, rd.x, rd.y);
+      text("+$" + rd.val, rd.x, rd.y - 22, 11, rd.gold ? "#ffb000" : "#39ff6e");
+      cx.globalAlpha = 1;
+    });
+
+    if (bubble) drawBubble(bubble);
+
+    floats.forEach(function (f) {
+      cx.globalAlpha = Math.max(0, Math.min(1, f.t));
+      text(f.txt, f.x, f.y, f.size || 11, f.color);
+      cx.globalAlpha = 1;
+    });
+
+    if (state === "playing" && warnT > 0 && Math.floor(blink * 1.25) % 2 === 0) {
+      cx.fillStyle = "rgba(0,0,0,.7)";
+      cx.fillRect(0, 176, W, 56);
+      text("âš  WARNING: INCOMING PROSPECTS âš ", W / 2, 210, 15, "#ff5544");
+    }
+
+    if (state === "playing") {
+      // speed toggle chip
+      var spX = W - 102, spY = UIY - 46, spW = 90, spH = 24;
+      cx.fillStyle = speedMult > 1 ? "#12291a" : "#101715";
+      cx.fillRect(spX, spY, spW, spH);
+      cx.strokeStyle = speedMult > 1 ? "#39ff6e" : "#2c4433";
+      cx.strokeRect(spX + 0.5, spY + 0.5, spW, spH);
+      text("â–¶â–¶ x" + speedMult, spX + spW / 2, spY + 17, 11, speedMult > 1 ? "#39ff6e" : "#8a9a8a");
+      // founder send chip
+      var chipX = 12, chipY = UIY - 46, chipW = 190, chipH = 24;
+      if (founderCd <= 0) {
+        cx.fillStyle = "#12291a";
+        cx.fillRect(chipX, chipY, chipW, chipH);
+        cx.strokeStyle = Math.floor(blink * 2) % 2 ? "#39ff6e" : "#1e4a2c";
+        cx.strokeRect(chipX + 0.5, chipY + 0.5, chipW, chipH);
+        text("FOUNDER SEND READY", chipX + chipW / 2, chipY + 16, 10, "#39ff6e");
+        cx.setLineDash([3, 3]);
+        creeps.forEach(function (c) {
+          if (!c.alive) return;
+          cx.strokeStyle = c.type === "fish" ? "#ff5544" : "rgba(255,255,255,.4)";
+          cx.beginPath();
+          cx.arc(c.x, c.y, 16, 0, Math.PI * 2);
+          cx.stroke();
+        });
+        cx.setLineDash([]);
+      } else {
+        cx.fillStyle = "#101715";
+        cx.fillRect(chipX, chipY, chipW, chipH);
+        cx.strokeStyle = "#26221e";
+        cx.strokeRect(chipX + 0.5, chipY + 0.5, chipW, chipH);
+        text("COOLING 0:" + String(Math.ceil(founderCd)).padStart(2, "0"), chipX + chipW / 2, chipY + 14, 10, "#ffb000");
+        cx.fillStyle = "#ffb000";
+        cx.fillRect(chipX + 4, chipY + 17, (chipW - 8) * (1 - founderCd / (perm.founderFast ? 5 : 8)), 4);
+      }
+    }
+
+    if (state === "build") {
+      if (quiz) {
+        cx.fillStyle = "#04070a";
+        cx.fillRect(0, 0, W, UIY);
+        cx.strokeStyle = "#1e2f22";
+        cx.strokeRect(14.5, 14.5, W - 29, UIY - 29);
+        text(quiz.title, W / 2, 172, 15, "#ffb000");
+        wrapText(quiz.q, W / 2, 202, 390, 13, "#ffffff");
+        quiz.opts.forEach(function (o, i) {
+          var qr = quizRect(i);
+          cx.fillStyle = "#101715";
+          cx.fillRect(qr.x, qr.y, qr.w, qr.h);
+          cx.strokeStyle = "#2c4433";
+          cx.strokeRect(qr.x + 0.5, qr.y + 0.5, qr.w, qr.h);
+          // uniform size, hanging indent: letter in the gutter, text wraps aligned to itself
+          text(String.fromCharCode(65 + i) + ".", qr.x + 13, qr.y + 25, 9, "#8a9a8a", "left");
+          cx.font = "bold " + fs(9) + "px 'Courier New', monospace";
+          var tx = qr.x + 40, tw = qr.w - 52;
+          var words = o.split(" "), line = "", lines = [];
+          words.forEach(function (w) {
+            var t2 = line ? line + " " + w : w;
+            if (cx.measureText(t2).width > tw && line) { lines.push(line); line = w; }
+            else line = t2;
+          });
+          lines.push(line);
+          lines = lines.slice(0, 2);
+          cx.fillStyle = "#cfe8d2";
+          cx.textAlign = "left";
+          var ty0 = lines.length === 1 ? qr.y + 31 : qr.y + 22;
+          lines.forEach(function (l, li) {
+            cx.fillText(l, tx, ty0 + li * 17);
+          });
+        });
+        if (quizFeedback)
+          wrapText(quizFeedback.txt, W / 2, 466, 390, 12, quizFeedback.ok ? "#39ff6e" : "#ff5544");
+        else
+          text("ANSWER TO CONTINUE", W / 2, 466, 10, "#8a9a8a");
+      } else if (briefing) {
+        // the morning briefing: solid panel, nothing bleeds through
+        cx.fillStyle = "#04070a";
+        cx.fillRect(0, 0, W, UIY);
+        cx.strokeStyle = "#1e2f22";
+        cx.strokeRect(14.5, 14.5, W - 29, UIY - 29);
+        text("DAY " + pendingDay, W / 2, 66, 22, "#ffb000");
+        wrapText(waveCardText, W / 2, 100, 380, 12, "#cfe8d2");
+        text("TOMORROW'S CALENDAR", W / 2, 176, 10, "#8a9a8a");
+        var cal = calFor(pendingDay);
+        var cw = 76, cx0 = W / 2 - (cal.length * cw) / 2 + cw / 2;
+        cal.forEach(function (row, i) {
+          drawSprite(SPR[row.type], cx0 + i * cw, 210);
+          text("x" + row.n, cx0 + i * cw, 242, 11, row.type === "fish" ? "#8a9a8a" : "#cfe8d2");
+        });
+        if (draft && !draft.picked) {
+          text("MORNING STANDUP: PICK ONE", W / 2, 288, 11, "#ffb000");
+          draft.cards.forEach(function (card, i) {
+            var dr = draftRect(i);
+            cx.fillStyle = "#0d1a12";
+            cx.fillRect(dr.x, dr.y, dr.w, dr.h);
+            cx.strokeStyle = "#39ff6e";
+            cx.strokeRect(dr.x + 0.5, dr.y + 0.5, dr.w, dr.h);
+            text(card.t, dr.x + 14, dr.y + 21, 11, "#39ff6e", "left");
+            text(card.d, dr.x + 14, dr.y + 41, 9, "#91a893", "left");
+          });
+          text("or skip the perks and go build:", W / 2, 522, 9, "#8a9a8a");
+        }
+        var br = briefRect();
+        var pulse2 = Math.floor(blink * 2) % 2;
+        cx.fillStyle = pulse2 ? "#183a24" : "#12291a";
+        cx.fillRect(br.x, br.y, br.w, br.h);
+        cx.strokeStyle = "#39ff6e";
+        cx.strokeRect(br.x + 0.5, br.y + 0.5, br.w, br.h);
+        text("CONTINUE â–¶", W / 2, br.y + 21, 12, "#39ff6e");
+      } else {
+        var calLine = calFor(pendingDay).map(function (r) { return r.n + " " + (r.type === "committee" ? "COMMITTEE" : r.type === "algorithm" ? "ALGORITHM" : r.type); }).join(" Â· ");
+        text("TOMORROW: " + calLine, 12, UIY - 14, 9, "#8a9a8a", "left");
+      }
+      if (dayClearT > 0) {
+        cx.fillStyle = "rgba(0,0,0,.78)";
+        cx.fillRect(0, 300, W, 60);
+        text("DAY " + dayClearN + " CLEARED", W / 2, 326, 18, "#39ff6e");
+        text("+$100 BUDGET APPROVED", W / 2, 346, 11, "#cfe8d2");
+      }
+    }
+
+    drawHud();
+    drawShop();
+  }
+
+  /* ---------- the index (below the cabinet) ---------- */
+  (function buildIndex() {
+    var host = document.getElementById("index");
+    function row(img, title, desc, sec) {
+      if (sec) {
+        var s = document.createElement("div");
+        s.className = "isec";
+        s.textContent = sec;
+        host.appendChild(s);
+      }
+      var r = document.createElement("div");
+      r.className = "irow";
+      if (img) {
+        var im = document.createElement("img");
+        im.src = img.toDataURL();
+        im.width = img.width * 1.4;
+        im.alt = title;
+        r.appendChild(im);
+      }
+      var t = document.createElement("div");
+      t.className = "it";
+      t.innerHTML = "<b>" + title + "</b>" + desc;
+      r.appendChild(t);
+      host.appendChild(r);
+    }
+    row(SPR.ceo, "CEO â€” $120", "Fast walker. Converting one books a meeting. The whole point.", "PROSPECTS (THEY WALK. YOU CONVERT.)");
+    row(SPR.ops, "OPS MANAGER â€” $60", "Takes two hits: first one is an open, second one caves.");
+    row(SPR.gate, "GATEKEEPER â€” $40", "Cheap conversion. There are always more.");
+    row(SPR.fish, "THE FISH â€” $0", "Not your ICP. Every email that hits it is a spam complaint against the sending domain. Personalized domains know better. Let it walk.");
+    row(SPR.committee, "THE COMMITTEE (boss, day 4)", "A decision that requires seven people. Huge. When it finally converts, it disbands into individual stakeholders you have to close one by one. Escapes cost 3 quota.", "BOSSES (EVERY 4TH DAY)");
+    row(SPR.algorithm, "THE ALGORITHM (boss, day 8)", "While it's on the board, all domains heat up 50% faster and it randomly sends one to the Promotions Tab, silencing it. Convert it to restore order. Escapes cost 3 quota.");
+    row(SPR.compA, "DOMAIN â€” $150", "A little computer with someone typing. Holds up to 3 inboxes that send on their own. Watch its two bars: green is reputation (spam complaints drain it; zero means BLACKLISTED until you SWAP), amber is send heat (too fast means a 12 second cooling-off timer).", "YOUR INFRASTRUCTURE");
+    row(null, "INBOX â€” $75", "Adds a sender to the selected domain. More volume, more heat.");
+    row(null, "WARMUP â€” $100 (W badge)", "Faster sends, reputation regen, and heat resistance for that domain. What warmup is actually for.");
+    row(null, "TARGETING â€” $100 (T badge, needs Cert 1)", "The domain reads the list and stops emailing fish entirely. Filtering ICP from not-ICP is a skill, so you have to prove you have it first.");
+    row(null, "PERSONALIZE â€” $125 (P badge, needs Cert 2)", "25% of sends land a critical hit for triple damage. It said their name, and they felt it.");
+    row(null, "SWAP â€” $100", "Replaces a blacklisted domain. Fresh domain, same everything. You know how it is.");
+    row(null, "CERTIFICATIONS", "Starting day 3, prep phases pose one real outbound question. Answer right and a skill unlocks (Targeting, then Personalization, then a free Auto Follow-Up where every send has a 25% chance to fire again). Answer wrong and you study the floor until tomorrow. The game only hands power to people who demonstrate they know what they're doing. In the booth version, these answers double as qualification data on every lead.", "SKILL CHECKS");
+    row(SPR.mail, "THE EMAILS", "Sent automatically, subject lines included: 'just circling back', 'per my last email'. You never fire them yourself. You just own the machine.");
+    row(null, "QUOTA â€” 10", "Every real prospect who reaches the exit went with the guy. Bosses that escape cost 3. Zero quota is the end of the quarter.");
+    row(SPR.mail, "REPLY BUBBLES", "Conversions drop a pulsing reply worth cash for ~2 seconds. Tap it to bank it. CEOs and bosses drop gold ones. Yes, the whole game is about tapping the reply notification. We know.", "THE ACTIVE LAYER");
+    row(null, "FOUNDER SEND", "Tap any prospect directly to hit them with a personal email for 3 damage, 8 second cooldown. It comes from the real domain, which is why you can't do it constantly. Tapping a fish resets your streak, because you personally emailed a fish.");
+    row(null, "REPLY STREAK", "Consecutive conversions build a score multiplier up to x3. Hitting a fish, oversending, or letting a prospect walk resets it. The leaderboard measures clean aggression, not survival.");
+    row(null, "MORNING STANDUP", "From day 2, each prep phase deals 3 cards, pick one or skip: caffeine, a deliverability consultant, a scraped list that pays now and poisons tomorrow. The cursed deals are the best deals. That's the industry.");
+    row(null, "DOMAIN STACKING", "In placing mode, tap an occupied desk to stack another domain there. Price scales ($300 for the 2nd, $450 for the 3rd...): +3 inbox capacity, bigger emails that hit harder (damage x stack), +30 range per stack, and send heat spreads across the stack, which is literally why real senders split volume across domains. The catch: one shared reputation, so a blacklist takes the whole tower down.", "QUALITY OF LIFE");
+    row(null, "SPEED TOGGLE (â–¶â–¶)", "Bottom-right chip during waves cycles x1, x2, x3 game speed. For when you have built the machine and just want to watch it print.");
+    row(null, "THE LEADERBOARD EMAIL", "Claiming a leaderboard spot asks for your email, and the game tells you the truth: we will absolutely cold email you. In this mockup it stays on your device; production wires it to a Norsoft endpoint.", "LEAD CAPTURE");
+  })();
+
+  /* ---------- loop ---------- */
+  function frame(ts) {
+    var dt = Math.min(0.05, (ts - last) / 1000 || 0.016);
+    last = ts;
+    if (state === "playing") dt *= speedMult;
+    update(dt);
+    draw();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
