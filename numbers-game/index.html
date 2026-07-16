@@ -91,6 +91,13 @@
   .irow .it b { display: block; letter-spacing: 1px; }
   .isec { font-size: 10px; letter-spacing: 2.5px; color: #6f8672; margin-top: 8px; }
   @media (prefers-reduced-motion: reduce) { .scanlines { background: none; } }
+  /* phones: drop the marquee (the game has its own title screen), reclaim the space */
+  @media (max-width: 540px) {
+    body { padding: 8px 4px 32px; gap: 10px; }
+    .marquee { display: none; }
+    .cabinet { padding: 6px; border-radius: 10px; }
+    canvas#game { max-height: 88vh; }
+  }
 </style>
 
 <div class="marquee">
@@ -125,6 +132,11 @@
   var cv = document.getElementById("game");
   var cx = cv.getContext("2d");
   var W = 480, H = 720;
+  // render at device pixel ratio so text is retina-sharp on phones
+  var DPR = Math.min(3, window.devicePixelRatio || 1);
+  cv.width = W * DPR;
+  cv.height = H * DPR;
+  cv.style.aspectRatio = W + " / " + H;
   var UIY = H - 122; // shop bar top
 
   /* ---------- audio ---------- */
@@ -1178,7 +1190,7 @@
   }
 
   /* ---------- draw ---------- */
-  function fs(s) { return Math.round((s || 14) * 1.25); }
+  function fs(s) { return Math.max(12, Math.round((s || 14) * 1.25)); }
   function text(t, x, y, size, color, align) {
     cx.fillStyle = color || "#cfe8d2";
     cx.font = "bold " + fs(size) + "px 'Courier New', monospace";
@@ -1707,6 +1719,7 @@
     var dt = Math.min(0.05, (ts - last) / 1000 || 0.016);
     last = ts;
     if (state === "playing") dt *= speedMult;
+    cx.setTransform(DPR, 0, 0, DPR, 0, 0);
     update(dt);
     draw();
     requestAnimationFrame(frame);
