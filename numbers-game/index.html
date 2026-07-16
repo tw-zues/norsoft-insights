@@ -1521,10 +1521,12 @@
       cx.globalAlpha = 1;
     });
 
-    if (state === "playing" && warnT > 0 && Math.floor(blink * 1.25) % 2 === 0) {
+    if (state === "playing" && warnT > 0) {
+      cx.globalAlpha = Math.min(1, warnT / 0.5);
       cx.fillStyle = "rgba(0,0,0,.7)";
       cx.fillRect(0, 176, W, 56);
       text("âš  WARNING: INCOMING PROSPECTS âš ", W / 2, 210, 15, "#ff5544");
+      cx.globalAlpha = 1;
     }
 
     if (state === "playing") {
