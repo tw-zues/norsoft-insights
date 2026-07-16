@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#060707">
 </head>
 <body>
-<title>NUMBERS GAME TD (tower defense mockup)</title>
+<title>MAILDOSO + NORSOFT (cold email tower defense)</title>
 <style>
   :root {
     --phos: #39ff6e;
@@ -125,7 +125,7 @@
 </style>
 
 <div class="marquee">
-  <div class="title">NUMBERS GAME</div>
+  <div class="title">MAILDOSO + NORSOFT</div>
   <div class="sub">COLD EMAIL TOWER DEFENSE · CONCEPT MOCKUP</div>
 </div>
 
@@ -147,13 +147,6 @@
     </div>
     <div class="index" id="index"></div>
   </div>
-</div>
-
-<div class="under">
-  <div class="h">WHY TOWER DEFENSE IS THE TRUE FORM</div>
-  <p><b>Cold email at scale is infrastructure, not aim.</b> You don't fire the emails. You build the machine that fires them: domains, inboxes on the domains, warmup so they land, personalization so the automation stops emailing fish. Then you watch it run, and you buy more domains when yours burn. That is the actual job, and now it's the game.</p>
-  <p><b>The teaching is in the mechanics.</b> Unpersonalized infrastructure targets whoever is closest, including the fish, and every fish it hits bleeds that domain's reputation until it's blacklisted. Personalization makes a domain skip the fish. Volume has a cost too: send too fast from one domain and it overheats into a timed cooldown, so the winning strategy is many warmed domains sending modestly, which is, word for word, how deliverability actually works.</p>
-  <p><b>Booth math:</b> a run is 2-4 minutes, ends at the initials screen, and the leaderboard is the lead capture. One HTML file, offline on a tablet, reskinnable per vendor. <button class="mutebtn" id="mute">SOUND: ON</button></p>
 </div>
 
 <script>
@@ -186,10 +179,7 @@
       o.stop(AC.currentTime + (dur || 0.08) + 0.02);
     } catch (e) {}
   }
-  document.getElementById("mute").addEventListener("click", function () {
-    muted = !muted;
-    this.textContent = muted ? "SOUND: OFF" : "SOUND: ON";
-  });
+  function soundRect() { return { x: W / 2 - 66, y: 652, w: 132, h: 26 }; }
 
   /* ---------- sprites ---------- */
   function makeSprite(rows, palette, px) {
@@ -691,6 +681,12 @@
       return;
     }
     if (state === "title") {
+      var sr3 = soundRect();
+      if (x >= sr3.x && x <= sr3.x + sr3.w && y >= sr3.y && y <= sr3.y + sr3.h) {
+        muted = !muted;
+        beep(520, 0.06, "square", 0.04);
+        return;
+      }
       for (var mi = 0; mi < 5; mi++) {
         var mr = menuRect(mi);
         if (x >= mr.x && x <= mr.x + mr.w && y >= mr.y && y <= mr.y + mr.h) {
@@ -1455,7 +1451,7 @@
     cx.fillRect(0, 0, W, H);
 
     if (state === "title") {
-      text("NUMBERS GAME", W / 2, 150, 34, "#39ff6e");
+      text("MAILDOSO + NORSOFT", W / 2, 150, 26, "#39ff6e");
       text("COLD EMAIL TOWER DEFENSE", W / 2, 182, 12, "#ffb000");
       text("THEY DID NOT ASK FOR THESE EMAILS.", W / 2, 232, 12, "#ffffff");
       text("SEND THEM ANYWAY.", W / 2, 252, 12, "#ffffff");
@@ -1470,9 +1466,15 @@
         cx.strokeRect(mr.x + 0.5, mr.y + 0.5, mr.w, mr.h);
         text(label, W / 2, mr.y + 27, 12, i === 0 ? "#39ff6e" : "#cfe8d2");
       });
-      text(diff().desc + " · x" + diff().score + " pts", W / 2, 606, 9, "#8a9a8a");
+      text(diff().desc + " · x" + diff().score + " pts", W / 2, 600, 9, "#8a9a8a");
       var hs = getScores();
-      if (hs.length) text("TOP CLOSER: " + hs[0].n + " · DAY " + hs[0].d, W / 2, 634, 11, "#b26bff");
+      if (hs.length) text("TOP CLOSER: " + hs[0].n + " · DAY " + hs[0].d, W / 2, 626, 11, "#b26bff");
+      var sr2 = soundRect();
+      cx.fillStyle = "#101715";
+      cx.fillRect(sr2.x, sr2.y, sr2.w, sr2.h);
+      cx.strokeStyle = "#26221e";
+      cx.strokeRect(sr2.x + 0.5, sr2.y + 0.5, sr2.w, sr2.h);
+      text("SOUND: " + (muted ? "OFF" : "ON"), W / 2, sr2.y + 18, 10, muted ? "#555" : "#8a9a8a");
       return;
     }
 
