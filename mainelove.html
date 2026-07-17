@@ -274,7 +274,151 @@
   .panel { display: none; }
   .panel.active { display: block; }
 
-  .panel-head { margin-bottom: 20px; }
+  .panel-head {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .panel-head .panel-head-text { flex: 1 1 260px; min-width: 0; }
+  .panel-head-actions { display: flex; gap: 8px; flex-wrap: wrap; flex: none; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Roboto Condensed';
+    font-weight: 700;
+    font-size: 12.5px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .btn svg { width: 15px; height: 15px; flex: none; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: var(--accent-strong); }
+  .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--line); }
+  .btn-secondary:hover { background: var(--surface-sunken); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .section-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 26px 0 12px;
+    flex-wrap: wrap;
+  }
+  .section-actions .section-sub { margin: 0; }
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 10, 26, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 440px;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+  }
+  .modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .modal-head h3 {
+    margin: 0;
+    font-family: 'Roboto Condensed';
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--accent);
+  }
+  .modal-close {
+    all: unset;
+    cursor: pointer;
+    color: var(--ink-faint);
+    padding: 5px;
+    border-radius: 6px;
+    line-height: 1;
+    font-size: 16px;
+  }
+  .modal-close:hover { background: var(--surface-sunken); color: var(--ink); }
+  .modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; font-size: 13px; color: var(--ink-soft); }
+  .modal-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--line); }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+  }
+  .field input, .field select, .field textarea {
+    font-family: 'Roboto Condensed';
+    font-size: 14px;
+    padding: 9px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface-sunken);
+    color: var(--ink);
+  }
+  .field textarea { min-height: 76px; resize: vertical; font-family: inherit; }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; min-width: 0; }
+
+  .dropzone {
+    border: 2px dashed var(--line);
+    border-radius: 10px;
+    padding: 26px 16px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+    background: var(--surface-sunken);
+  }
+  .dropzone strong { color: var(--accent); }
+  .dropzone .hint { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: 'Roboto Condensed';
+    font-weight: 700;
+    font-size: 13px;
+    padding: 11px 20px;
+    border-radius: 999px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 200ms ease;
+    z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+
   .panel-head h2 {
     font-family: 'Roboto Condensed';
     font-weight: 800;
@@ -899,8 +1043,20 @@
       <!-- INVENTORY -->
       <section class="panel" id="panel-inventory">
         <div class="panel-head">
-          <h2>Inventory</h2>
-          <p>Five SKUs, sized to how little movement they actually see — no bloated module list to configure.</p>
+          <div class="panel-head-text">
+            <h2>Inventory</h2>
+            <p>Five SKUs, sized to how little movement they actually see — no bloated module list to configure.</p>
+          </div>
+          <div class="panel-head-actions">
+            <button class="btn btn-secondary" data-action="upload-inventory">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4"/><path d="M6 10l6-6 6 6"/><path d="M4 20h16"/></svg>
+              Upload spreadsheet
+            </button>
+            <button class="btn btn-primary" data-action="add-sku">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Add SKU
+            </button>
+          </div>
         </div>
         <div class="table-wrap">
           <table>
@@ -1075,8 +1231,16 @@
       <!-- PRODUCTION -->
       <section class="panel" id="panel-production">
         <div class="panel-head">
-          <h2>Production</h2>
-          <p>Asset-light by design — mainelove doesn't own a canning line. This tracks capacity booked across partner breweries instead of a single facility.</p>
+          <div class="panel-head-text">
+            <h2>Production</h2>
+            <p>Asset-light by design — mainelove doesn't own a canning line. This tracks capacity booked across partner breweries instead of a single facility.</p>
+          </div>
+          <div class="panel-head-actions">
+            <button class="btn btn-primary" data-action="schedule-run">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Schedule canning run
+            </button>
+          </div>
         </div>
         <div class="table-wrap">
           <table>
@@ -1145,8 +1309,16 @@
       <!-- DOCK SCHEDULE -->
       <section class="panel" id="panel-dock">
         <div class="panel-head">
-          <h2>Dock schedule</h2>
-          <p>Pickup appointments with the broadline distributors, in one shared calendar instead of phone and email back-and-forth.</p>
+          <div class="panel-head-text">
+            <h2>Dock schedule</h2>
+            <p>Pickup appointments with the broadline distributors, in one shared calendar instead of phone and email back-and-forth.</p>
+          </div>
+          <div class="panel-head-actions">
+            <button class="btn btn-primary" data-action="new-appointment">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              New appointment
+            </button>
+          </div>
         </div>
 
         <div class="section-sub">This week — Jul 14–20</div>
@@ -1230,8 +1402,20 @@
       <!-- ORDERS -->
       <section class="panel" id="panel-orders">
         <div class="panel-head">
-          <h2>Orders</h2>
-          <p>Direct, DSD, Walmart.com, and broadline EDI orders in one queue — instead of a separate portal per distributor.</p>
+          <div class="panel-head-text">
+            <h2>Orders</h2>
+            <p>Direct, DSD, Walmart.com, and broadline EDI orders in one queue — instead of a separate portal per distributor.</p>
+          </div>
+          <div class="panel-head-actions">
+            <button class="btn btn-secondary" data-action="import-orders">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4"/><path d="M6 10l6-6 6 6"/><path d="M4 20h16"/></svg>
+              Import orders
+            </button>
+            <button class="btn btn-primary" data-action="new-order">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              New order
+            </button>
+          </div>
         </div>
         <div class="table-wrap">
           <table>
@@ -1418,7 +1602,13 @@
           <p>Knowledge base, legal documents, team access, and integrations — the back-office corner, kept out of the way of day-to-day ops.</p>
         </div>
 
-        <div class="section-sub">Knowledge base</div>
+        <div class="section-actions">
+          <div class="section-sub">Knowledge base</div>
+          <button class="btn btn-secondary" data-action="new-article">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            New article
+          </button>
+        </div>
         <div class="card">
           <ul class="glance">
             <li><span class="n">How to process a Sysco 850 PO</span><span class="v">Jul 10</span></li>
@@ -1429,7 +1619,13 @@
           </ul>
         </div>
 
-        <div class="section-sub">Legal documents</div>
+        <div class="section-actions">
+          <div class="section-sub">Legal documents</div>
+          <button class="btn btn-secondary" data-action="upload-document">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4"/><path d="M6 10l6-6 6 6"/><path d="M4 20h16"/></svg>
+            Upload document
+          </button>
+        </div>
         <div class="card">
           <ul class="glance">
             <li><span class="n">Sysco — Distribution Agreement</span><span class="v">2025</span></li>
@@ -1441,7 +1637,13 @@
           </ul>
         </div>
 
-        <div class="section-sub">Team &amp; onboarding</div>
+        <div class="section-actions">
+          <div class="section-sub">Team &amp; onboarding</div>
+          <button class="btn btn-secondary" data-action="invite-teammate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Invite teammate
+          </button>
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
@@ -1513,6 +1715,144 @@
     </div>
   </div>
 </div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h3 id="modalTitle">Title</h3>
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" id="modalCancel">Cancel</button>
+      <button class="btn btn-primary" id="modalConfirm">Save</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  var MODAL_CONTENT = {
+    'upload-inventory': {
+      title: 'Upload inventory spreadsheet',
+      confirm: 'Upload',
+      toast: 'Spreadsheet queued — inventory will update once it finishes processing.',
+      body: '<div class="dropzone"><strong>Drag a CSV or XLSX file here</strong>, or click to browse<div class="hint">Matches columns automatically: SKU, product, on hand, allocated, reorder point</div></div>'
+    },
+    'add-sku': {
+      title: 'Add a new SKU',
+      confirm: 'Save SKU',
+      toast: 'SKU added to inventory.',
+      body: '<div class="field"><label>SKU code</label><input type="text" placeholder="MLV-XXX-12"></div>' +
+            '<div class="field"><label>Product name</label><input type="text" placeholder="e.g. Peach Ginger with Bubbles"></div>' +
+            '<div class="field-row"><div class="field"><label>Category</label><select><option>Still</option><option>Sparkling</option><option selected>Flavored</option></select></div>' +
+            '<div class="field"><label>Reorder point</label><input type="number" placeholder="2,500"></div></div>' +
+            '<div class="field"><label>Starting on-hand</label><input type="number" placeholder="0"></div>'
+    },
+    'schedule-run': {
+      title: 'Schedule a canning run',
+      confirm: 'Schedule run',
+      toast: 'Canning run scheduled.',
+      body: '<div class="field"><label>Partner brewery</label><select><option>Partner Brewery — Southern Maine</option><option>Partner Brewery — Central Maine</option></select></div>' +
+            '<div class="field-row"><div class="field"><label>Line</label><input type="text" placeholder="Line 1"></div>' +
+            '<div class="field"><label>Cases planned</label><input type="number" placeholder="2,000"></div></div>' +
+            '<div class="field"><label>SKU(s)</label><input type="text" placeholder="e.g. Perfectly Still, With Bubbles"></div>' +
+            '<div class="field"><label>Date</label><input type="text" placeholder="Aug 8"></div>'
+    },
+    'new-appointment': {
+      title: 'Request a dock appointment',
+      confirm: 'Request',
+      toast: 'Appointment request sent.',
+      body: '<div class="field"><label>Distributor</label><select><option>Sysco</option><option>US Foods</option><option>Performance Food Group</option></select></div>' +
+            '<div class="field-row"><div class="field"><label>Dock door</label><input type="text" placeholder="Dock 1"></div>' +
+            '<div class="field"><label>Type</label><select><option>Pickup</option><option>Delivery</option></select></div></div>' +
+            '<div class="field"><label>Date &amp; time</label><input type="text" placeholder="Mon, Jul 28 · 8:00 AM"></div>'
+    },
+    'import-orders': {
+      title: 'Import orders',
+      confirm: 'Import',
+      toast: 'Order file queued for import.',
+      body: '<div class="dropzone"><strong>Drag a CSV or XLSX file here</strong>, or click to browse<div class="hint">CSV export from Shopify or Walmart Seller Center</div></div>'
+    },
+    'new-order': {
+      title: 'Create a new order',
+      confirm: 'Create order',
+      toast: 'Order created.',
+      body: '<div class="field"><label>Source</label><select><option>Direct</option><option>Walmart.com</option><option>Sysco EDI</option><option>US Foods EDI</option><option>PFG EDI</option></select></div>' +
+            '<div class="field"><label>Account / customer</label><input type="text" placeholder="e.g. Aramark concessions"></div>' +
+            '<div class="field-row"><div class="field"><label>SKU</label><input type="text" placeholder="With Bubbles"></div>' +
+            '<div class="field"><label>Quantity (cases)</label><input type="number" placeholder="60"></div></div>'
+    },
+    'new-article': {
+      title: 'New knowledge base article',
+      confirm: 'Publish',
+      toast: 'Article published to the knowledge base.',
+      body: '<div class="field"><label>Title</label><input type="text" placeholder="e.g. How to handle a rejected 856 ASN"></div>' +
+            '<div class="field"><label>Category</label><select><option>EDI &amp; distributors</option><option>Production</option><option>Onboarding</option><option>Warehouse</option></select></div>' +
+            '<div class="field"><label>Body</label><textarea placeholder="Write the article..."></textarea></div>'
+    },
+    'upload-document': {
+      title: 'Upload legal document',
+      confirm: 'Upload',
+      toast: 'Document uploaded.',
+      body: '<div class="dropzone"><strong>Drag a PDF or DOCX here</strong>, or click to browse<div class="hint">Distribution agreements, licensing, insurance certificates</div></div>'
+    },
+    'invite-teammate': {
+      title: 'Invite a teammate',
+      confirm: 'Send invite',
+      toast: 'Invite sent.',
+      body: '<div class="field"><label>Email</label><input type="email" placeholder="name@mainelove.com"></div>' +
+            '<div class="field"><label>Access level</label><select><option selected>Full access</option></select><div class="hint" style="font-size:11.5px;color:var(--ink-faint);margin-top:2px;">Everyone on the team shares the same access level today.</div></div>'
+    }
+  };
+
+  (function () {
+    var backdrop = document.getElementById('modalBackdrop');
+    var titleEl = document.getElementById('modalTitle');
+    var bodyEl = document.getElementById('modalBody');
+    var confirmBtn = document.getElementById('modalConfirm');
+    var cancelBtn = document.getElementById('modalCancel');
+    var closeBtn = document.getElementById('modalClose');
+    var toastEl = document.getElementById('toast');
+    var toastTimer = null;
+    var activeToast = '';
+
+    function openModal(action) {
+      var cfg = MODAL_CONTENT[action];
+      if (!cfg) return;
+      titleEl.textContent = cfg.title;
+      bodyEl.innerHTML = cfg.body;
+      confirmBtn.textContent = cfg.confirm;
+      activeToast = cfg.toast;
+      backdrop.classList.add('open');
+    }
+    function closeModal() {
+      backdrop.classList.remove('open');
+    }
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+    }
+
+    document.querySelectorAll('[data-action]').forEach(function (btn) {
+      btn.addEventListener('click', function () { openModal(btn.dataset.action); });
+    });
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    confirmBtn.addEventListener('click', function () {
+      closeModal();
+      showToast(activeToast);
+    });
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal();
+    });
+  })();
+</script>
 
 <script>
   (function () {
