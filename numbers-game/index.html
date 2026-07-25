@@ -760,6 +760,7 @@
             }
             beep(120, 0.3, "sawtooth", 0.05);
           }
+          quizFeedback.pick = qi;
           quizT = quizFeedback.ok ? 2.2 : 3.4;
           return;
         }
@@ -1704,12 +1705,15 @@
         wrapText(quiz.q, W / 2, 202, 390, 13, "#ffffff");
         quiz.opts.forEach(function (o, i) {
           var qr = quizRect(i);
-          cx.fillStyle = "#101715";
+          var fbRight = quizFeedback && i === quiz.correct;
+          var fbPick = quizFeedback && quizFeedback.pick === i && !fbRight;
+          var optColor = fbRight ? "#39ff6e" : fbPick ? "#ff5544" : "#cfe8d2";
+          cx.fillStyle = fbRight ? "#12291a" : fbPick ? "#3a1210" : "#101715";
           cx.fillRect(qr.x, qr.y, qr.w, qr.h);
-          cx.strokeStyle = "#2c4433";
+          cx.strokeStyle = fbRight ? "#39ff6e" : fbPick ? "#ff5544" : "#2c4433";
           cx.strokeRect(qr.x + 0.5, qr.y + 0.5, qr.w, qr.h);
           // uniform size, hanging indent: letter in the gutter, text wraps aligned to itself
-          text(String.fromCharCode(65 + i) + ".", qr.x + 13, qr.y + 25, 9, "#8a9a8a", "left");
+          text(String.fromCharCode(65 + i) + ".", qr.x + 13, qr.y + 25, 9, optColor === "#cfe8d2" ? "#8a9a8a" : optColor, "left");
           cx.font = "bold " + fs(9) + "px 'Courier New', monospace";
           var tx = qr.x + 40, tw = qr.w - 52;
           var words = o.split(" "), line = "", lines = [];
@@ -1720,7 +1724,7 @@
           });
           lines.push(line);
           lines = lines.slice(0, 2);
-          cx.fillStyle = "#cfe8d2";
+          cx.fillStyle = optColor;
           cx.textAlign = "left";
           var ty0 = lines.length === 1 ? qr.y + 31 : qr.y + 22;
           lines.forEach(function (l, li) {
