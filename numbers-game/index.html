@@ -443,9 +443,9 @@
 
   /* ---------- difficulty ---------- */
   var DIFFS = [
-    { key: "INTERN", quota: 12, money: 350, speed: 0.85, score: 0.75, fishBonus: 0, gateOffset: 0, desc: "someone set up the domains for you" },
-    { key: "SDR", quota: 10, money: 250, speed: 1, score: 1, fishBonus: 0, gateOffset: 2, desc: "the job as posted" },
-    { key: "FOUNDER", quota: 6, money: 200, speed: 1.1, score: 1.5, fishBonus: 1, gateOffset: 4, desc: "no budget. the quota is personal" }
+    { key: "INTERN", quota: 12, money: 350, speed: 0.85, score: 0.75, fishBonus: 0, gateOffset: 0, hpCurve: 0.13, spdCurve: 0.045, spdCap: 1.5, desc: "someone set up the domains for you" },
+    { key: "SDR", quota: 10, money: 250, speed: 1, score: 1, fishBonus: 0, gateOffset: 2, hpCurve: 0.18, spdCurve: 0.06, spdCap: 1.7, desc: "the job as posted" },
+    { key: "FOUNDER", quota: 6, money: 200, speed: 1.1, score: 1.5, fishBonus: 1, gateOffset: 4, hpCurve: 0.25, spdCurve: 0.08, spdCap: 1.9, desc: "no budget. the quota is personal" }
   ];
   var diffIdx = 1;
   function diff() { return DIFFS[diffIdx]; }
@@ -1075,10 +1075,10 @@
       if (spawnTimer <= 0) {
         var type = spawnQueue.shift();
         var def = CREEP_DEF[type];
-        var hp = Math.ceil(def.hp * (1 + (day - 1) * 0.18));
-        if (type === "committee") hp = 24 + day * 6;
-        if (type === "algorithm") hp = 20 + day * 5;
-        var spdMult = Math.min(1.7, 1 + (day - 1) * 0.06);
+        var hp = Math.ceil(def.hp * (1 + (day - 1) * diff().hpCurve));
+        if (type === "committee") hp = Math.ceil((24 + day * 6) * (diff().hpCurve / 0.18));
+        if (type === "algorithm") hp = Math.ceil((20 + day * 5) * (diff().hpCurve / 0.18));
+        var spdMult = Math.min(diff().spdCap, 1 + (day - 1) * diff().spdCurve);
         var nc = { type: type, hp: hp, maxhp: hp, speed: def.speed * (0.9 + Math.random() * 0.2) * spdMult * todayMods.speed * diff().speed, dist: 0, x: PATH[0][0], y: PATH[0][1], alive: true };
         if (type === "fish" && !fishIntroDone) {
           fishIntroDone = true;
