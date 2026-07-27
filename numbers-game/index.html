@@ -444,9 +444,9 @@
 
   /* ---------- difficulty ---------- */
   var DIFFS = [
-    { key: "INTERN", quota: 12, money: 350, speed: 0.85, score: 0.75, fishBonus: 0, gateOffset: 0, hpCurve: 0.13, spdCurve: 0.045, spdCap: 1.5, desc: "someone set up the domains for you" },
-    { key: "SDR", quota: 10, money: 250, speed: 1, score: 1, fishBonus: 0, gateOffset: 2, hpCurve: 0.18, spdCurve: 0.06, spdCap: 1.7, desc: "the job as posted" },
-    { key: "FOUNDER", quota: 6, money: 200, speed: 1.1, score: 1.5, fishBonus: 1, gateOffset: 4, hpCurve: 0.25, spdCurve: 0.08, spdCap: 1.9, desc: "no budget. the quota is personal" }
+    { key: "INTERN", quota: 12, money: 350, speed: 0.85, score: 0.75, fishBonus: 0, gateOffset: 0, hpCurve: 0.20, spdCurve: 0.05, spdCap: 1.6, heatMult: 0.8, desc: "someone set up the domains for you" },
+    { key: "SDR", quota: 10, money: 250, speed: 1, score: 1, fishBonus: 0, gateOffset: 3, hpCurve: 0.30, spdCurve: 0.07, spdCap: 1.8, heatMult: 1.0, desc: "the job as posted" },
+    { key: "FOUNDER", quota: 6, money: 200, speed: 1.1, score: 1.5, fishBonus: 1, gateOffset: 7, hpCurve: 0.48, spdCurve: 0.11, spdCap: 2.2, heatMult: 1.35, desc: "no budget. the quota is personal" }
   ];
   var diffIdx = 1;
   function diff() { return DIFFS[diffIdx]; }
@@ -999,7 +999,7 @@
           if (target) {
             d.cds[i] = rate * todayMods.rate;
             sentCount++;
-            d.heat += ((d.warm ? 4 : 7) / d.stack) * (algoAlive ? 1.5 : 1);
+            d.heat += ((d.warm ? 4 : 7) / d.stack) * (algoAlive ? 1.5 : 1) * diff().heatMult;
             var crit = d.pers && Math.random() < 0.25;
             shots.push({
               x: d.x, y: d.y - 12, target: target,
