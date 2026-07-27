@@ -67,7 +67,7 @@
     color: #91a893; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer;
   }
   #initials {
-    position: absolute; left: 50%; top: 58%;
+    position: absolute; left: 50%; top: 68%;
     transform: translate(-50%, -50%);
     width: 120px; font-family: inherit; font-size: 34px;
     letter-spacing: 12px; text-align: center; text-transform: uppercase;
@@ -75,7 +75,7 @@
     outline: none; display: none; padding: 4px 0 4px 12px;
   }
   #email {
-    position: absolute; left: 50%; top: 58%;
+    position: absolute; left: 50%; top: 68%;
     transform: translate(-50%, -50%);
     width: 300px; font-family: inherit; font-size: 17px;
     text-align: center;
@@ -1564,32 +1564,32 @@
       text(OVER_QUOTA[0], W / 2, 140, 26, "#ff5544");
       text(OVER_QUOTA[1], W / 2, 178, 13, "#cfe8d2");
       text(OVER_QUOTA[2], W / 2, 200, 13, "#cfe8d2");
-      text("FINAL SCORE ..... " + (scorePts + meetings * 400 + bossesDown * 1000), W / 2, 232, 15, "#ffb000");
-      text("MODE .............. " + diff().key, W / 2, 234, 13, "#cfe8d2");
-      text("DAYS SURVIVED ..... " + day, W / 2, 256, 13, "#cfe8d2");
-      text("EMAILS SENT ....... " + sentCount, W / 2, 278, 13, "#cfe8d2");
-      text("CONVERSIONS ....... " + conversions, W / 2, 300, 13, "#cfe8d2");
-      text("MEETINGS .......... " + meetings, W / 2, 322, 13, "#39ff6e");
-      text("BOSSES CONVERTED .. " + bossesDown, W / 2, 344, 13, "#b26bff");
-      text("DOMAINS BURNED .... " + burnedCount, W / 2, 366, 13, "#ff5544");
-      text("TIMES OVERSENT .... " + oversends, W / 2, 388, 13, "#ffb000");
-      text("CERTS PASSED ...... " + (certs.target + certs.pers + certs.seq | 0), W / 2, 410, 13, "#4de8ff");
+      text("MODE .............. " + diff().key, W / 2, 228, 13, "#8a9a8a");
+      text("FINAL SCORE ....... " + (scorePts + meetings * 400 + bossesDown * 1000), W / 2, 252, 15, "#ffb000");
+      text("DAYS SURVIVED ..... " + day, W / 2, 276, 13, "#cfe8d2");
+      text("EMAILS SENT ....... " + sentCount, W / 2, 298, 13, "#cfe8d2");
+      text("CONVERSIONS ....... " + conversions, W / 2, 320, 13, "#cfe8d2");
+      text("MEETINGS .......... " + meetings, W / 2, 342, 13, "#39ff6e");
+      text("BOSSES CONVERTED .. " + bossesDown, W / 2, 364, 13, "#b26bff");
+      text("DOMAINS BURNED .... " + burnedCount, W / 2, 386, 13, "#ff5544");
+      text("TIMES OVERSENT .... " + oversends, W / 2, 408, 13, "#ffb000");
+      text("CERTS PASSED ...... " + (certs.target + certs.pers + certs.seq | 0), W / 2, 430, 13, "#4de8ff");
       if (state === "gameover" && stateTimer <= 0)
-        text("TAP FOR THE LEADERBOARD", W / 2, 442, 13, Math.floor(blink * 2) % 2 ? "#ffffff" : "#666");
+        text("TAP FOR THE LEADERBOARD", W / 2, 464, 13, Math.floor(blink * 2) % 2 ? "#ffffff" : "#666");
       if (state === "initials")
-        text("ENTER YOUR INITIALS", W / 2, 420, 15, "#ffb000");
+        text("ENTER YOUR INITIALS", W / 2, 458, 15, "#ffb000");
       if (state === "email") {
-        text("ENTER EMAIL TO CLAIM YOUR SPOT", W / 2, 400, 14, "#ffb000");
-        text("we will absolutely cold email you.", W / 2, 478, 11, "#8a9a8a");
-        text("(enter with it empty to stay a mystery)", W / 2, 498, 9, "#3d5544");
+        text("ENTER EMAIL TO CLAIM YOUR SPOT", W / 2, 458, 14, "#ffb000");
+        text("we will absolutely cold email you.", W / 2, 500, 11, "#8a9a8a");
+        text("(enter with it empty to stay a mystery)", W / 2, 520, 9, "#3d5544");
       }
       if (state === "scores") {
-        text("TOP CLOSERS", W / 2, 428, 16, "#b26bff");
+        text("TOP CLOSERS", W / 2, 458, 16, "#b26bff");
         var list = getScores();
         for (var i = 0; i < list.length; i++)
-          text((i + 1) + ". " + list[i].n + "  " + list[i].s + " pts  (day " + list[i].d + ")", W / 2, 456 + i * 22, 13, i === 0 ? "#39ff6e" : "#cfe8d2");
-        text("IN THE BOOTH: THIS SCREEN CAPTURES THE LEAD", W / 2, 588, 11, "#8a9a8a");
-        if (Math.floor(blink * 2) % 2) text("TAP FOR THE MENU", W / 2, 616, 13, "#ffffff");
+          text((i + 1) + ". " + list[i].n + "  " + list[i].s + " pts  (day " + list[i].d + ")", W / 2, 486 + i * 22, 13, i === 0 ? "#39ff6e" : "#cfe8d2");
+        text("IN THE BOOTH: THIS SCREEN CAPTURES THE LEAD", W / 2, 618, 11, "#8a9a8a");
+        if (Math.floor(blink * 2) % 2) text("TAP FOR THE MENU", W / 2, 644, 13, "#ffffff");
       }
       return;
     }
