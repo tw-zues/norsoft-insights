@@ -406,6 +406,7 @@
     }
   ];
   var quiz = null, quizFeedback = null, quizT = 0, gateIdx = 0, warnT = 0, quitArm = 0;
+  var shuffledGates = [];
 
   // end-of-day review questions, easy -> hard (all technically accurate)
   var GATES = [
@@ -559,7 +560,7 @@
     for (var i = 0; i < QUIZZES.length; i++) {
       if (nextDay >= QUIZZES[i].day && !certs[QUIZZES[i].key]) { quiz = QUIZZES[i]; break; }
     }
-    if (!quiz && nextDay >= 2) quiz = GATES[Math.min(gateIdx + diff().gateOffset, GATES.length - 1)];
+    if (!quiz && nextDay >= 2) quiz = shuffledGates[Math.min(gateIdx + diff().gateOffset, shuffledGates.length - 1)];
     draft = null;
     resetTodayMods();
     briefing = true;
@@ -654,11 +655,27 @@
     if (state === "gameover" && stateTimer <= 0) { promptInitials(); return; }
   }
 
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function freshGateOrder() {
+    // reshuffle within tiers so easy->hard pacing holds, but the exact
+    // question at each step is different every run for repeat players
+    var easy = GATES.slice(0, 4), mid = GATES.slice(4, 7), hard = GATES.slice(7, 10);
+    return shuffle(easy).concat(shuffle(mid), shuffle(hard));
+  }
+
   function reset() {
     money = diff().money; quota = diff().quota; quotaMax = diff().quota; day = 0; meetings = 0; sentCount = 0; conversions = 0; burnedCount = 0; oversends = 0; bossesDown = 0;
     domains = []; creeps = []; shots = []; floats = []; selected = null; placing = false;
     certs = { target: false, pers: false, seq: false };
     streak = 0; scorePts = 0; founderCd = 0; replyDrops = []; extraFish = 0; speedMult = 1; gateIdx = 0;
+    shuffledGates = freshGateOrder();
     quotaFlash = 0; dayClearT = 0; dayT = 0;
     fishIntroDone = false; complaintTaught = false;
     perm = { spintax: false, founderFast: false };
