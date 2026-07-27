@@ -407,6 +407,7 @@
   ];
   var quiz = null, quizFeedback = null, quizT = 0, gateIdx = 0, warnT = 0, quitArm = 0;
   var shuffledGates = [];
+  var globalRep = 100;
 
   // end-of-day review questions, easy -> hard (all technically accurate)
   var GATES = [
@@ -443,13 +444,27 @@
   ];
 
   /* ---------- difficulty ---------- */
+  // hpCurve is now a COMPOUNDING per-day multiplier (hp = base * hpCurve^(day-1)),
+  // not an additive rate. This is the shape every proven TD game actually uses —
+  // near-flat early game, accelerating hard late game. See video-game-concepts.md
+  // for the research: a linear curve, however steep, can't outrun a compounding
+  // player economy; a geometric one can.
   var DIFFS = [
-    { key: "INTERN", quota: 12, money: 350, speed: 0.85, score: 0.75, fishBonus: 0, gateOffset: 0, hpCurve: 0.20, spdCurve: 0.05, spdCap: 1.6, heatMult: 0.8, desc: "someone set up the domains for you" },
-    { key: "SDR", quota: 10, money: 250, speed: 1, score: 1, fishBonus: 0, gateOffset: 3, hpCurve: 0.30, spdCurve: 0.07, spdCap: 1.8, heatMult: 1.0, desc: "the job as posted" },
-    { key: "FOUNDER", quota: 6, money: 200, speed: 1.1, score: 1.5, fishBonus: 1, gateOffset: 7, hpCurve: 0.48, spdCurve: 0.11, spdCap: 2.2, heatMult: 1.35, desc: "no budget. the quota is personal" }
+    { key: "INTERN", quota: 12, money: 350, speed: 0.85, score: 0.75, fishBonus: 0, gateOffset: 0, hpCurve: 1.12, spdCurve: 0.05, spdCap: 1.6, heatMult: 0.8, desc: "someone set up the domains for you" },
+    { key: "SDR", quota: 10, money: 250, speed: 1, score: 1, fishBonus: 0, gateOffset: 3, hpCurve: 1.18, spdCurve: 0.07, spdCap: 1.8, heatMult: 1.0, desc: "the job as posted" },
+    { key: "FOUNDER", quota: 6, money: 200, speed: 1.1, score: 1.5, fishBonus: 1, gateOffset: 7, hpCurve: 1.27, spdCurve: 0.11, spdCap: 2.2, heatMult: 1.35, desc: "no budget. the quota is personal" }
   ];
   var diffIdx = 1;
   function diff() { return DIFFS[diffIdx]; }
+  // bounty tax (BTD6-style): kills are worth less as the economy matures,
+  // so a good early build can't keep out-earning a wave curve forever
+  function bountyMult(d) {
+    if (d <= 5) return 1.00;
+    if (d <= 9) return 0.75;
+    if (d <= 13) return 0.55;
+    if (d <= 17) return 0.40;
+    return 0.30;
+  }
   function menuRect(i) { return { x: W / 2 - 130, y: 296 + i * 56, w: 260, h: 42 }; }
 
   /* ---------- state ---------- */
@@ -676,6 +691,7 @@
     certs = { target: false, pers: false, seq: false };
     streak = 0; scorePts = 0; founderCd = 0; replyDrops = []; extraFish = 0; speedMult = 1; gateIdx = 0;
     shuffledGates = freshGateOrder();
+    globalRep = 100;
     quotaFlash = 0; dayClearT = 0; dayT = 0;
     fishIntroDone = false; complaintTaught = false;
     perm = { spintax: false, founderFast: false };
@@ -972,6 +988,20 @@
   function domainMaintenance(dt, canFire) {
     var algoAlive = creeps.some(function (c) { return c.alive && c.type === "algorithm"; });
 
+    // Global Sending Reputation: shared infrastructure throttle. More total
+    // inboxes = each shot costs more rep; rep regen scales with warmed-up
+    // domains. Low rep slows EVERY domain's fire rate (never fully stops).
+    var totalInboxes = 0, warmDomains = 0;
+    domains.forEach(function (d) {
+      if (d.burned) return;
+      totalInboxes += d.inboxes;
+      if (d.warm) warmDomains++;
+    });
+    var repCostPerShot = totalInboxes <= 3 ? 1.0 : 1.0 + 0.15 * (totalInboxes - 3);
+    var repRegenPerSec = 6 + 4 * warmDomains;
+    globalRep = Math.min(100, globalRep + repRegenPerSec * dt);
+    var fireRateMult = Math.max(0.4, Math.min(1.0, 0.4 + 0.6 * (globalRep / 100)));
+
     domains.forEach(function (d) {
       if (d.bornT > 0) d.bornT -= dt;
       if (d.burned) return;
@@ -993,12 +1023,13 @@
       if (!canFire || d.promo > 0) return;
       var rate = d.warm ? 0.85 : 1.15;
       for (var i = 0; i < d.inboxes; i++) {
-        d.cds[i] -= dt;
+        d.cds[i] -= dt * fireRateMult;
         if (d.cds[i] <= 0) {
           var target = acquire(d);
           if (target) {
             d.cds[i] = rate * todayMods.rate;
             sentCount++;
+            globalRep = Math.max(0, globalRep - repCostPerShot);
             d.heat += ((d.warm ? 4 : 7) / d.stack) * (algoAlive ? 1.5 : 1) * diff().heatMult;
             var crit = d.pers && Math.random() < 0.25;
             shots.push({
@@ -1092,9 +1123,12 @@
       if (spawnTimer <= 0) {
         var type = spawnQueue.shift();
         var def = CREEP_DEF[type];
-        var hp = Math.ceil(def.hp * (1 + (day - 1) * diff().hpCurve));
-        if (type === "committee") hp = Math.ceil((24 + day * 6) * (diff().hpCurve / 0.18));
-        if (type === "algorithm") hp = Math.ceil((20 + day * 5) * (diff().hpCurve / 0.18));
+        // geometric compounding curve (research-backed): early days feel
+        // near-flat, late days accelerate hard — a linear-in-multiplier
+        // curve can never keep pace with a compounding player economy
+        var hp = Math.ceil(def.hp * Math.pow(diff().hpCurve, day - 1));
+        if (type === "committee") hp = Math.ceil(24 * 1.3 * Math.pow(diff().hpCurve, day - 1));
+        if (type === "algorithm") hp = Math.ceil(20 * 1.3 * Math.pow(diff().hpCurve, day - 1));
         var spdMult = Math.min(diff().spdCap, 1 + (day - 1) * diff().spdCurve);
         var nc = { type: type, hp: hp, maxhp: hp, speed: def.speed * (0.9 + Math.random() * 0.2) * spdMult * todayMods.speed * diff().speed, dist: 0, x: PATH[0][0], y: PATH[0][1], alive: true };
         if (type === "fish" && !fishIntroDone) {
@@ -1250,7 +1284,7 @@
       conversions++;
       streak++;
       var b = CREEP_DEF[c.type].bounty;
-      money += b;
+      money += Math.round(b * bountyMult(day));
       var pts = Math.round(b * mult() * todayMods.score * diff().score);
       scorePts += pts;
       floatText(c.x, c.y - 14, "+" + pts + " PTS", "#ffb000");
@@ -1488,6 +1522,16 @@
       cx.strokeRect(135, 48, W - 147, 8);
       cx.fillStyle = "#b26bff";
       cx.fillRect(135, 48, (W - 147) * (boss.hp / boss.maxhp), 8);
+    }
+    // global sending reputation: shared throttle across ALL domains.
+    // stack too many inboxes and every domain fires slower, not just the new one.
+    if (state === "playing") {
+      text("NET REP", 12, 69, 9, "#8a9a8a", "left");
+      cx.strokeStyle = "#26221e";
+      cx.strokeRect(54, 62, W - 66, 6);
+      cx.fillStyle = globalRep > 60 ? "#4de8ff" : globalRep > 30 ? "#ffb000" : "#ff5544";
+      cx.fillRect(54, 62, (W - 66) * (globalRep / 100), 6);
+      if (globalRep < 30) text("OVERBUILT — SPREAD THE LOAD", W - 12, 69, 8, "#ff5544", "right");
     }
   }
 
@@ -1844,6 +1888,8 @@
     row(SPR.mail, "REPLY BUBBLES", "Conversions drop a pulsing reply worth cash for ~2 seconds. Tap it to bank it. CEOs and bosses drop gold ones. Yes, the whole game is about tapping the reply notification. We know.", "THE ACTIVE LAYER");
     row(null, "FOUNDER SEND", "Tap any prospect directly to hit them with a personal email for 3 damage, 8 second cooldown. It comes from the real domain, which is why you can't do it constantly. Tapping a fish resets your streak, because you personally emailed a fish.");
     row(null, "REPLY STREAK", "Consecutive conversions build a score multiplier up to x3. Hitting a fish, oversending, or letting a prospect walk resets it. The leaderboard measures clean aggression, not survival.");
+    row(null, "NET REP (global)", "Every inbox on the board shares ONE sending-reputation pool. Past 3 total active inboxes, each send costs more rep, and low rep slows EVERY domain's fire rate at once, not just the newest one. Warmed-up domains regen it faster. This is why real senders spread volume across many domains instead of stacking inboxes on one — buying more firepower stops being free past a certain scale.", "GLOBAL PRESSURE");
+    row(null, "BOUNTY TAX", "Kills are worth less as the run goes on: full price through day 5, then 75%, 55%, 40%, and 30% of face value by day 18+. Your economy can't just out-earn the wave forever — the same thing BTD6 does to stop a strong early build from trivializing the back half.");
     row(null, "DOMAIN STACKING", "In placing mode, tap an occupied desk to stack another domain there. Price scales ($300 for the 2nd, $450 for the 3rd...): +3 inbox capacity, bigger emails that hit harder (damage x stack), +30 range per stack, and send heat spreads across the stack, which is literally why real senders split volume across domains. The catch: one shared reputation, so a blacklist takes the whole tower down.", "QUALITY OF LIFE");
     row(null, "SPEED TOGGLE (▶▶)", "Bottom-right chip during waves cycles x1, x2, x3 game speed. For when you have built the machine and just want to watch it print.");
     row(null, "THE LEADERBOARD EMAIL", "Claiming a leaderboard spot asks for your email, and the game tells you the truth: we will absolutely cold email you. In this mockup it stays on your device; production wires it to a Norsoft endpoint.", "LEAD CAPTURE");
