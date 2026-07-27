@@ -1075,10 +1075,11 @@
       if (spawnTimer <= 0) {
         var type = spawnQueue.shift();
         var def = CREEP_DEF[type];
-        var hp = def.hp + Math.floor((day - 1) / 2);
-        if (type === "committee") hp = 24 + day * 5;
-        if (type === "algorithm") hp = 20 + day * 4;
-        var nc = { type: type, hp: hp, maxhp: hp, speed: def.speed * (0.9 + Math.random() * 0.2) * (1 + (day - 1) * 0.04) * todayMods.speed * diff().speed, dist: 0, x: PATH[0][0], y: PATH[0][1], alive: true };
+        var hp = Math.ceil(def.hp * (1 + (day - 1) * 0.18));
+        if (type === "committee") hp = 24 + day * 6;
+        if (type === "algorithm") hp = 20 + day * 5;
+        var spdMult = Math.min(1.7, 1 + (day - 1) * 0.06);
+        var nc = { type: type, hp: hp, maxhp: hp, speed: def.speed * (0.9 + Math.random() * 0.2) * spdMult * todayMods.speed * diff().speed, dist: 0, x: PATH[0][0], y: PATH[0][1], alive: true };
         if (type === "fish" && !fishIntroDone) {
           fishIntroDone = true;
           nc.introT = 2.5;
