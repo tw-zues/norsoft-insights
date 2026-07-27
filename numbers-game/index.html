@@ -343,6 +343,9 @@
     "Quota reset overnight. It does that."
   ];
   var OVER_QUOTA = ["END OF QUARTER", "They went with the guy.", "All of them. The guy."];
+  var WIN_DAY = 10;
+  var WIN_LINES = ["QUARTER CLOSED", "You hit your number.", "Nobody believed you would."];
+  var runWon = false;
 
   /* ---------- path & spots ---------- */
   var PATH = [
@@ -595,10 +598,21 @@
     money += 100;
     dayClearT = 1.4;
     dayClearN = day;
+    if (day >= WIN_DAY) { win(); return; }
     enterBuild(day + 1);
   }
 
+  function win() {
+    runWon = true;
+    state = "win";
+    stateTimer = 2.6;
+    bubble = null;
+    beep(880, 0.15, "square", 0.05);
+    beep(1100, 0.2, "square", 0.05);
+  }
+
   function gameOver() {
+    runWon = false;
     state = "gameover";
     stateTimer = 2.6;
     bubble = null;
@@ -667,7 +681,7 @@
       startPending();
       return;
     }
-    if (state === "gameover" && stateTimer <= 0) { promptInitials(); return; }
+    if ((state === "gameover" || state === "win") && stateTimer <= 0) { promptInitials(); return; }
   }
 
   function shuffle(arr) {
@@ -1109,7 +1123,7 @@
       floats = floats.filter(function (f) { return f.t > 0; });
       return;
     }
-    if (state === "gameover") { stateTimer -= dt; return; }
+    if (state === "gameover" || state === "win") { stateTimer -= dt; return; }
     if (state !== "playing") return;
 
     dayT += dt;
@@ -1604,10 +1618,11 @@
       return;
     }
 
-    if (state === "gameover" || state === "initials" || state === "email" || state === "scores") {
-      text(OVER_QUOTA[0], W / 2, 140, 26, "#ff5544");
-      text(OVER_QUOTA[1], W / 2, 178, 13, "#cfe8d2");
-      text(OVER_QUOTA[2], W / 2, 200, 13, "#cfe8d2");
+    if (state === "gameover" || state === "win" || state === "initials" || state === "email" || state === "scores") {
+      var endLines = runWon ? WIN_LINES : OVER_QUOTA;
+      text(endLines[0], W / 2, 140, 26, runWon ? "#39ff6e" : "#ff5544");
+      text(endLines[1], W / 2, 178, 13, "#cfe8d2");
+      text(endLines[2], W / 2, 200, 13, "#cfe8d2");
       text("MODE .............. " + diff().key, W / 2, 228, 13, "#8a9a8a");
       text("FINAL SCORE ....... " + (scorePts + meetings * 400 + bossesDown * 1000), W / 2, 252, 15, "#ffb000");
       text("DAYS SURVIVED ..... " + day, W / 2, 276, 13, "#cfe8d2");
@@ -1618,7 +1633,7 @@
       text("DOMAINS BURNED .... " + burnedCount, W / 2, 386, 13, "#ff5544");
       text("TIMES OVERSENT .... " + oversends, W / 2, 408, 13, "#ffb000");
       text("CERTS PASSED ...... " + (certs.target + certs.pers + certs.seq | 0), W / 2, 430, 13, "#4de8ff");
-      if (state === "gameover" && stateTimer <= 0)
+      if ((state === "gameover" || state === "win") && stateTimer <= 0)
         text("TAP FOR THE LEADERBOARD", W / 2, 464, 13, Math.floor(blink * 2) % 2 ? "#ffffff" : "#666");
       if (state === "initials")
         text("ENTER YOUR INITIALS", W / 2, 458, 15, "#ffb000");
