@@ -50,6 +50,7 @@ not a security boundary.
   * { box-sizing: border-box; }
   body {
     margin: 0;
+    width: 100%;
     min-height: 100vh;
     background: radial-gradient(900px 500px at 50% -10%, #14201a, #060707 65%), #060707;
     display: flex;
@@ -59,8 +60,9 @@ not a security boundary.
     padding: 22px 12px 48px;
     font-family: "Courier New", ui-monospace, monospace;
     color: #cfe8d2;
+    overflow-x: hidden;
   }
-  .marquee { text-align: center; line-height: 1.1; }
+  .marquee { max-width: 100%; text-align: center; line-height: 1.1; }
   .marquee .title {
     font-size: clamp(26px, 6vw, 44px);
     font-weight: bold;
@@ -78,42 +80,64 @@ not a security boundary.
     border-radius: 14px;
     padding: 14px;
     box-shadow: 0 30px 70px rgba(0,0,0,.7), inset 0 1px 0 #2e3134;
+    width: min(508px, calc(100vw - 8px));
     max-width: 100%;
   }
-  .screen-wrap { position: relative; background: #000; border-radius: 8px; overflow: hidden; line-height: 0; }
-  canvas#game { image-rendering: pixelated; display: block; max-width: 100%; max-height: 82vh; width: auto; height: auto; margin: 0 auto; background: #000; touch-action: none; }
+  .screen-wrap { position: relative; width: 100%; background: #000; border-radius: 8px; overflow: hidden; line-height: 0; }
+  canvas#game { image-rendering: pixelated; display: block; max-width: 100%; max-height: 82vh; width: 100%; height: auto; margin: 0 auto; background: #000; touch-action: none; }
   .scanlines {
     position: absolute; inset: 0; pointer-events: none;
     background: repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px);
     mix-blend-mode: multiply;
   }
   .glow { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 90px rgba(20,255,120,.09); }
-  .under { max-width: 620px; width: 100%; font-size: 13px; line-height: 1.65; color: #91a893; }
+  .under {
+    width: min(590px, calc(100vw - 24px));
+    max-width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 210px;
+    gap: 18px 24px;
+    align-items: start;
+    border-top: 1px solid #1d211d;
+    padding: 18px 0 4px;
+    font-size: 13px;
+    line-height: 1.58;
+    color: #91a893;
+  }
   .under b { color: #cfe8d2; }
   .under .h { letter-spacing: 3px; color: var(--amber); font-weight: bold; margin: 18px 0 8px; text-transform: uppercase; }
-  .under p { margin: 0 0 10px; }
+  .under p { margin: 0; }
   .under a { color: var(--phos); text-decoration: none; }
   .under a:hover { text-decoration: underline; }
   .under .cta { color: #061008; }
   .under .ghost { color: #cfe8d2; }
+  .demo-copy { min-width: 0; display: grid; gap: 9px; }
+  .kicker {
+    color: var(--amber);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
   .proofline {
-    border-top: 1px solid #1d211d;
-    border-bottom: 1px solid #1d211d;
-    padding: 12px 0;
     color: #cfe8d2;
   }
-  .cta-row, .pwa-tools {
+  .proofline b {
+    display: block;
+    margin-bottom: 4px;
+  }
+  .demo-actions {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
     gap: 10px;
-    margin-top: 12px;
+    align-items: stretch;
   }
   .cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 34px;
+    min-height: 38px;
     padding: 8px 13px;
     border: 1px solid var(--phos);
     color: #061008;
@@ -139,7 +163,14 @@ not a security boundary.
     cursor: pointer;
     text-decoration: none;
   }
-  .pwa-tools { color: #6f8672; font-size: 12px; }
+  .pwa-tools {
+    display: grid;
+    gap: 8px;
+    color: #6f8672;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+  .pwa-tools .ghost { width: 100%; }
   .pwa-tools button[hidden] { display: none; }
   #initials {
     position: absolute; left: 50%; top: 68%;
@@ -193,11 +224,20 @@ not a security boundary.
   @media (max-width: 540px) {
     body { padding: 8px 4px 32px; gap: 8px; }
     .marquee .title { font-size: 20px; letter-spacing: 3px; }
-    .marquee .sub { font-size: 9px; letter-spacing: 2px; margin-top: 2px; }
+    .marquee .sub { font-size: 8px; letter-spacing: 1.4px; line-height: 1.45; margin-top: 2px; }
     .cabinet { padding: 6px; border-radius: 10px; }
     canvas#game { max-height: 84vh; }
-    .under { padding: 0 8px; font-size: 12px; }
-    .cta-row, .pwa-tools { align-items: stretch; }
+    .under {
+      width: 100%;
+      max-width: calc(100vw - 8px);
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 16px 12px 0;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    .demo-copy { gap: 8px; }
+    .kicker { letter-spacing: 1.5px; }
     .cta, .ghost { width: 100%; }
   }
   @media (display-mode: standalone) {
@@ -220,16 +260,19 @@ not a security boundary.
   </div>
 </div>
 
-<section class="under" aria-label="About this Norsoft micro-demo">
-  <p class="proofline"><b>We turn niche operating logic into software people can actually use.</b> This tiny arcade game models cold outbound infrastructure: domains, inboxes, warmup, targeting, reputation, replies, and quota pressure.</p>
-  <p>It is intentionally small: one playable workflow, built to show how quickly Norsoft can understand a specific business system and make it concrete.</p>
-  <div class="cta-row">
-    <a class="cta" href="https://norsoft.pipedrive.com/scheduler/jq55RKf3/quick-chat-with-tim" target="_blank" rel="noopener">TALK CUSTOM SOFTWARE</a>
-    <a class="ghost" href="https://norsoft.com" target="_blank" rel="noopener">NORSOFT.COM</a>
+<section class="under" aria-label="Norsoft micro-demo next step">
+  <div class="demo-copy">
+    <p class="kicker">OUTBOUND SYSTEMS, MADE PLAYABLE</p>
+    <p class="proofline"><b>Cold outbound breaks when the system is invisible.</b> This demo turns DNS, inbox warmup, SMTP, targeting, reputation, replies, and quota into one playable system.</p>
+    <p>That is the point: Norsoft takes niche workflows and turns them into software people can actually use.</p>
   </div>
-  <div class="pwa-tools" aria-live="polite">
-    <button id="installPwa" class="ghost" type="button" hidden>INSTALL APP</button>
-    <span id="pwaStatus">On mobile, install or add to home screen for the app-style version.</span>
+  <div class="demo-actions">
+    <a class="cta" href="https://norsoft.pipedrive.com/scheduler/Z688L0h1/linkedin-discovery-call" target="_blank" rel="noopener">BOOK DISCOVERY CALL</a>
+    <a class="ghost" href="https://norsoft.com" target="_blank" rel="noopener">NORSOFT.COM</a>
+    <div class="pwa-tools" aria-live="polite">
+      <button id="installPwa" class="ghost" type="button" hidden>INSTALL APP</button>
+      <span id="pwaStatus">Installable on supported browsers.</span>
+    </div>
   </div>
 </section>
 
@@ -270,18 +313,18 @@ not a security boundary.
   if (standalone) {
     setPwaStatus("Running in app mode.");
   } else if (isiOS) {
-    setPwaStatus("iPhone: Share -> Add to Home Screen for the app-style version.");
+    setPwaStatus("iPhone: Share -> Add to Home Screen.");
   }
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
     installPrompt = e;
     if (installBtn) installBtn.hidden = false;
-    setPwaStatus("Install this as a standalone phone app.");
+    setPwaStatus("Opens as a standalone app.");
   });
   if (installBtn) {
     installBtn.addEventListener("click", function () {
       if (!installPrompt) {
-        setPwaStatus(isiOS ? "iPhone: Share -> Add to Home Screen." : "Use your browser menu to install this app.");
+        setPwaStatus(isiOS ? "iPhone: Share -> Add to Home Screen." : "Use browser menu to install.");
         return;
       }
       installPrompt.prompt();
@@ -299,7 +342,7 @@ not a security boundary.
   if ("serviceWorker" in navigator && location.protocol !== "file:") {
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(function () {
-        setPwaStatus("Install is available from supported mobile browsers after the page is served over HTTPS.");
+        setPwaStatus("Serve over HTTPS to enable install.");
       });
     });
   }
