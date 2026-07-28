@@ -513,13 +513,21 @@
   var COST = { domain: 150, inbox: 75, warmup: 100, target: 100, pers: 125, swap: 100 };
 
   /* ---------- certifications (skill-gated unlocks) ---------- */
-  var certs = { target: false, pers: false, seq: false };
+  function freshCerts() {
+    return { target: false, pers: false, seq: false, auth: false, policy: false };
+  }
+  var certs = freshCerts();
+  function certCount() {
+    return Object.keys(certs).reduce(function (n, k) { return n + (certs[k] ? 1 : 0); }, 0);
+  }
   var QUIZZES = [
     {
       key: "target", day: 3, title: "CERTIFICATION 1: TARGETING",
       q: "Your list has 5,000 contacts. What matters most before anything sends?",
       opts: ["That every single one gets the email", "That the people on it actually match your ICP", "A catchier subject line"],
       correct: 1,
+      cat: "Targeting",
+      why: "list fit beats volume because bad fit turns into complaints",
       reward: "TARGETING unlocked: domains can learn to skip the fish"
     },
     {
@@ -527,6 +535,8 @@
       q: "What makes personalization actually land?",
       opts: ["Their first name in every sentence", "A detail that proves you looked at their business", "Sending the same email twice"],
       correct: 1,
+      cat: "Personalization",
+      why: "proof of relevance beats cosmetic merge tags",
       reward: "PERSONALIZE unlocked: critical hits enabled"
     },
     {
@@ -534,45 +544,114 @@
       q: "Where do most replies actually come from?",
       opts: ["The first email, if it's good enough", "The follow-ups after the first email", "The unsubscribe link"],
       correct: 1,
+      cat: "Sequencing",
+      why: "the first email starts the file; follow-ups usually do the collecting",
       reward: "AUTO FOLLOW-UP granted free: every send has a 25% chance to fire a follow-up"
+    },
+    {
+      key: "auth", day: 9, title: "CERTIFICATION 4: DNS AUTH",
+      q: "What has to be right before bulk Gmail/Yahoo sending gets serious?",
+      opts: ["SPF, DKIM, DMARC, alignment, DNS, and TLS", "A subject line with zero spam words", "A Gmail account duct-taped to a spreadsheet"],
+      correct: 0,
+      cat: "DNS Authentication",
+      why: "current bulk sender rules require authentication, alignment, DNS, and secure transport",
+      reward: "DNS AUTH certified: the machine can pass a real sender check"
+    },
+    {
+      key: "policy", day: 11, title: "CERTIFICATION 5: POLICY RADAR",
+      q: "For marketing mail over 5,000 Gmail recipients/day, unsubscribe needs...",
+      opts: ["One-click headers plus a visible unsubscribe link", "A reply-to inbox nobody checks", "Only a breakup-email unsubscribe"],
+      correct: 0,
+      cat: "Gmail/Yahoo Rules",
+      why: "bulk marketing mail needs one-click unsubscribe support and a clear body unsubscribe",
+      reward: "POLICY RADAR certified: current sender rules logged"
     }
   ];
   var quiz = null, quizFeedback = null, quizT = 0, gateIdx = 0, warnT = 0, quitArm = 0;
   var shuffledGates = [];
   var globalRep = 100;
+  var skillMisses = {};
+
+  function trackSkillMiss(q) {
+    var cat = q.cat || "General outbound";
+    skillMisses[cat] = (skillMisses[cat] || 0) + 1;
+  }
+  function totalSkillMisses() {
+    return Object.keys(skillMisses).reduce(function (n, k) { return n + skillMisses[k]; }, 0);
+  }
+  function topSkillMisses(limit) {
+    return Object.keys(skillMisses).sort(function (a, b) {
+      return skillMisses[b] - skillMisses[a] || a.localeCompare(b);
+    }).slice(0, limit || 3);
+  }
+  function knowledgeBreakdown() {
+    var misses = totalSkillMisses();
+    if (!misses) return "Knowledge check clean. Your problem is now execution speed.";
+    return "Review: " + topSkillMisses(3).join(" / ") + ".";
+  }
 
   // end-of-day review questions, easy -> hard (all technically accurate)
   var GATES = [
     { title: "END OF DAY REVIEW", q: "Should you send cold email from your main company domain?",
-      opts: ["Yes. It shows confidence", "No. Use lookalike domains so the damage never touches it", "Only for the breakup email"],
-      correct: 1, why: "the real domain is the one asset too valuable to burn" },
+      opts: ["Yes. It shows confidence", "No. Use dedicated sending domains so the real domain stays protected", "Only for the breakup email"],
+      correct: 1, tier: "easy", cat: "Domain Strategy", why: "the real domain is the one asset too valuable to burn" },
     { title: "END OF DAY REVIEW", q: "'Verified' on a purchased lead list means...",
       opts: ["It has a first name and an @ in it", "The tool charged you a credit for it", "SMTP-checked, low bounce risk. Some bounce anyway"],
-      correct: 2, why: "verified is a level of optimism, not a guarantee" },
+      correct: 2, tier: "easy", cat: "List Hygiene", why: "verified is a level of optimism, not a guarantee" },
     { title: "END OF DAY REVIEW", q: "Safe daily cold sends per inbox?",
       opts: ["Roughly 10-30, and that includes warmup emails", "500. The plan says unlimited", "No limit if you believe in your offer"],
-      correct: 0, why: "10-30 a day. the tool will physically let you do 500. once" },
+      correct: 0, tier: "easy", cat: "Sending Volume", why: "10-30 a day. the tool will physically let you do 500. once" },
     { title: "END OF DAY REVIEW", q: "How long do you warm up a brand-new domain?",
       opts: ["Zero days. Warmup is a scam", "14-21 days minimum", "You buy pre-warmed ones from a guy"],
-      correct: 1, why: "14-21 days of robots complimenting each other's fake emails" },
+      correct: 1, tier: "easy", cat: "Warmup", why: "14-21 days of robots complimenting each other's fake emails" },
     { title: "END OF DAY REVIEW", q: "Your bounce rate hits 4%. You...",
       opts: ["Stop and re-verify the list. Over 2% is already damage", "Keep going. Bounces are no's you didn't have to read", "Nothing. The tool would have said something"],
-      correct: 0, why: "the tool did say something. it was a small yellow triangle" },
+      correct: 0, tier: "mid", cat: "Bounce Hygiene", why: "the tool did say something. it was a small yellow triangle" },
     { title: "END OF DAY REVIEW", q: "How many follow-ups before you stop?",
       opts: ["Nine. The breakup email is number seven", "2-3, then stop. Returns collapse after that", "You never stop. You change domains"],
-      correct: 1, why: "2-3. 'you never stop' is a description of the industry, which is why it's wrong" },
+      correct: 1, tier: "mid", cat: "Sequencing", why: "2-3. 'you never stop' is a description of the industry, which is why it's wrong" },
     { title: "END OF DAY REVIEW", q: "Why is your open rate unreliable?",
       opts: ["Prospects open emails with their eyes closed", "It isn't. Mine is 92% and things are going great", "Apple preloads tracking pixels, firing opens no human made"],
-      correct: 2, why: "Apple MPP inflates opens 15-35%. the metric everyone reports is partly Apple's servers" },
+      correct: 2, tier: "mid", cat: "Metrics", why: "Apple MPP inflated opens. the metric everyone reports is partly Apple's servers" },
     { title: "END OF DAY REVIEW", q: "A 'catch-all' address means...",
       opts: ["The server accepts everything. Validity is unknowable until it bounces", "The whole company reads every email together", "Send more. Someone's bound to get it"],
-      correct: 0, why: "the only test for a catch-all is the consequence" },
+      correct: 0, tier: "hard", cat: "List Hygiene", why: "the only test for a catch-all is the consequence" },
     { title: "END OF DAY REVIEW", q: "Under the 2024 Gmail rules, what complaint rate ends you?",
       opts: ["3%. One decimal place is basically a rounding error", "No threshold if you never open Postmaster Tools", "0.3% is the hard line. Stay under 0.1%"],
-      correct: 2, why: "three angry people per thousand sends. that's the whole margin" },
+      correct: 2, tier: "hard", cat: "Gmail/Yahoo Rules", why: "three angry people per thousand sends. that's the whole margin" },
     { title: "END OF DAY REVIEW", q: "A spam trap is...",
       opts: ["An address with no human behind it, built to catch bad lists", "A prospect who says 'interested!' then ghosts forever", "The unibox"],
-      correct: 0, why: "an email address whose entire job is to punish whoever sent to it" }
+      correct: 0, tier: "hard", cat: "List Hygiene", why: "an email address whose entire job is to punish whoever sent to it" },
+    { title: "END OF DAY REVIEW", q: "SPF answers which question?",
+      opts: ["Which servers are allowed to send for this domain", "Which prospect is most likely to buy", "Which subject line avoids spam words"],
+      correct: 0, tier: "mid", cat: "DNS Authentication", why: "SPF is the allowed-senders list in DNS" },
+    { title: "END OF DAY REVIEW", q: "DKIM proves...",
+      opts: ["The message was signed by the domain and was not altered", "The recipient opened it", "The sender has a verified LinkedIn profile"],
+      correct: 0, tier: "mid", cat: "DNS Authentication", why: "DKIM is the signature. without it, receivers trust you less" },
+    { title: "END OF DAY REVIEW", q: "DMARC is for...",
+      opts: ["Telling receivers what to do when SPF/DKIM alignment fails", "Warming domains automatically", "Changing Gmail's complaint threshold"],
+      correct: 0, tier: "hard", cat: "DNS Authentication", why: "DMARC connects authentication to policy and alignment" },
+    { title: "END OF DAY REVIEW", q: "Missing reverse DNS/PTR records usually means...",
+      opts: ["Receivers may distrust the sending IP path", "The email sends twice", "The subject line is too short"],
+      correct: 0, tier: "hard", cat: "DNS Authentication", why: "bulk sender infrastructure needs valid forward and reverse DNS" },
+    { title: "END OF DAY REVIEW", q: "Postmaster Tools is where you check...",
+      opts: ["Spam rate, reputation, authentication, encryption, and delivery errors", "Only open rate", "Whether prospects like your logo"],
+      correct: 0, tier: "hard", cat: "Deliverability Monitoring", why: "Gmail's own diagnostics beat guessing from open rates" },
+    { title: "END OF DAY REVIEW", q: "Spam words are the whole deliverability problem, right?",
+      opts: ["No. Reputation, authentication, relevance, complaints, and deception matter more", "Yes. Delete 'free' and you are safe", "Only emojis are dangerous"],
+      correct: 0, tier: "mid", cat: "Copy Risk", why: "modern filters judge the whole sender/message pattern, not a magic word list" },
+    { title: "END OF DAY REVIEW", q: "A fake 'RE:' subject line is...",
+      opts: ["A deceptive open trick that can create legal and spam-filter risk", "Fine if the prospect might reply later", "Required for founder-led sales"],
+      correct: 0, tier: "mid", cat: "Copy Risk", why: "deceptive subjects are not clever. they are evidence" },
+    { title: "END OF DAY REVIEW", q: "Commercial cold email needs...",
+      opts: ["Truthful headers/subject, postal address, opt-out, and honored unsubscribes", "No physical address if it is B2B", "An unsubscribe only after they complain"],
+      correct: 0, tier: "hard", cat: "Compliance", why: "B2B commercial email is not exempt from CAN-SPAM" },
+    { title: "END OF DAY REVIEW", q: "Gmail/Yahoo rules change. Your operating habit should be...",
+      opts: ["Watch sender guidelines and Postmaster data before enforcement hits", "Keep the 2021 playbook forever", "Ask the warmup vendor once per year"],
+      correct: 0, tier: "hard", cat: "Policy Updates", why: "deliverability is an operating system, not a one-time setup" },
+    { title: "END OF DAY REVIEW", q: "Replies are low and complaints are high. First fix...",
+      opts: ["List, offer, and message fit before adding volume", "Five more inboxes", "A louder subject line"],
+      correct: 0, tier: "mid", cat: "Offer Fit", why: "volume amplifies fit. it does not create it" }
   ];
 
   /* ---------- difficulty ---------- */
@@ -753,7 +832,7 @@
   }
   function saveScore(initials, email) {
     var list = getScores();
-    list.push({ n: initials, s: scorePts + meetings * 400 + bossesDown * 1000, d: day, m: diff().key, e: email || "" });
+    list.push({ n: initials, s: scorePts + meetings * 400 + bossesDown * 1000, d: day, m: diff().key, e: email || "", q: totalSkillMisses(), gaps: topSkillMisses(3) });
     list.sort(function (a, b) { return b.s - a.s; });
     try { localStorage.setItem("numbers-game-td-scores", JSON.stringify(list.slice(0, 5))); } catch (e) {}
   }
@@ -823,7 +902,9 @@
   function freshGateOrder() {
     // reshuffle within tiers so easy->hard pacing holds, but the exact
     // question at each step is different every run for repeat players
-    var easy = GATES.slice(0, 4), mid = GATES.slice(4, 7), hard = GATES.slice(7, 10);
+    var easy = GATES.filter(function (g) { return g.tier === "easy"; });
+    var mid = GATES.filter(function (g) { return g.tier === "mid"; });
+    var hard = GATES.filter(function (g) { return g.tier === "hard"; });
     return shuffle(easy).concat(shuffle(mid), shuffle(hard));
   }
   function randomOtherGate(current) {
@@ -834,7 +915,8 @@
   function reset() {
     money = diff().money; quota = diff().quota; quotaMax = diff().quota; day = 0; meetings = 0; sentCount = 0; conversions = 0; burnedCount = 0; oversends = 0; bossesDown = 0;
     domains = []; creeps = []; shots = []; floats = []; selected = null; placing = false;
-    certs = { target: false, pers: false, seq: false };
+    certs = freshCerts();
+    skillMisses = {};
     streak = 0; scorePts = 0; founderCd = 0; replyDrops = []; extraFish = 0; speedMult = 1; gateIdx = 0;
     shuffledGates = freshGateOrder();
     globalRep = 100;
@@ -931,11 +1013,12 @@
             }
             beep(990, 0.2, "square", 0.05);
           } else {
+            trackSkillMiss(quiz);
             if (quiz.key) {
-              quizFeedback = { ok: false, retry: true, txt: "not yet. study the floor. try again." };
+              quizFeedback = { ok: false, retry: true, txt: "not yet. " + (quiz.why || "study the floor") + ". try again." };
             } else {
               money = Math.max(0, money - 50);
-              quizFeedback = { ok: false, retry: true, txt: "wrong. " + quiz.why + " · -$50. try again." };
+              quizFeedback = { ok: false, retry: true, txt: "wrong. " + quiz.why + " -$50. try again." };
             }
             beep(120, 0.3, "sawtooth", 0.05);
           }
@@ -1772,9 +1855,13 @@
       text("BOSSES CONVERTED .. " + bossesDown, W / 2, 364, 13, "#b26bff");
       text("DOMAINS BURNED .... " + burnedCount, W / 2, 386, 13, "#ff5544");
       text("TIMES OVERSENT .... " + oversends, W / 2, 408, 13, "#ffb000");
-      text("CERTS PASSED ...... " + (certs.target + certs.pers + certs.seq | 0), W / 2, 430, 13, "#4de8ff");
+      text("CERTS PASSED ...... " + certCount(), W / 2, 430, 13, "#4de8ff");
+      if (state === "gameover") {
+        text("KNOWLEDGE MISSES .. " + totalSkillMisses(), W / 2, 452, 13, totalSkillMisses() ? "#ffb000" : "#39ff6e");
+        wrapText(knowledgeBreakdown(), W / 2, 474, 390, 10, "#8a9a8a");
+      }
       if (state === "gameover" && stateTimer <= 0)
-        text("TAP FOR THE LEADERBOARD", W / 2, 464, 13, Math.floor(blink * 2) % 2 ? "#ffffff" : "#666");
+        text("TAP FOR THE LEADERBOARD", W / 2, 548, 13, Math.floor(blink * 2) % 2 ? "#ffffff" : "#666");
       if (state === "initials")
         text("ENTER YOUR INITIALS", W / 2, 458, 15, "#ffb000");
       if (state === "email") {
@@ -2045,7 +2132,11 @@
     row(null, "TARGETING — $100 (T badge, needs Cert 1)", "The domain reads the list and stops emailing fish entirely. Filtering ICP from not-ICP is a skill, so you have to prove you have it first.");
     row(null, "PERSONALIZE — $125 (P badge, needs Cert 2)", "25% of sends land a critical hit for triple damage. It said their name, and they felt it.");
     row(null, "SWAP — $100", "Replaces a blacklisted domain. Fresh domain, same everything. You know how it is.");
-    row(null, "CERTIFICATIONS", "Starting day 3, prep phases pose one real outbound question. Answer right and a skill unlocks (Targeting, then Personalization, then a free Auto Follow-Up where every send has a 25% chance to fire again). Answer wrong and you study the floor until tomorrow. The game only hands power to people who demonstrate they know what they're doing. In the booth version, these answers double as qualification data on every lead.", "SKILL CHECKS");
+    row(null, "CERTIFICATIONS", "Starting day 3, prep phases pose real outbound questions. Answer right and skill gates unlock: Targeting, Personalization, Auto Follow-Up, DNS Auth, and Policy Radar. Answer wrong and the game records the weak area. In the booth version, these answers double as qualification data on every lead.", "SKILL CHECKS");
+    row(null, "DNS AUTH", "SPF says which servers may send for the domain. DKIM signs the message. DMARC tells receivers what to do when SPF/DKIM alignment fails. Bulk sender infrastructure also needs valid forward/reverse DNS and TLS. This is the part people skip right before blaming the subject line.", "DELIVERABILITY RULES");
+    row(null, "GMAIL/YAHOO RADAR", "Current bulk-sender rules are operational requirements, not trivia: authenticate mail, align the From domain, keep complaint rates under 0.3% and preferably under 0.1%, monitor Postmaster data, and support one-click unsubscribe for marketing mail at bulk volume.");
+    row(null, "SPAM WORDS", "There is no magic banned-word list. Fake urgency, deceptive RE:/FWD: subjects, all-caps hype, sketchy links, bad targeting, and complaint behavior do more damage than one ordinary word. Rewrite the message, but fix reputation and fit first.");
+    row(null, "CAN-SPAM BASICS", "Commercial email still needs truthful routing/header info, non-deceptive subjects, a valid physical postal address, a clear opt-out path, and opt-outs honored within 10 business days. B2B is not a loophole.");
     row(SPR.mail, "THE EMAILS", "Sent automatically, subject lines included: 'just circling back', 'per my last email'. You never fire them yourself. You just own the machine.");
     row(null, "QUOTA — 10", "Every real prospect who reaches the exit went with the guy. Bosses that escape cost 3. Zero quota is the end of the quarter.");
     row(SPR.mail, "REPLY BUBBLES", "Conversions drop a pulsing reply worth cash for ~2 seconds. Tap it to bank it. CEOs and bosses drop gold ones. Yes, the whole game is about tapping the reply notification. We know.", "THE ACTIVE LAYER");
