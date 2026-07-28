@@ -1,7 +1,7 @@
 {
-  "name": "Norsoft Pipeline Defense",
-  "short_name": "Pipeline Defense",
-  "description": "A Norsoft micro-demo that turns cold outbound infrastructure into a playable arcade system.",
+  "name": "Norsoft Cold Email Ops Arcade",
+  "short_name": "Email Ops",
+  "description": "A Norsoft micro-demo for cold email pros that turns deliverability and outbound infrastructure into a playable arcade system.",
   "id": "./",
   "start_url": "./",
   "scope": "./",

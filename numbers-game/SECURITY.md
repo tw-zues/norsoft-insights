@@ -1,4 +1,4 @@
-# Pipeline Defense Security Notes
+# Cold Email Ops Arcade Security Notes
 
 Last reviewed: 2026-07-28
 
