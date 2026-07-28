@@ -699,6 +699,10 @@
     var easy = GATES.slice(0, 4), mid = GATES.slice(4, 7), hard = GATES.slice(7, 10);
     return shuffle(easy).concat(shuffle(mid), shuffle(hard));
   }
+  function randomOtherGate(current) {
+    var pool = GATES.filter(function (g) { return g !== current; });
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
 
   function reset() {
     money = diff().money; quota = diff().quota; quotaMax = diff().quota; day = 0; meetings = 0; sentCount = 0; conversions = 0; burnedCount = 0; oversends = 0; bossesDown = 0;
@@ -1120,8 +1124,13 @@
       if (quizFeedback) {
         quizT -= dt;
         if (quizT <= 0) {
-          if (quizFeedback.retry) { quizFeedback = null; }
-          else { quiz = null; quizFeedback = null; }
+          if (quizFeedback.retry) {
+            // regular review questions: serve a genuinely different one each
+            // wrong attempt. certifications only have one question each, so
+            // there's nothing to swap to -- same question is unavoidable.
+            if (!quiz.key) quiz = randomOtherGate(quiz);
+            quizFeedback = null;
+          } else { quiz = null; quizFeedback = null; }
         }
       }
       floats.forEach(function (f) { f.t -= dt; f.y -= 24 * dt; });
