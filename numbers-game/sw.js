@@ -1,4 +1,4 @@
-const CACHE_NAME = "norsoft-pipeline-defense-v2";
+const CACHE_NAME = "norsoft-pipeline-defense-v3";
 const APP_ASSETS = [
   "./",
   "./index.html",

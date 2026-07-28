@@ -549,13 +549,13 @@
       reward: "AUTO FOLLOW-UP granted free: every send has a 25% chance to fire a follow-up"
     },
     {
-      key: "auth", day: 9, title: "CERTIFICATION 4: DNS AUTH",
+      key: "auth", day: 9, title: "CERTIFICATION 4: DNS + SMTP",
       q: "What has to be right before bulk Gmail/Yahoo sending gets serious?",
-      opts: ["SPF, DKIM, DMARC, alignment, DNS, and TLS", "A subject line with zero spam words", "A Gmail account duct-taped to a spreadsheet"],
+      opts: ["SPF/DKIM/DMARC + clean SMTP", "Zero spam words", "One Gmail tab"],
       correct: 0,
       cat: "DNS Authentication",
       why: "current bulk sender rules require authentication, alignment, DNS, and secure transport",
-      reward: "DNS AUTH certified: the machine can pass a real sender check"
+      reward: "DNS + SMTP certified: the machine can pass a real sender check"
     },
     {
       key: "policy", day: 11, title: "CERTIFICATION 5: POLICY RADAR",
@@ -651,7 +651,25 @@
       correct: 0, tier: "hard", cat: "Policy Updates", why: "deliverability is an operating system, not a one-time setup" },
     { title: "END OF DAY REVIEW", q: "Replies are low and complaints are high. First fix...",
       opts: ["List, offer, and message fit before adding volume", "Five more inboxes", "A louder subject line"],
-      correct: 0, tier: "mid", cat: "Offer Fit", why: "volume amplifies fit. it does not create it" }
+      correct: 0, tier: "mid", cat: "Offer Fit", why: "volume amplifies fit. it does not create it" },
+    { title: "END OF DAY REVIEW", q: "SMTP 4xx response means...",
+      opts: ["Temporary failure. Retry with backoff", "Permanent hard bounce", "The email was opened"],
+      correct: 0, tier: "mid", cat: "SMTP Diagnostics", why: "4xx is a transient failure. retrying later may work" },
+    { title: "END OF DAY REVIEW", q: "SMTP 5xx response means...",
+      opts: ["Permanent failure. Suppress or fix it", "Try every 10 seconds forever", "The mailbox is warmed up"],
+      correct: 0, tier: "hard", cat: "SMTP Diagnostics", why: "5xx usually needs a list, address, auth, or policy fix before retry" },
+    { title: "END OF DAY REVIEW", q: "A 550 5.1.1 bounce usually means...",
+      opts: ["Bad or nonexistent recipient", "Soft deferral", "Meeting booked"],
+      correct: 0, tier: "mid", cat: "SMTP Diagnostics", why: "address-level hard bounces should hit suppression immediately" },
+    { title: "END OF DAY REVIEW", q: "A wave of 421/451 deferrals says...",
+      opts: ["Throttle and inspect reputation/auth", "Buy more inboxes", "Ignore it until sales calls"],
+      correct: 0, tier: "hard", cat: "SMTP Diagnostics", why: "temporary SMTP deferrals are often the first visible delivery warning" },
+    { title: "END OF DAY REVIEW", q: "Enhanced status 5.7.1 points toward...",
+      opts: ["Security, policy, or authorization refusal", "The prospect is out of office", "The subject line is too short"],
+      correct: 0, tier: "hard", cat: "SMTP Diagnostics", why: "X.7.x codes are policy/security territory, not a normal bounce" },
+    { title: "END OF DAY REVIEW", q: "Bounce handling should separate...",
+      opts: ["Hard bounces, soft bounces, complaints", "Replies from meetings only", "CEOs from founders"],
+      correct: 0, tier: "mid", cat: "SMTP Diagnostics", why: "one bucket hides the difference between retry, suppress, and repair" }
   ];
 
   /* ---------- difficulty ---------- */
@@ -661,9 +679,9 @@
   // for the research: a linear curve, however steep, can't outrun a compounding
   // player economy; a geometric one can.
   var DIFFS = [
-    { key: "INTERN", color: "#39ff6e", quota: 12, money: 350, speed: 0.85, score: 0.75, fishBonus: 0, gateOffset: 0, hpCurve: 1.12, spdCurve: 0.05, spdCap: 1.6, heatMult: 0.8, desc: "someone set up the domains for you" },
-    { key: "SDR", color: "#ffb000", quota: 10, money: 250, speed: 1, score: 1, fishBonus: 0, gateOffset: 3, hpCurve: 1.18, spdCurve: 0.07, spdCap: 1.8, heatMult: 1.0, desc: "the job as posted" },
-    { key: "FOUNDER", color: "#ff5544", quota: 6, money: 200, speed: 1.1, score: 1.5, fishBonus: 1, gateOffset: 7, hpCurve: 1.27, spdCurve: 0.11, spdCap: 2.2, heatMult: 1.35, desc: "no budget. the quota is personal" }
+    { key: "INTERN", color: "#39ff6e", quota: 14, money: 430, speed: 0.82, score: 0.75, fishBonus: 0, gateOffset: 0, hpCurve: 1.13, spdCurve: 0.045, spdCap: 1.65, heatMult: 0.75, waveMult: 0.75, waveCurve: 1.025, ceoCap: 5, fishCap: 5, spawnBase: 1.20, spawnAccel: 0.04, spawnMin: 0.55, bountyScale: 1.00, endBonus: 120, costMult: 0.85, repBaseRegen: 6.0, repWarmRegen: 4.0, repCostGrowth: 0.12, heatDecay: 10, heatWarmDecay: 14, rangeBase: 155, rangeStack: 32, stackDmg: 0.75, stackHeatSplit: 0.75, cooling: 10, bossHpMult: 1.15, bossPenalty: 3, founderCd: 7, founderFastCd: 4.5, desc: "someone set up the domains for you" },
+    { key: "SDR", color: "#ffb000", quota: 10, money: 320, speed: 1.00, score: 1, fishBonus: 0, gateOffset: 4, hpCurve: 1.22, spdCurve: 0.075, spdCap: 2.05, heatMult: 1.05, waveMult: 0.90, waveCurve: 1.045, ceoCap: 7, fishCap: 6, spawnBase: 1.05, spawnAccel: 0.055, spawnMin: 0.40, bountyScale: 0.85, endBonus: 90, costMult: 0.95, repBaseRegen: 5.0, repWarmRegen: 3.2, repCostGrowth: 0.20, heatDecay: 9.5, heatWarmDecay: 13, rangeBase: 145, rangeStack: 25, stackDmg: 0.60, stackHeatSplit: 0.50, cooling: 12, bossHpMult: 1.35, bossPenalty: 3, founderCd: 8, founderFastCd: 5, desc: "the job as posted" },
+    { key: "FOUNDER", color: "#ff5544", quota: 8, money: 420, speed: 1.12, score: 1.5, fishBonus: 1, gateOffset: 14, hpCurve: 1.35, spdCurve: 0.12, spdCap: 2.75, heatMult: 1.55, waveMult: 0.65, waveCurve: 1.16, ceoCap: 9, fishCap: 8, spawnBase: 0.95, spawnAccel: 0.07, spawnMin: 0.26, bountyScale: 0.60, endBonus: 70, costMult: 1.10, repBaseRegen: 3.5, repWarmRegen: 1.8, repCostGrowth: 0.35, heatDecay: 8, heatWarmDecay: 11, rangeBase: 128, rangeStack: 18, stackDmg: 0.45, stackHeatSplit: 0.30, cooling: 16, bossHpMult: 1.65, bossPenalty: 4, founderCd: 10, founderFastCd: 7, desc: "no budget. the quota is personal" }
   ];
   var diffIdx = 1;
   function diff() { return DIFFS[diffIdx]; }
@@ -679,6 +697,21 @@
     if (d <= 13) return 0.55;
     if (d <= 17) return 0.40;
     return 0.30;
+  }
+  function costOf(key) {
+    return Math.max(5, Math.round((COST[key] * (diff().costMult || 1)) / 5) * 5);
+  }
+  function stackCostOf(d) {
+    return costOf("domain") * (d.stack + 1);
+  }
+  function maxInboxes(d) {
+    return d.stack * 3;
+  }
+  function stackDamageOf(d) {
+    return 1 + (d.stack - 1) * (diff().stackDmg || 1);
+  }
+  function stackHeatDivisor(d) {
+    return 1 + (d.stack - 1) * (diff().stackHeatSplit || 1);
   }
   function menuRect(i) { return { x: W / 2 - 130, y: 296 + i * 56, w: 260, h: 42 }; }
 
@@ -710,10 +743,10 @@
   var CARDS = [
     { t: "CAFFEINE", d: "all inboxes send 25% faster today", f: function () { todayMods.rate = 0.8; } },
     { t: "DELIVERABILITY CONSULTANT", d: "+20 rep on every domain. he said the thing about subdomains", f: function () { domains.forEach(function (d) { if (!d.burned) d.rep = Math.min(100, d.rep + 20); }); } },
-    { t: "VERIFIED LIST", d: "+$100 now. some of it bounced anyway", f: function () { money += 100; } },
+    { t: "VERIFIED LIST", d: "cash now. some of it bounced anyway", f: function () { money += Math.round(100 * (diff().bountyScale || 1)); } },
     { t: "SCRAPED LIST", d: "+$200 now. +2 fish tomorrow. you knew what it was", f: function () { money += 200; extraFish += 2; } },
     { t: "SPINTAX", d: "crits splash 1 damage to a nearby prospect. permanent", f: function () { perm.spintax = true; } },
-    { t: "SECOND MONITOR", d: "founder send cooldown 8s becomes 5s. permanent", f: function () { perm.founderFast = true; } },
+    { t: "SECOND MONITOR", d: "founder send cooldown gets shorter. permanent", f: function () { perm.founderFast = true; } },
     { t: "HOLIDAY WEEKEND", d: "prospects walk 20% slower today. they are 'out of office'", f: function () { todayMods.speed = 0.8; } },
     { t: "QUOTA PRESSURE", d: "kills score x1.5 today. quota -1. leadership sends their regards", f: function () { todayMods.score = 1.5; if (quota > 1) { quota--; quotaFlash = 0.8; floatText(W - 40, 44, "-1", "#ff5544", 1.2, 13); } } },
     { t: "AN INTERN", d: "reply bubbles worth double today. he is 'learning the ropes'", f: function () { todayMods.reply = 2; } }
@@ -758,7 +791,12 @@
 
   function buildDay(n) {
     var q = [];
-    var gates = 4 + Math.round(n * 1.6), ops = 2 + Math.round(n * 1.3), ceos = n >= 2 ? Math.min(6, n - 1) : 0, fish = (n >= 2 ? Math.min(6, n) : 1) + extraFish + diff().fishBonus;
+    var waveScale = (diff().waveMult || 1) * Math.pow(diff().waveCurve || 1, Math.max(0, n - 1));
+    var gates = Math.ceil((4 + n * 1.55) * waveScale);
+    var ops = Math.ceil((2 + n * 1.25) * waveScale);
+    var ceos = n >= 2 ? Math.ceil(Math.min(diff().ceoCap || 6, n - 1) * (0.85 + waveScale * 0.15)) : 0;
+    var baseFish = n < 3 ? 1 : Math.min(diff().fishCap || 6, n) + diff().fishBonus;
+    var fish = Math.ceil((baseFish + extraFish) * Math.max(0.8, waveScale * 0.85));
     extraFish = 0;
     for (var i = 0; i < gates; i++) q.push("gate");
     for (i = 0; i < ops; i++) q.push("ops");
@@ -807,7 +845,7 @@
   }
 
   function endDay() {
-    money += 100;
+    money += Math.round(diff().endBonus || 100);
     dayClearN = day;
     if (day % WIN_DAY === 0) {
       dayClearT = 2.4;
@@ -908,7 +946,9 @@
     return shuffle(easy).concat(shuffle(mid), shuffle(hard));
   }
   function randomOtherGate(current) {
-    var pool = GATES.filter(function (g) { return g !== current; });
+    var start = Math.min(diff().gateOffset || 0, shuffledGates.length - 1);
+    var pool = shuffledGates.slice(start).filter(function (g) { return g !== current; });
+    if (!pool.length) pool = GATES.filter(function (g) { return g !== current; });
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
@@ -927,12 +967,12 @@
   }
 
   var SHOP = [
-    { key: "domain", label: "DOMAIN", cost: COST.domain },
-    { key: "inbox", label: "INBOX", cost: COST.inbox },
-    { key: "warmup", label: "WARMUP", cost: COST.warmup },
-    { key: "target", label: "TARGET", cost: COST.target, cert: "target" },
-    { key: "pers", label: "PERSNL", cost: COST.pers, cert: "pers" },
-    { key: "swap", label: "SWAP", cost: COST.swap }
+    { key: "domain", label: "DOMAIN" },
+    { key: "inbox", label: "INBOX" },
+    { key: "warmup", label: "WARMUP" },
+    { key: "target", label: "TARGET", cert: "target" },
+    { key: "pers", label: "PERSNL", cert: "pers" },
+    { key: "swap", label: "SWAP" }
   ];
   function shopRects() {
     var bw = (W - 24) / SHOP.length;
@@ -1068,7 +1108,7 @@
         domains.forEach(function (d) { if (d.spot === s) host = d; });
         if (host) {
           // stack another domain on the same desk: price scales with the stack
-          var stackCost = COST.domain * (host.stack + 1);
+          var stackCost = stackCostOf(host);
           if (money >= stackCost) {
             money -= stackCost;
             host.stack++;
@@ -1080,8 +1120,9 @@
           return;
         }
         {
-          if (money >= COST.domain) {
-            money -= COST.domain;
+          var domainCost = costOf("domain");
+          if (money >= domainCost) {
+            money -= domainCost;
             var idx = domains.length + 1;
             var dom = { spot: s, x: sp.x, y: sp.y, inboxes: 1, stack: 1, warm: false, pers: false, target: false, rep: 100, burned: false, heat: 0, cooling: 0, promo: 0, bornT: 0.8, name: "yourco" + (idx > 1 ? idx : "") + ".net", cds: [Math.random() * 0.6] };
             domains.push(dom);
@@ -1136,7 +1177,7 @@
             floatText(cc.x, cc.y - 14, "founder cooling", "#8a9a8a");
             return;
           }
-          founderCd = perm.founderFast ? 5 : 8;
+          founderCd = perm.founderFast ? (diff().founderFastCd || 5) : (diff().founderCd || 8);
           if (cc.type === "fish") {
             breakStreak(cc.x, cc.y, "spam complaint");
             floatText(cc.x, cc.y - 14, "you personally emailed a fish", "#8a9a8a");
@@ -1156,8 +1197,9 @@
 
   function shopTap(key) {
     if (key === "domain") {
-      if (money >= COST.domain) { placing = true; selected = null; beep(400, 0.05, "square", 0.03); }
-      else floatText(W / 2, UIY - 16, "need $" + COST.domain, "#ff5544");
+      var domainCost = costOf("domain");
+      if (money >= domainCost) { placing = true; selected = null; beep(400, 0.05, "square", 0.03); }
+      else floatText(W / 2, UIY - 16, "need $" + domainCost, "#ff5544");
       return;
     }
     // locked certs explain themselves even without a selection
@@ -1172,44 +1214,49 @@
     if (!selected) { floatText(W / 2, UIY - 16, "select a domain first", "#8a9a8a"); return; }
     var d = selected;
     if (key === "inbox") {
-      if (d.inboxes >= d.stack * 3) { floatText(d.x, d.y - 30, "location full · stack another domain here", "#8a9a8a"); return; }
-      if (money >= COST.inbox) {
-        money -= COST.inbox; d.inboxes++; d.cds.push(Math.random() * 0.6);
+      var inboxCost = costOf("inbox");
+      if (d.inboxes >= maxInboxes(d)) { floatText(d.x, d.y - 30, "location full · stack another domain here", "#8a9a8a"); return; }
+      if (money >= inboxCost) {
+        money -= inboxCost; d.inboxes++; d.cds.push(Math.random() * 0.6);
         floatText(d.x, d.y - 30, "inbox added", "#4de8ff");
         beep(520, 0.08, "square", 0.04);
-      } else floatText(W / 2, UIY - 16, "need $" + COST.inbox, "#ff5544");
+      } else floatText(W / 2, UIY - 16, "need $" + inboxCost, "#ff5544");
     }
     if (key === "warmup") {
+      var warmupCost = costOf("warmup");
       if (d.warm) { floatText(d.x, d.y - 30, "already warm", "#8a9a8a"); return; }
-      if (money >= COST.warmup) {
-        money -= COST.warmup; d.warm = true;
+      if (money >= warmupCost) {
+        money -= warmupCost; d.warm = true;
         floatText(d.x, d.y - 30, "warming up...", "#4de8ff");
         beep(600, 0.08, "square", 0.04);
-      } else floatText(W / 2, UIY - 16, "need $" + COST.warmup, "#ff5544");
+      } else floatText(W / 2, UIY - 16, "need $" + warmupCost, "#ff5544");
     }
     if (key === "target") {
+      var targetCost = costOf("target");
       if (d.target) { floatText(d.x, d.y - 30, "list already cleaned", "#8a9a8a"); return; }
-      if (money >= COST.target) {
-        money -= COST.target; d.target = true;
+      if (money >= targetCost) {
+        money -= targetCost; d.target = true;
         floatText(d.x, d.y - 30, "the list has been cleaned", "#4de8ff");
         beep(700, 0.08, "square", 0.04);
-      } else floatText(W / 2, UIY - 16, "need $" + COST.target, "#ff5544");
+      } else floatText(W / 2, UIY - 16, "need $" + targetCost, "#ff5544");
     }
     if (key === "pers") {
+      var persCost = costOf("pers");
       if (d.pers) { floatText(d.x, d.y - 30, "already personalized", "#8a9a8a"); return; }
-      if (money >= COST.pers) {
-        money -= COST.pers; d.pers = true;
+      if (money >= persCost) {
+        money -= persCost; d.pers = true;
         floatText(d.x, d.y - 30, "crits enabled. it says their name now", "#39ff6e");
         beep(700, 0.08, "square", 0.04);
-      } else floatText(W / 2, UIY - 16, "need $" + COST.pers, "#ff5544");
+      } else floatText(W / 2, UIY - 16, "need $" + persCost, "#ff5544");
     }
     if (key === "swap") {
+      var swapCost = costOf("swap");
       if (!d.burned) { floatText(d.x, d.y - 30, "not burned (yet)", "#8a9a8a"); return; }
-      if (money >= COST.swap) {
-        money -= COST.swap; d.burned = false; d.rep = 60; d.heat = 0;
+      if (money >= swapCost) {
+        money -= swapCost; d.burned = false; d.rep = 60; d.heat = 0;
         floatText(d.x, d.y - 30, "fresh domain, same everything", "#4de8ff");
         beep(520, 0.1, "square", 0.04);
-      } else floatText(W / 2, UIY - 16, "need $" + COST.swap, "#ff5544");
+      } else floatText(W / 2, UIY - 16, "need $" + swapCost, "#ff5544");
     }
   }
 
@@ -1226,8 +1273,8 @@
       totalInboxes += d.inboxes;
       if (d.warm) warmDomains++;
     });
-    var repCostPerShot = totalInboxes <= 3 ? 1.0 : 1.0 + 0.15 * (totalInboxes - 3);
-    var repRegenPerSec = 6 + 4 * warmDomains;
+    var repCostPerShot = totalInboxes <= 3 ? 1.0 : 1.0 + (diff().repCostGrowth || 0.15) * (totalInboxes - 3);
+    var repRegenPerSec = (diff().repBaseRegen || 6) + (diff().repWarmRegen || 4) * warmDomains;
     globalRep = Math.min(100, globalRep + repRegenPerSec * dt);
     var fireRateMult = Math.max(0.4, Math.min(1.0, 0.4 + 0.6 * (globalRep / 100)));
     if (!netRepTaught && fireRateMult < 0.85) {
@@ -1249,7 +1296,7 @@
         }
         return;
       }
-      var decay = (d.warm ? 14 : 10) * (algoAlive ? 0.5 : 1);
+      var decay = (d.warm ? (diff().heatWarmDecay || 14) : (diff().heatDecay || 10)) * (algoAlive ? 0.5 : 1);
       d.heat = Math.max(0, d.heat - decay * dt);
       if (d.warm && d.rep < 100) d.rep = Math.min(100, d.rep + 2 * dt);
 
@@ -1263,11 +1310,11 @@
             d.cds[i] = rate * todayMods.rate;
             sentCount++;
             globalRep = Math.max(0, globalRep - repCostPerShot);
-            d.heat += ((d.warm ? 4 : 7) / d.stack) * (algoAlive ? 1.5 : 1) * diff().heatMult;
+            d.heat += ((d.warm ? 4 : 7) / stackHeatDivisor(d)) * (algoAlive ? 1.5 : 1) * diff().heatMult;
             var crit = d.pers && Math.random() < 0.25;
             shots.push({
               x: d.x, y: d.y - 12, target: target,
-              dmg: (crit ? 3 : 1) * d.stack, crit: crit, dom: d,
+              dmg: (crit ? 3 : 1) * stackDamageOf(d), crit: crit, dom: d,
               scale: 1 + (d.stack - 1) * 0.5,
               subj: SUBJECTS[subjIdx++ % SUBJECTS.length],
               showSubj: Math.random() < 0.33
@@ -1282,7 +1329,7 @@
             beep(880, 0.03, "square", 0.02);
             if (d.heat >= 100) {
               d.heat = 100;
-              d.cooling = 12;
+              d.cooling = diff().cooling || 12;
               oversends++;
               breakStreak(d.x, d.y - 44, "oversent");
               floatText(d.x, d.y - 30, "OVERSENT. COOLING OFF.", "#ffb000");
@@ -1364,9 +1411,10 @@
         // geometric compounding curve (research-backed): early days feel
         // near-flat, late days accelerate hard — a linear-in-multiplier
         // curve can never keep pace with a compounding player economy
-        var hp = Math.ceil(def.hp * Math.pow(diff().hpCurve, day - 1));
-        if (type === "committee") hp = Math.ceil(24 * 1.3 * Math.pow(diff().hpCurve, day - 1));
-        if (type === "algorithm") hp = Math.ceil(20 * 1.3 * Math.pow(diff().hpCurve, day - 1));
+        var latePressure = 1 + Math.max(0, day - 10) * 0.035;
+        var hp = Math.ceil(def.hp * Math.pow(diff().hpCurve, day - 1) * latePressure);
+        if (type === "committee") hp = Math.ceil(24 * (diff().bossHpMult || 1.3) * Math.pow(diff().hpCurve, day - 1) * latePressure);
+        if (type === "algorithm") hp = Math.ceil(20 * (diff().bossHpMult || 1.3) * Math.pow(diff().hpCurve, day - 1) * latePressure);
         var spdMult = Math.min(diff().spdCap, 1 + (day - 1) * diff().spdCurve);
         var nc = { type: type, hp: hp, maxhp: hp, speed: def.speed * (0.9 + Math.random() * 0.2) * spdMult * todayMods.speed * diff().speed, dist: 0, x: PATH[0][0], y: PATH[0][1], alive: true };
         if (type === "fish" && !fishIntroDone) {
@@ -1375,7 +1423,7 @@
           floatText(nc.x, Math.max(40, nc.y), "THE FISH · DO NOT EMAIL", "#ff5544", 2.5);
         }
         creeps.push(nc);
-        spawnTimer = type === "committee" || type === "algorithm" ? 1.6 : Math.max(0.55, 1.15 - day * 0.05);
+        spawnTimer = type === "committee" || type === "algorithm" ? Math.max(0.9, (diff().spawnBase || 1.15) + 0.35) : Math.max(diff().spawnMin || 0.55, (diff().spawnBase || 1.15) - day * (diff().spawnAccel || 0.05));
       }
     }
 
@@ -1395,10 +1443,10 @@
         if (c.type === "fish") {
           floatText(c.x, c.y - 14, "the fish swims away. correctly.", "#8a9a8a");
         } else if (c.type === "committee" || c.type === "algorithm") {
-          quota -= 3;
+          quota -= diff().bossPenalty || 3;
           quotaFlash = 0.8;
-          floatText(W - 40, 44, "-3", "#ff5544", 1.2, 13);
-          floatText(c.x, c.y - 14, "THE BOSS WALKED. -3 QUOTA", "#ff5544");
+          floatText(W - 40, 44, "-" + (diff().bossPenalty || 3), "#ff5544", 1.2, 13);
+          floatText(c.x, c.y - 14, "THE BOSS WALKED. -" + (diff().bossPenalty || 3) + " QUOTA", "#ff5544");
           beep(90, 0.4, "sawtooth", 0.06);
           if (quota <= 0) { quota = 0; gameOver(); }
         } else {
@@ -1522,11 +1570,11 @@
       conversions++;
       streak++;
       var b = CREEP_DEF[c.type].bounty;
-      money += Math.round(b * bountyMult(day));
+      money += Math.round(b * bountyMult(day) * (diff().bountyScale || 1));
       var pts = Math.round(b * mult() * todayMods.score * diff().score);
       scorePts += pts;
       floatText(c.x, c.y - 14, "+" + pts + " PTS", "#ffb000");
-      replyDrops.push({ x: c.x, y: c.y, val: Math.max(10, Math.round(b * 0.4 * todayMods.reply)), t: 3.2, gold: c.type === "ceo" || c.type === "committee" || c.type === "algorithm" });
+      replyDrops.push({ x: c.x, y: c.y, val: Math.max(10, Math.round(b * 0.4 * todayMods.reply * (diff().bountyScale || 1))), t: 3.2, gold: c.type === "ceo" || c.type === "committee" || c.type === "algorithm" });
       if (c.type === "ceo") { meetings++; floatText(c.x, c.y, "MEETING BOOKED +$" + b, "#39ff6e"); }
       else if (c.type === "committee") {
         meetings += 2; bossesDown++;
@@ -1566,7 +1614,7 @@
     var sc = scale || 1;
     cx.drawImage(img, Math.round(x - (img.width * sc) / 2), Math.round(y - (img.height * sc) / 2), img.width * sc, img.height * sc);
   }
-  function rangeOf(d) { return 150 + (d.stack - 1) * 30; }
+  function rangeOf(d) { return (diff().rangeBase || 150) + (d.stack - 1) * (diff().rangeStack || 30); }
   function wrapText(t, x, y, maxW, size, color) {
     cx.font = "bold " + fs(size) + "px 'Courier New', monospace";
     var words = t.split(" "), line = "", lines = [];
@@ -1600,8 +1648,8 @@
   function drawDomain(d) {
     var img = d.burned ? SPR.compDead : (Math.floor(blink * 4) % 2 ? SPR.compA : SPR.compB);
     drawSprite(img, d.x, d.y);
-    if (d.stack > 1) text("×" + d.stack + " · " + d.inboxes + "/" + d.stack * 3, d.x + 26, d.y + 27, 8, "#4de8ff", "left");
-    if (placing) text("STACK +$" + COST.domain * (d.stack + 1), d.x, d.y - 36, 9, "#4de8ff");
+    if (d.stack > 1) text("×" + d.stack + " · " + d.inboxes + "/" + maxInboxes(d), d.x + 26, d.y + 27, 8, "#4de8ff", "left");
+    if (placing) text("STACK +$" + stackCostOf(d), d.x, d.y - 36, 9, "#4de8ff");
     if (d === selected) {
       cx.lineWidth = 2;
       cx.strokeStyle = "#ffffff";
@@ -1662,7 +1710,7 @@
   }
 
   function domainStatusLine(d) {
-    return d.name + (d.stack > 1 ? " ×" + d.stack : "") + " · INBOX " + d.inboxes + "/" + d.stack * 3 + " · " +
+    return d.name + (d.stack > 1 ? " ×" + d.stack : "") + " · INBOX " + d.inboxes + "/" + maxInboxes(d) + " · " +
       (d.warm ? "W✓" : "W✗") + " " + (d.target ? "T✓" : "T✗") + " " + (d.pers ? "P✓" : "P✗") +
       " · REP " + Math.round(Math.max(0, d.rep)) + "%";
   }
@@ -1681,7 +1729,7 @@
       if (selected.burned) hint = "DOMAIN BLACKLISTED. SWAP TO REVIVE.";
       else { hint = domainStatusLine(selected); hintColor = "#cfe8d2"; }
     } else if (state === "build" && domains.length === 0) {
-      hint = "▼ BUY A DOMAIN ($150) TO BEGIN"; hintColor = "#ffb000";
+      hint = "▼ BUY A DOMAIN ($" + costOf("domain") + ") TO BEGIN"; hintColor = "#ffb000";
     } else if (anyBurned) {
       hint = "A DOMAIN IS BLACKLISTED. TAP IT, THEN SWAP"; hintColor = "#ff5544";
     } else {
@@ -1690,11 +1738,12 @@
     text(hint, W / 2, UIY + 16, 9, hintColor);
     shopRects().forEach(function (rc, i) {
       var s = SHOP[i];
+      var itemCost = costOf(s.key);
       var locked = s.cert && !certs[s.cert];
-      var afford = money >= s.cost && !locked;
+      var afford = money >= itemCost && !locked;
       var owned = false;
       if (selected) {
-        if (s.key === "inbox" && selected.inboxes >= selected.stack * 3) owned = true;
+        if (s.key === "inbox" && selected.inboxes >= maxInboxes(selected)) owned = true;
         if (s.key === "warmup" && selected.warm) owned = true;
         if (s.key === "target" && selected.target) owned = true;
         if (s.key === "pers" && selected.pers) owned = true;
@@ -1708,7 +1757,7 @@
       cx.strokeRect(rc.x + 0.5, rc.y + 0.5, rc.w, rc.h);
       var label = owned ? (s.key === "inbox" ? "FULL" : "OWNED") : s.label;
       text(label, rc.x + rc.w / 2, rc.y + 23, 10, afford ? "#cfe8d2" : "#555");
-      var priceTxt = locked ? (s.cert === "target" ? "CERT 1" : "CERT 2") : "$" + s.cost;
+      var priceTxt = locked ? (s.cert === "target" ? "CERT 1" : "CERT 2") : "$" + itemCost;
       var priceColor = locked ? "#8a9a8a" : owned ? "#3d5544" : afford ? "#39ff6e" : "#555";
       text(priceTxt, rc.x + rc.w / 2, rc.y + 42, 10, priceColor);
     });
@@ -1820,7 +1869,7 @@
       text("A REVIEW QUESTION GATES EVERY DAY. WRONG COSTS $50.", W / 2, 460, 10, "#ffb000");
 
       text("TAP DESK SPACES TO BUILD", W / 2, 506, 10, "#39ff6e");
-      text("TAP PROSPECTS = FOUNDER SEND (3 DMG, COOLDOWN)", W / 2, 528, 10, "#39ff6e");
+      text("TAP PROSPECTS = FOUNDER SEND (3 DMG, MODE COOLDOWN)", W / 2, 528, 10, "#39ff6e");
       text("TAP REPLY BUBBLES TO BANK THE MONEY", W / 2, 550, 10, "#39ff6e");
       text("FULL DETAIL: MENU → THE INDEX", W / 2, 586, 9, "#8a9a8a");
 
@@ -1891,10 +1940,10 @@
       cx.setLineDash([]);
       if (placing) {
         text("+", sp.x, sp.y + 5, 14, "#39ff6e");
-        text("$150", sp.x, sp.y + 26, 9, "#39ff6e");
+        text("$" + costOf("domain"), sp.x, sp.y + 26, 9, "#39ff6e");
         cx.strokeStyle = "rgba(57,255,110,.08)";
         cx.beginPath();
-        cx.arc(sp.x, sp.y, 150, 0, Math.PI * 2);
+        cx.arc(sp.x, sp.y, diff().rangeBase || 150, 0, Math.PI * 2);
         cx.stroke();
       }
     });
@@ -2087,7 +2136,7 @@
         cx.fillStyle = "rgba(0,0,0,.78)";
         cx.fillRect(0, 300, W, 60);
         text("DAY " + dayClearN + " CLEARED", W / 2, 326, 18, "#39ff6e");
-        text("+$100 BUDGET APPROVED", W / 2, 346, 11, "#cfe8d2");
+        text("+$" + (diff().endBonus || 100) + " BUDGET APPROVED", W / 2, 346, 11, "#cfe8d2");
       }
     }
 
@@ -2126,25 +2175,26 @@
     row(SPR.fish, "THE FISH — $0", "Not your ICP. Every email that hits it is a spam complaint against the sending domain. Personalized domains know better. Let it walk.");
     row(SPR.committee, "THE COMMITTEE (boss, day 4)", "A decision that requires seven people. Huge. When it finally converts, it disbands into individual stakeholders you have to close one by one. Escapes cost 3 quota.", "BOSSES (EVERY 4TH DAY)");
     row(SPR.algorithm, "THE ALGORITHM (boss, day 8)", "While it's on the board, all domains heat up 50% faster and it randomly sends one to the Promotions Tab, silencing it. Convert it to restore order. Escapes cost 3 quota.");
-    row(SPR.compA, "DOMAIN — $150", "A little computer with someone typing. Holds up to 3 inboxes that send on their own. Watch its two bars: green is reputation (spam complaints drain it; zero means BLACKLISTED until you SWAP), amber is send heat (too fast means a 12 second cooling-off timer).", "YOUR INFRASTRUCTURE");
-    row(null, "INBOX — $75", "Adds a sender to the selected domain. More volume, more heat.");
-    row(null, "WARMUP — $100 (W badge)", "Faster sends, reputation regen, and heat resistance for that domain. What warmup is actually for.");
-    row(null, "TARGETING — $100 (T badge, needs Cert 1)", "The domain reads the list and stops emailing fish entirely. Filtering ICP from not-ICP is a skill, so you have to prove you have it first.");
-    row(null, "PERSONALIZE — $125 (P badge, needs Cert 2)", "25% of sends land a critical hit for triple damage. It said their name, and they felt it.");
-    row(null, "SWAP — $100", "Replaces a blacklisted domain. Fresh domain, same everything. You know how it is.");
-    row(null, "CERTIFICATIONS", "Starting day 3, prep phases pose real outbound questions. Answer right and skill gates unlock: Targeting, Personalization, Auto Follow-Up, DNS Auth, and Policy Radar. Answer wrong and the game records the weak area. In the booth version, these answers double as qualification data on every lead.", "SKILL CHECKS");
-    row(null, "DNS AUTH", "SPF says which servers may send for the domain. DKIM signs the message. DMARC tells receivers what to do when SPF/DKIM alignment fails. Bulk sender infrastructure also needs valid forward/reverse DNS and TLS. This is the part people skip right before blaming the subject line.", "DELIVERABILITY RULES");
+    row(SPR.compA, "DOMAIN", "A little computer with someone typing. Holds up to 3 inboxes that send on their own. Watch its two bars: green is reputation (spam complaints drain it; zero means BLACKLISTED until you SWAP), amber is send heat. Prices and forgiveness change by difficulty.", "YOUR INFRASTRUCTURE");
+    row(null, "INBOX", "Adds a sender to the selected domain. More volume, more heat, and harder modes make every extra inbox cost more global reputation.");
+    row(null, "WARMUP", "Faster sends, reputation regen, and heat resistance for that domain. What warmup is actually for.");
+    row(null, "TARGETING (T badge, needs Cert 1)", "The domain reads the list and stops emailing fish entirely. Filtering ICP from not-ICP is a skill, so you have to prove you have it first.");
+    row(null, "PERSONALIZE (P badge, needs Cert 2)", "25% of sends land a critical hit for triple damage. It said their name, and they felt it.");
+    row(null, "SWAP", "Replaces a blacklisted domain. Fresh domain, same everything.");
+    row(null, "CERTIFICATIONS", "Starting day 3, prep phases pose real outbound questions. Answer right and skill gates unlock: Targeting, Personalization, Auto Follow-Up, DNS + SMTP, and Policy Radar. Harder modes pull harder questions earlier. Answer wrong and the game records the weak area.", "SKILL CHECKS");
+    row(null, "DNS + SMTP", "SPF says which servers may send for the domain. DKIM signs the message. DMARC tells receivers what to do when SPF/DKIM alignment fails. Bulk sender infrastructure also needs valid forward/reverse DNS, TLS, and sane SMTP bounce handling. This is the part people skip right before blaming the subject line.", "DELIVERABILITY RULES");
     row(null, "GMAIL/YAHOO RADAR", "Current bulk-sender rules are operational requirements, not trivia: authenticate mail, align the From domain, keep complaint rates under 0.3% and preferably under 0.1%, monitor Postmaster data, and support one-click unsubscribe for marketing mail at bulk volume.");
     row(null, "SPAM WORDS", "There is no magic banned-word list. Fake urgency, deceptive RE:/FWD: subjects, all-caps hype, sketchy links, bad targeting, and complaint behavior do more damage than one ordinary word. Rewrite the message, but fix reputation and fit first.");
+    row(null, "SMTP DIAGNOSTICS", "4xx means temporary failure: slow down, retry with backoff, and inspect reputation/auth. 5xx usually means permanent failure: suppress, fix, or stop retrying the same message. Codes like 5.7.1 point toward security, authorization, or policy refusal.");
     row(null, "CAN-SPAM BASICS", "Commercial email still needs truthful routing/header info, non-deceptive subjects, a valid physical postal address, a clear opt-out path, and opt-outs honored within 10 business days. B2B is not a loophole.");
     row(SPR.mail, "THE EMAILS", "Sent automatically, subject lines included: 'just circling back', 'per my last email'. You never fire them yourself. You just own the machine.");
-    row(null, "QUOTA — 10", "Every real prospect who reaches the exit went with the guy. Bosses that escape cost 3. Zero quota is the end of the quarter.");
+    row(null, "QUOTA", "Every real prospect who reaches the exit went with the guy. Boss escapes hit harder on harder modes. Zero quota is the end of the quarter.");
     row(SPR.mail, "REPLY BUBBLES", "Conversions drop a pulsing reply worth cash for ~2 seconds. Tap it to bank it. CEOs and bosses drop gold ones. Yes, the whole game is about tapping the reply notification. We know.", "THE ACTIVE LAYER");
-    row(null, "FOUNDER SEND", "Tap any prospect directly to hit them with a personal email for 3 damage, 8 second cooldown. It comes from the real domain, which is why you can't do it constantly. Tapping a fish resets your streak, because you personally emailed a fish.");
+    row(null, "FOUNDER SEND", "Tap any prospect directly to hit them with a personal email for 3 damage. Cooldown gets longer on harder modes. It comes from the real domain, which is why you can't do it constantly. Tapping a fish resets your streak, because you personally emailed a fish.");
     row(null, "REPLY STREAK", "Consecutive conversions build a score multiplier up to x3. Hitting a fish, oversending, or letting a prospect walk resets it. The leaderboard measures clean aggression, not survival.");
     row(null, "NET REP (global)", "Every inbox on the board shares ONE sending-reputation pool. Past 3 total active inboxes, each send costs more rep, and low rep slows EVERY domain's fire rate at once, not just the newest one. Warmed-up domains regen it faster. This is why real senders spread volume across many domains instead of stacking inboxes on one — buying more firepower stops being free past a certain scale.", "GLOBAL PRESSURE");
     row(null, "BOUNTY TAX", "Kills are worth less as the run goes on: full price through day 5, then 75%, 55%, 40%, and 30% of face value by day 18+. Your economy can't just out-earn the wave forever — the same thing BTD6 does to stop a strong early build from trivializing the back half.");
-    row(null, "DOMAIN STACKING", "In placing mode, tap an occupied desk to stack another domain there. Price scales ($300 for the 2nd, $450 for the 3rd...): +3 inbox capacity, bigger emails that hit harder (damage x stack), +30 range per stack, and send heat spreads across the stack, which is literally why real senders split volume across domains. The catch: one shared reputation, so a blacklist takes the whole tower down.", "QUALITY OF LIFE");
+    row(null, "DOMAIN STACKING", "In placing mode, tap an occupied desk to stack another domain there. Price scales by mode. Stacks add inbox capacity, range, and damage, but hard modes reduce the free lunch: heat and global reputation still catch up.", "QUALITY OF LIFE");
     row(null, "SPEED TOGGLE (▶▶)", "Bottom-right chip during waves cycles x1, x2, x3 game speed. For when you have built the machine and just want to watch it print.");
     row(null, "THE LEADERBOARD EMAIL", "Email is optional. In this public version the leaderboard stays on your device; if Norsoft wires it to a CRM later, the page should say that plainly.", "LEAD CAPTURE");
   })();
