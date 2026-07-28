@@ -622,7 +622,7 @@
   }
   function saveScore(initials, email) {
     var list = getScores();
-    list.push({ n: initials, s: scorePts + meetings * 400 + bossesDown * 1000, d: day, e: email || "" });
+    list.push({ n: initials, s: scorePts + meetings * 400 + bossesDown * 1000, d: day, m: diff().key, e: email || "" });
     list.sort(function (a, b) { return b.s - a.s; });
     try { localStorage.setItem("numbers-game-td-scores", JSON.stringify(list.slice(0, 5))); } catch (e) {}
   }
@@ -1609,7 +1609,7 @@
         text("the quota remains unmet.", W / 2, 224, 12, "#8a9a8a");
       } else {
         for (var bi = 0; bi < list2.length; bi++)
-          text((bi + 1) + ". " + list2[bi].n + "  " + list2[bi].s + " pts  (day " + list2[bi].d + ")", W / 2, 180 + bi * 34, 13, bi === 0 ? "#39ff6e" : "#cfe8d2");
+          text((bi + 1) + ". " + list2[bi].n + "  " + list2[bi].s + " pts  (day " + list2[bi].d + ", " + (list2[bi].m || "SDR") + ")", W / 2, 180 + bi * 34, 13, bi === 0 ? "#39ff6e" : "#cfe8d2");
       }
       if (Math.floor(blink * 2) % 2) text("TAP ANYWHERE TO GO BACK", W / 2, 636, 12, "#ffffff");
       return;
@@ -1642,7 +1642,7 @@
         text("TOP CLOSERS", W / 2, 458, 16, "#b26bff");
         var list = getScores();
         for (var i = 0; i < list.length; i++)
-          text((i + 1) + ". " + list[i].n + "  " + list[i].s + " pts  (day " + list[i].d + ")", W / 2, 486 + i * 22, 13, i === 0 ? "#39ff6e" : "#cfe8d2");
+          text((i + 1) + ". " + list[i].n + "  " + list[i].s + " pts  (day " + list[i].d + ", " + (list[i].m || "SDR") + ")", W / 2, 486 + i * 22, 13, i === 0 ? "#39ff6e" : "#cfe8d2");
         text("IN THE BOOTH: THIS SCREEN CAPTURES THE LEAD", W / 2, 618, 11, "#8a9a8a");
         if (Math.floor(blink * 2) % 2) text("TAP FOR THE MENU", W / 2, 644, 13, "#ffffff");
       }
