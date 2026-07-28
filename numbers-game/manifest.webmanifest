@@ -1,0 +1,27 @@
+{
+  "name": "Norsoft Pipeline Defense",
+  "short_name": "Pipeline Defense",
+  "description": "A Norsoft micro-demo that turns cold outbound infrastructure into a playable arcade system.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#060707",
+  "theme_color": "#060707",
+  "categories": ["business", "games", "productivity"],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -2,11 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#060707">
+<title>Norsoft Pipeline Defense | Custom Software Micro-Demo</title>
+<meta name="description" content="A Norsoft custom software micro-demo: cold outbound infrastructure turned into a playable arcade system.">
+<link rel="canonical" href="https://tw-zues.github.io/norsoft-insights/numbers-game/">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pipeline Defense">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Norsoft Pipeline Defense">
+<meta property="og:description" content="Cold outbound infrastructure, modeled as an arcade game by Norsoft.">
+<meta property="og:url" content="https://tw-zues.github.io/norsoft-insights/numbers-game/">
+<meta property="og:image" content="https://tw-zues.github.io/norsoft-insights/numbers-game/icon-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Norsoft Pipeline Defense">
+<meta name="twitter:description" content="A tiny proof that Norsoft can turn niche workflow logic into software people remember.">
 </head>
 <body>
-<title>NORSOFT: COLD EMAIL TOWER DEFENSE</title>
 <style>
   :root {
     --phos: #39ff6e;
@@ -58,14 +74,59 @@
     mix-blend-mode: multiply;
   }
   .glow { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 90px rgba(20,255,120,.09); }
-  .under { max-width: 560px; width: 100%; font-size: 13px; line-height: 1.65; color: #91a893; }
+  .under { max-width: 620px; width: 100%; font-size: 13px; line-height: 1.65; color: #91a893; }
   .under b { color: #cfe8d2; }
-  .under .h { letter-spacing: 3px; color: var(--amber); font-weight: bold; margin: 18px 0 8px; }
+  .under .h { letter-spacing: 3px; color: var(--amber); font-weight: bold; margin: 18px 0 8px; text-transform: uppercase; }
   .under p { margin: 0 0 10px; }
-  .mutebtn {
-    font-family: inherit; background: none; border: 1px solid #2b2e31;
-    color: #91a893; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer;
+  .under a { color: var(--phos); text-decoration: none; }
+  .under a:hover { text-decoration: underline; }
+  .under .cta { color: #061008; }
+  .under .ghost { color: #cfe8d2; }
+  .proofline {
+    border-top: 1px solid #1d211d;
+    border-bottom: 1px solid #1d211d;
+    padding: 12px 0;
+    color: #cfe8d2;
   }
+  .cta-row, .pwa-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 8px 13px;
+    border: 1px solid var(--phos);
+    color: #061008;
+    background: var(--phos);
+    border-radius: 6px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-decoration: none;
+  }
+  .ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 8px 13px;
+    border: 1px solid #2b2e31;
+    color: #cfe8d2;
+    background: #101715;
+    border-radius: 6px;
+    font-family: inherit;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .pwa-tools { color: #6f8672; font-size: 12px; }
+  .pwa-tools button[hidden] { display: none; }
   #initials {
     position: absolute; left: 50%; top: 68%;
     transform: translate(-50%, -50%);
@@ -121,12 +182,18 @@
     .marquee .sub { font-size: 9px; letter-spacing: 2px; margin-top: 2px; }
     .cabinet { padding: 6px; border-radius: 10px; }
     canvas#game { max-height: 84vh; }
+    .under { padding: 0 8px; font-size: 12px; }
+    .cta-row, .pwa-tools { align-items: stretch; }
+    .cta, .ghost { width: 100%; }
+  }
+  @media (display-mode: standalone) {
+    .pwa-tools { display: none; }
   }
 </style>
 
 <div class="marquee">
   <div class="title">NORSOFT</div>
-  <div class="sub">COLD EMAIL TOWER DEFENSE · CONCEPT MOCKUP</div>
+  <div class="sub">PIPELINE DEFENSE · CUSTOM SOFTWARE MICRO-DEMO</div>
 </div>
 
 <div class="cabinet">
@@ -135,9 +202,22 @@
     <div class="scanlines"></div>
     <div class="glow"></div>
     <input id="initials" maxlength="3" autocomplete="off" spellcheck="false" aria-label="Enter three initials">
-    <input id="email" type="email" autocomplete="email" spellcheck="false" placeholder="you@company.com" aria-label="Enter email to claim your leaderboard spot">
+    <input id="email" type="email" autocomplete="email" spellcheck="false" placeholder="optional email" aria-label="Optional email for leaderboard follow-up">
   </div>
 </div>
+
+<section class="under" aria-label="About this Norsoft micro-demo">
+  <p class="proofline"><b>We turn niche operating logic into software people can actually use.</b> This tiny arcade game models cold outbound infrastructure: domains, inboxes, warmup, targeting, reputation, replies, and quota pressure.</p>
+  <p>It is intentionally small: one playable workflow, built to show how quickly Norsoft can understand a specific business system and make it concrete.</p>
+  <div class="cta-row">
+    <a class="cta" href="https://norsoft.pipedrive.com/scheduler/jq55RKf3/quick-chat-with-tim" target="_blank" rel="noopener">TALK CUSTOM SOFTWARE</a>
+    <a class="ghost" href="https://norsoft.com" target="_blank" rel="noopener">NORSOFT.COM</a>
+  </div>
+  <div class="pwa-tools" aria-live="polite">
+    <button id="installPwa" class="ghost" type="button" hidden>INSTALL APP</button>
+    <span id="pwaStatus">On mobile, install or add to home screen for the app-style version.</span>
+  </div>
+</section>
 
 <div id="indexModal">
   <div class="idxwrap">
@@ -162,6 +242,53 @@
   cv.height = H * DPR;
   cv.style.aspectRatio = W + " / " + H;
   var UIY = H - 122; // shop bar top
+
+  /* ---------- pwa install ---------- */
+  var installPrompt = null;
+  var installBtn = document.getElementById("installPwa");
+  var pwaStatus = document.getElementById("pwaStatus");
+  var standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+  var isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+  function setPwaStatus(msg) {
+    if (pwaStatus) pwaStatus.textContent = msg;
+  }
+  if (standalone) {
+    setPwaStatus("Running in app mode.");
+  } else if (isiOS) {
+    setPwaStatus("iPhone: Share -> Add to Home Screen for the app-style version.");
+  }
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    installPrompt = e;
+    if (installBtn) installBtn.hidden = false;
+    setPwaStatus("Install this as a standalone phone app.");
+  });
+  if (installBtn) {
+    installBtn.addEventListener("click", function () {
+      if (!installPrompt) {
+        setPwaStatus(isiOS ? "iPhone: Share -> Add to Home Screen." : "Use your browser menu to install this app.");
+        return;
+      }
+      installPrompt.prompt();
+      installPrompt.userChoice.finally(function () {
+        installPrompt = null;
+        installBtn.hidden = true;
+      });
+    });
+  }
+  window.addEventListener("appinstalled", function () {
+    installPrompt = null;
+    if (installBtn) installBtn.hidden = true;
+    setPwaStatus("Installed. Launch it from your home screen.");
+  });
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(function () {
+        setPwaStatus("Install is available from supported mobile browsers after the page is served over HTTPS.");
+      });
+    });
+  }
 
   /* ---------- audio ---------- */
   var AC = null, muted = false;
@@ -1423,10 +1550,15 @@
     cx.fillRect(d.x - 20, d.y + 28, Math.max(0, d.rep) * 0.4, 5);
     if (!d.burned && (d === selected || d.bornT > 0)) {
       var ringA = d.bornT > 0 ? 0.25 + 0.25 * (d.bornT / 0.8) : 0.40;
+      cx.save();
+      cx.beginPath();
+      cx.rect(0, 58, W, UIY - 58);
+      cx.clip();
       cx.strokeStyle = "rgba(57,255,110," + ringA.toFixed(3) + ")";
       cx.beginPath();
       cx.arc(d.x, d.y, rangeOf(d), 0, Math.PI * 2);
       cx.stroke();
+      cx.restore();
     }
   }
 
@@ -1562,9 +1694,9 @@
 
     if (state === "title") {
       text("NORSOFT", W / 2, 150, 34, "#39ff6e");
-      text("COLD EMAIL TOWER DEFENSE", W / 2, 182, 12, "#ffb000");
-      text("THEY DID NOT ASK FOR THESE EMAILS.", W / 2, 232, 12, "#ffffff");
-      text("SEND THEM ANYWAY.", W / 2, 252, 12, "#ffffff");
+      text("PIPELINE DEFENSE", W / 2, 182, 12, "#ffb000");
+      text("IF YOU KNOW WHY THIS IS HARD,", W / 2, 232, 12, "#ffffff");
+      text("YOU ARE THE AUDIENCE.", W / 2, 252, 12, "#ffffff");
 
       var items = ["▶  START RUN", "DIFFICULTY: " + diff().key, "HOW TO PLAY", "THE INDEX", "TOP CLOSERS"];
       items.forEach(function (label, i) {
@@ -1646,8 +1778,8 @@
       if (state === "initials")
         text("ENTER YOUR INITIALS", W / 2, 458, 15, "#ffb000");
       if (state === "email") {
-        text("ENTER EMAIL TO CLAIM YOUR SPOT", W / 2, 458, 14, "#ffb000");
-        text("we will absolutely cold email you.", W / 2, 500, 11, "#8a9a8a");
+        text("OPTIONAL EMAIL FOR FOLLOW-UP", W / 2, 458, 14, "#ffb000");
+        text("leave blank to keep the score local.", W / 2, 500, 11, "#8a9a8a");
         text("(enter with it empty to stay a mystery)", W / 2, 520, 9, "#3d5544");
       }
       if (state === "scores") {
@@ -1655,7 +1787,7 @@
         var list = getScores();
         for (var i = 0; i < list.length; i++)
           text((i + 1) + ". " + list[i].n + "  " + list[i].s + " pts  (day " + list[i].d + ", " + (list[i].m || "SDR") + ")", W / 2, 486 + i * 22, 13, diffColor(list[i].m));
-        text("IN THE BOOTH: THIS SCREEN CAPTURES THE LEAD", W / 2, 618, 11, "#8a9a8a");
+        text("LOCAL SCORE SAVED. CRM HOOK OPTIONAL.", W / 2, 618, 11, "#8a9a8a");
         if (Math.floor(blink * 2) % 2) text("TAP FOR THE MENU", W / 2, 644, 13, "#ffffff");
       }
       return;
@@ -1923,7 +2055,7 @@
     row(null, "BOUNTY TAX", "Kills are worth less as the run goes on: full price through day 5, then 75%, 55%, 40%, and 30% of face value by day 18+. Your economy can't just out-earn the wave forever — the same thing BTD6 does to stop a strong early build from trivializing the back half.");
     row(null, "DOMAIN STACKING", "In placing mode, tap an occupied desk to stack another domain there. Price scales ($300 for the 2nd, $450 for the 3rd...): +3 inbox capacity, bigger emails that hit harder (damage x stack), +30 range per stack, and send heat spreads across the stack, which is literally why real senders split volume across domains. The catch: one shared reputation, so a blacklist takes the whole tower down.", "QUALITY OF LIFE");
     row(null, "SPEED TOGGLE (▶▶)", "Bottom-right chip during waves cycles x1, x2, x3 game speed. For when you have built the machine and just want to watch it print.");
-    row(null, "THE LEADERBOARD EMAIL", "Claiming a leaderboard spot asks for your email, and the game tells you the truth: we will absolutely cold email you. In this mockup it stays on your device; production wires it to a Norsoft endpoint.", "LEAD CAPTURE");
+    row(null, "THE LEADERBOARD EMAIL", "Email is optional. In this public version the leaderboard stays on your device; if Norsoft wires it to a CRM later, the page should say that plainly.", "LEAD CAPTURE");
   })();
 
   /* ---------- loop ---------- */
