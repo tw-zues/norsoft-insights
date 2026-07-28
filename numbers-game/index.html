@@ -480,7 +480,7 @@
   var state = "title"; // title | build | playing | gameover | initials | email | scores
   var money = 250, quota = 10, quotaMax = 10, day = 0, pendingDay = 1, meetings = 0, sentCount = 0, conversions = 0, burnedCount = 0, oversends = 0, bossesDown = 0;
   var quotaFlash = 0, dayClearT = 0, dayClearN = 0, dayT = 0;
-  var fishIntroDone = false, complaintTaught = false;
+  var fishIntroDone = false, complaintTaught = false, netRepTaught = false;
   var domains = [], creeps = [], shots = [], floats = [];
   var spawnQueue = [], spawnTimer = 0;
   var stateTimer = 0, waveCardText = "";
@@ -708,7 +708,7 @@
     shuffledGates = freshGateOrder();
     globalRep = 100;
     quotaFlash = 0; dayClearT = 0; dayT = 0;
-    fishIntroDone = false; complaintTaught = false;
+    fishIntroDone = false; complaintTaught = false; netRepTaught = false;
     perm = { spintax: false, founderFast: false };
     resetTodayMods(); draft = null;
   }
@@ -801,7 +801,7 @@
             beep(990, 0.2, "square", 0.05);
           } else {
             if (quiz.key) {
-              quizFeedback = { ok: false, txt: "Not yet. Study the floor. Same question tomorrow." };
+              quizFeedback = { ok: false, retry: true, txt: "not yet. study the floor. try again." };
             } else {
               money = Math.max(0, money - 50);
               quizFeedback = { ok: false, retry: true, txt: "wrong. " + quiz.why + " · -$50. try again." };
@@ -1016,6 +1016,10 @@
     var repRegenPerSec = 6 + 4 * warmDomains;
     globalRep = Math.min(100, globalRep + repRegenPerSec * dt);
     var fireRateMult = Math.max(0.4, Math.min(1.0, 0.4 + 0.6 * (globalRep / 100)));
+    if (!netRepTaught && fireRateMult < 0.85) {
+      netRepTaught = true;
+      floatText(W / 2, 100, "infrastructure overbuilt — every domain is sending slower now", "#ff5544", 3);
+    }
 
     domains.forEach(function (d) {
       if (d.bornT > 0) d.bornT -= dt;
@@ -1538,16 +1542,9 @@
       cx.fillStyle = "#b26bff";
       cx.fillRect(135, 48, (W - 147) * (boss.hp / boss.maxhp), 8);
     }
-    // global sending reputation: shared throttle across ALL domains.
-    // stack too many inboxes and every domain fires slower, not just the new one.
-    if (state === "playing") {
-      text("NET REP", 12, 69, 9, "#8a9a8a", "left");
-      cx.strokeStyle = "#26221e";
-      cx.strokeRect(54, 62, W - 66, 6);
-      cx.fillStyle = globalRep > 60 ? "#4de8ff" : globalRep > 30 ? "#ffb000" : "#ff5544";
-      cx.fillRect(54, 62, (W - 66) * (globalRep / 100), 6);
-      if (globalRep < 30) text("OVERBUILT — SPREAD THE LOAD", W - 12, 69, 8, "#ff5544", "right");
-    }
+    // Global Sending Reputation still runs (see domainMaintenance) -- it's
+    // just not shown as its own meter anymore, too much HUD to parse at a
+    // glance. It surfaces instead through domains visibly firing slower.
   }
 
   function draw() {
