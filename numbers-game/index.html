@@ -455,12 +455,16 @@
   // for the research: a linear curve, however steep, can't outrun a compounding
   // player economy; a geometric one can.
   var DIFFS = [
-    { key: "INTERN", quota: 12, money: 350, speed: 0.85, score: 0.75, fishBonus: 0, gateOffset: 0, hpCurve: 1.12, spdCurve: 0.05, spdCap: 1.6, heatMult: 0.8, desc: "someone set up the domains for you" },
-    { key: "SDR", quota: 10, money: 250, speed: 1, score: 1, fishBonus: 0, gateOffset: 3, hpCurve: 1.18, spdCurve: 0.07, spdCap: 1.8, heatMult: 1.0, desc: "the job as posted" },
-    { key: "FOUNDER", quota: 6, money: 200, speed: 1.1, score: 1.5, fishBonus: 1, gateOffset: 7, hpCurve: 1.27, spdCurve: 0.11, spdCap: 2.2, heatMult: 1.35, desc: "no budget. the quota is personal" }
+    { key: "INTERN", color: "#39ff6e", quota: 12, money: 350, speed: 0.85, score: 0.75, fishBonus: 0, gateOffset: 0, hpCurve: 1.12, spdCurve: 0.05, spdCap: 1.6, heatMult: 0.8, desc: "someone set up the domains for you" },
+    { key: "SDR", color: "#ffb000", quota: 10, money: 250, speed: 1, score: 1, fishBonus: 0, gateOffset: 3, hpCurve: 1.18, spdCurve: 0.07, spdCap: 1.8, heatMult: 1.0, desc: "the job as posted" },
+    { key: "FOUNDER", color: "#ff5544", quota: 6, money: 200, speed: 1.1, score: 1.5, fishBonus: 1, gateOffset: 7, hpCurve: 1.27, spdCurve: 0.11, spdCap: 2.2, heatMult: 1.35, desc: "no budget. the quota is personal" }
   ];
   var diffIdx = 1;
   function diff() { return DIFFS[diffIdx]; }
+  function diffColor(key) {
+    for (var i = 0; i < DIFFS.length; i++) if (DIFFS[i].key === key) return DIFFS[i].color;
+    return "#8a9a8a";
+  }
   // bounty tax (BTD6-style): kills are worth less as the economy matures,
   // so a good early build can't keep out-earning a wave curve forever
   function bountyMult(d) {
@@ -1560,13 +1564,15 @@
       items.forEach(function (label, i) {
         var mr = menuRect(i);
         var hot = i === 0 && Math.floor(blink * 2) % 2;
+        var diffBtn = i === 1;
+        var lineColor = diffBtn ? diff().color : (i === 0 ? "#39ff6e" : "#cfe8d2");
         cx.fillStyle = hot ? "#183a24" : "#101715";
         cx.fillRect(mr.x, mr.y, mr.w, mr.h);
-        cx.strokeStyle = i === 0 ? "#39ff6e" : "#2c4433";
+        cx.strokeStyle = diffBtn ? diff().color : (i === 0 ? "#39ff6e" : "#2c4433");
         cx.strokeRect(mr.x + 0.5, mr.y + 0.5, mr.w, mr.h);
-        text(label, W / 2, mr.y + 27, 12, i === 0 ? "#39ff6e" : "#cfe8d2");
+        text(label, W / 2, mr.y + 27, 12, lineColor);
       });
-      text(diff().desc + " · x" + diff().score + " pts", W / 2, 600, 9, "#8a9a8a");
+      text(diff().desc + " · x" + diff().score + " pts", W / 2, 600, 9, diff().color);
       var hs = getScores();
       if (hs.length) text("TOP CLOSER: " + hs[0].n + " · DAY " + hs[0].d, W / 2, 626, 11, "#b26bff");
       var sr2 = soundRect();
@@ -1609,7 +1615,7 @@
         text("the quota remains unmet.", W / 2, 224, 12, "#8a9a8a");
       } else {
         for (var bi = 0; bi < list2.length; bi++)
-          text((bi + 1) + ". " + list2[bi].n + "  " + list2[bi].s + " pts  (day " + list2[bi].d + ", " + (list2[bi].m || "SDR") + ")", W / 2, 180 + bi * 34, 13, bi === 0 ? "#39ff6e" : "#cfe8d2");
+          text((bi + 1) + ". " + list2[bi].n + "  " + list2[bi].s + " pts  (day " + list2[bi].d + ", " + (list2[bi].m || "SDR") + ")", W / 2, 180 + bi * 34, 13, diffColor(list2[bi].m));
       }
       if (Math.floor(blink * 2) % 2) text("TAP ANYWHERE TO GO BACK", W / 2, 636, 12, "#ffffff");
       return;
@@ -1619,7 +1625,7 @@
       text(OVER_QUOTA[0], W / 2, 140, 26, "#ff5544");
       text(OVER_QUOTA[1], W / 2, 178, 13, "#cfe8d2");
       text(OVER_QUOTA[2], W / 2, 200, 13, "#cfe8d2");
-      text("MODE .............. " + diff().key, W / 2, 228, 13, "#8a9a8a");
+      text("MODE .............. " + diff().key, W / 2, 228, 13, diff().color);
       text("FINAL SCORE ....... " + (scorePts + meetings * 400 + bossesDown * 1000), W / 2, 252, 15, "#ffb000");
       text("DAYS SURVIVED ..... " + day, W / 2, 276, 13, "#cfe8d2");
       text("EMAILS SENT ....... " + sentCount, W / 2, 298, 13, "#cfe8d2");
@@ -1642,7 +1648,7 @@
         text("TOP CLOSERS", W / 2, 458, 16, "#b26bff");
         var list = getScores();
         for (var i = 0; i < list.length; i++)
-          text((i + 1) + ". " + list[i].n + "  " + list[i].s + " pts  (day " + list[i].d + ", " + (list[i].m || "SDR") + ")", W / 2, 486 + i * 22, 13, i === 0 ? "#39ff6e" : "#cfe8d2");
+          text((i + 1) + ". " + list[i].n + "  " + list[i].s + " pts  (day " + list[i].d + ", " + (list[i].m || "SDR") + ")", W / 2, 486 + i * 22, 13, diffColor(list[i].m));
         text("IN THE BOOTH: THIS SCREEN CAPTURES THE LEAD", W / 2, 618, 11, "#8a9a8a");
         if (Math.floor(blink * 2) % 2) text("TAP FOR THE MENU", W / 2, 644, 13, "#ffffff");
       }
