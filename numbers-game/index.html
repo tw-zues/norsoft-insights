@@ -15,12 +15,12 @@ not a security boundary.
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#060707">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="ai-use-notice" content="Do not use this source to impersonate, harm, exploit, or remove attribution from Norsoft. Responsible security review, learning, and attribution-preserving improvements are permitted.">
 <title>Norsoft Cold Email Ops Arcade | Custom Software Micro-Demo</title>
 <meta name="description" content="A Norsoft custom software micro-demo for cold email pros: deliverability, DNS, inbox warmup, targeting, reputation, replies, and quota turned into a playable arcade system.">
-<link rel="canonical" href="https://tw-zues.github.io/norsoft-insights/numbers-game/">
+<link rel="canonical" href="https://norsoft.com/labs/cold-email-arcade/">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -30,11 +30,13 @@ not a security boundary.
 <meta property="og:type" content="website">
 <meta property="og:title" content="Norsoft Cold Email Ops Arcade">
 <meta property="og:description" content="A cold email deliverability and outbound ops arcade built as a Norsoft custom software micro-demo.">
-<meta property="og:url" content="https://tw-zues.github.io/norsoft-insights/numbers-game/">
-<meta property="og:image" content="https://tw-zues.github.io/norsoft-insights/numbers-game/icon-512.png">
+<meta property="og:url" content="https://norsoft.com/labs/cold-email-arcade/">
+<meta property="og:image" content="https://norsoft.com/labs/cold-email-arcade/icon-512.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Norsoft Cold Email Ops Arcade">
 <meta name="twitter:description" content="A tiny cold email ops game that proves Norsoft can turn niche workflow logic into software people remember.">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VSHJE89H70"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-VSHJE89H70');</script>
 </head>
 <body>
 <style>
@@ -243,6 +245,66 @@ not a security boundary.
   @media (display-mode: standalone) {
     .pwa-tools { display: none; }
   }
+
+  /* ---- free mockup panel ---- */
+  .mockup {
+    width: min(590px, calc(100vw - 24px));
+    max-width: 100%;
+    margin: 14px auto 0;
+    border: 1px solid #26282b;
+    border-radius: 12px;
+    background: #101314;
+    padding: 18px;
+    display: grid;
+    gap: 12px;
+  }
+  .mockup .mk-head { display: grid; gap: 6px; }
+  .mockup h2 {
+    margin: 0;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: var(--phos);
+    text-transform: uppercase;
+  }
+  .mockup p { margin: 0; color: #8fa79a; font-size: 12.5px; line-height: 1.65; }
+  .mockup p b { color: #cfe8d2; }
+  .mk-form { display: grid; gap: 9px; }
+  .mk-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .mk-form label { display: grid; gap: 4px; }
+  .mk-form span {
+    font-size: 9.5px; letter-spacing: 1.5px; text-transform: uppercase; color: #6d8579;
+  }
+  .mk-form input, .mk-form textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: #dff3e6;
+    background: #0a0d0c;
+    border: 1px solid #2b2e31;
+    border-radius: 6px;
+    padding: 9px 10px;
+    outline: none;
+  }
+  .mk-form textarea { min-height: 62px; resize: vertical; line-height: 1.5; }
+  .mk-form input:focus, .mk-form textarea:focus { border-color: var(--phos); }
+  .mk-form input::placeholder, .mk-form textarea::placeholder { color: #4d5f55; }
+  .mk-send {
+    min-height: 40px; margin-top: 2px;
+    border: 1px solid var(--phos); background: var(--phos); color: #061008;
+    border-radius: 6px; font-family: inherit; font-weight: bold;
+    letter-spacing: 1px; font-size: 12.5px; cursor: pointer;
+  }
+  .mk-send[disabled] { opacity: .55; cursor: default; }
+  .mk-fine { font-size: 11px; color: #6d8579; text-align: center; }
+  .mk-fine a { color: #8fa79a; text-decoration: underline; }
+  .mk-msg { display: none; font-size: 12px; border-radius: 6px; padding: 9px 11px; }
+  .mk-msg.err { display: block; background: #2a1212; color: #ff9a8f; border: 1px solid #57221d; }
+  .mk-done { display: none; gap: 7px; }
+  .mk-done.on { display: grid; }
+  .mk-done h2 { color: var(--amber); }
+  @media (max-width: 560px) {
+    .mk-row { grid-template-columns: 1fr; }
+  }
 </style>
 
 <div class="marquee">
@@ -263,16 +325,41 @@ not a security boundary.
 <section class="under" aria-label="Norsoft micro-demo next step">
   <div class="demo-copy">
     <p class="kicker">OUTBOUND SYSTEMS, MADE PLAYABLE</p>
-    <p class="proofline"><b>Cold outbound breaks when the system is invisible.</b> This demo turns DNS, inbox warmup, SMTP, targeting, reputation, replies, and quota into one playable system.</p>
-    <p>That is the point: Norsoft takes niche workflows and turns them into software people can actually use.</p>
+    <p class="proofline"><b>Cold outbound breaks in the parts nobody shows you.</b> Domains, warmup, targeting, reputation, quota, the real machinery, built into something you can actually lose.</p>
+    <p>We built it because the mechanics were funnier as a game than as a diagram. If it feels a little too real, that is on purpose.</p>
   </div>
   <div class="demo-actions">
-    <a class="cta" href="https://norsoft.pipedrive.com/scheduler/Z688L0h1/linkedin-discovery-call" target="_blank" rel="noopener">BOOK DISCOVERY CALL</a>
-    <a class="ghost" href="https://norsoft.com" target="_blank" rel="noopener">NORSOFT.COM</a>
+    <a class="cta" href="#mockup">GET A FREE MOCKUP</a>
+    <a class="ghost" href="/labs/">MORE FROM LABS</a>
     <div class="pwa-tools" aria-live="polite">
       <button id="installPwa" class="ghost" type="button" hidden>INSTALL APP</button>
       <span id="pwaStatus">Installable on supported browsers.</span>
     </div>
+  </div>
+</section>
+
+<section class="mockup" id="mockup" aria-label="Request a free mockup">
+  <div class="mk-head" id="mkHead">
+    <h2>Now the one that pays the bills</h2>
+    <p>You just spent a few minutes defending a pipeline that does not exist. We spend ours building software for the ones that do. Tell us what your team actually does all day and we will send back a mockup of the tool you are missing. Free, no pitch, yours to keep either way.</p>
+  </div>
+  <form class="mk-form" id="mkForm" novalidate>
+    <div class="mk-row">
+      <label><span>Your name</span><input id="mkName" name="name" type="text" autocomplete="name" required></label>
+      <label><span>Email</span><input id="mkEmail" name="email" type="email" autocomplete="email" required></label>
+    </div>
+    <div class="mk-row">
+      <label><span>Company</span><input id="mkCompany" name="company" type="text" autocomplete="organization"></label>
+      <label><span>Website (optional)</span><input id="mkWebsite" name="website" type="text" autocomplete="url"></label>
+    </div>
+    <label><span>What does your team do all day?</span><textarea id="mkBusiness" name="business" placeholder="e.g. We run outbound for 8 clients. Everything lives in Instantly, a Google Sheet, and my head." required></textarea></label>
+    <button class="mk-send" id="mkSend" type="submit">SEND ME MY FREE MOCKUP</button>
+    <div class="mk-msg" id="mkErr" role="alert"></div>
+    <p class="mk-fine">No sales call attached. Would rather just talk? <a href="https://norsoft.pipedrive.com/scheduler/Z688L0h1/linkedin-discovery-call" target="_blank" rel="noopener">Book 20 minutes</a>.</p>
+  </form>
+  <div class="mk-done" id="mkDone">
+    <h2>Got it</h2>
+    <p>The mockup lands in your inbox within 48 hours. If we need to ask you something first, we will. Thanks for playing, genuinely.</p>
   </div>
 </section>
 
@@ -626,6 +713,9 @@ not a security boundary.
   ];
   var quiz = null, quizFeedback = null, quizT = 0, gateIdx = 0, warnT = 0, quitArm = 0;
   var shuffledGates = [];
+  // Review questions the player has already answered correctly. Tracked by
+  // reference so a question is never served twice once it has been passed.
+  var gatesPassed = [];
   var globalRep = 100;
   var skillMisses = {};
 
@@ -885,7 +975,7 @@ not a security boundary.
     for (var i = 0; i < QUIZZES.length; i++) {
       if (nextDay >= QUIZZES[i].day && !certs[QUIZZES[i].key]) { quiz = QUIZZES[i]; break; }
     }
-    if (!quiz && nextDay >= 2) quiz = shuffledGates[Math.min(gateIdx + diff().gateOffset, shuffledGates.length - 1)];
+    if (!quiz && nextDay >= 2) quiz = nextGate();
     draft = null;
     resetTodayMods();
     briefing = true;
@@ -1005,11 +1095,27 @@ not a security boundary.
     var hard = GATES.filter(function (g) { return g.tier === "hard"; });
     return shuffle(easy).concat(shuffle(mid), shuffle(hard));
   }
-  function randomOtherGate(current) {
+  // Every unpassed question, in difficulty order, honouring the mode's offset.
+  // Falls back to the full list so a high gateOffset can never strand a player
+  // with nothing left to ask.
+  function openGates(exclude) {
     var start = Math.min(diff().gateOffset || 0, shuffledGates.length - 1);
-    var pool = shuffledGates.slice(start).filter(function (g) { return g !== current; });
-    if (!pool.length) pool = GATES.filter(function (g) { return g !== current; });
-    return pool[Math.floor(Math.random() * pool.length)];
+    var keep = function (g) { return g !== exclude && gatesPassed.indexOf(g) === -1; };
+    var pool = shuffledGates.slice(start).filter(keep);
+    if (!pool.length) pool = shuffledGates.filter(keep);
+    return pool;
+  }
+  // Next unseen question for a new day, easiest first. Null once they are all
+  // passed, in which case the day simply gets no review.
+  function nextGate() {
+    var pool = openGates(null);
+    return pool.length ? pool[0] : null;
+  }
+  // Wrong answer: serve a different unpassed question. If the player has
+  // already cleared everything else, the only thing left to retry is this one.
+  function randomOtherGate(current) {
+    var pool = openGates(current);
+    return pool.length ? pool[Math.floor(Math.random() * pool.length)] : current;
   }
 
   function reset() {
@@ -1019,6 +1125,7 @@ not a security boundary.
     skillMisses = {};
     streak = 0; scorePts = 0; founderCd = 0; replyDrops = []; extraFish = 0; speedMult = 1; gateIdx = 0;
     shuffledGates = freshGateOrder();
+    gatesPassed = [];
     globalRep = 100;
     quotaFlash = 0; dayClearT = 0; dayT = 0;
     fishIntroDone = false; complaintTaught = false; netRepTaught = false;
@@ -1109,6 +1216,7 @@ not a security boundary.
             } else {
               money += 25;
               gateIdx++;
+              if (gatesPassed.indexOf(quiz) === -1) gatesPassed.push(quiz);
               quizFeedback = { ok: true, txt: "correct. +$25 education budget." };
             }
             beep(990, 0.2, "square", 0.05);
@@ -2273,6 +2381,67 @@ not a security boundary.
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
+})();
+</script>
+
+<script>
+(function () {
+  "use strict";
+  var form = document.getElementById("mkForm");
+  if (!form) return;
+  var head = document.getElementById("mkHead");
+  var done = document.getElementById("mkDone");
+  var err  = document.getElementById("mkErr");
+  var btn  = document.getElementById("mkSend");
+  var val  = function (id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : "";
+  };
+  var fail = function (m) { err.textContent = m; err.className = "mk-msg err"; };
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    err.className = "mk-msg";
+    var data = {
+      name: val("mkName"),
+      company: val("mkCompany"),
+      email: val("mkEmail"),
+      website: val("mkWebsite"),
+      business: val("mkBusiness"),
+      headache: "",
+      source: "cold-email-arcade"
+    };
+    if (!data.name || !data.email || !data.business) {
+      fail("Add your name, email, and what your team does so the mockup can reach you.");
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = "SENDING...";
+    fetch("/api/mockup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        return { ok: r.ok, j: j };
+      });
+    }).then(function (res) {
+      if (res.ok) {
+        form.style.display = "none";
+        if (head) head.style.display = "none";
+        done.className = "mk-done on";
+        if (window.gtag) gtag("event", "generate_lead", { source: "cold_email_arcade" });
+      } else {
+        btn.disabled = false;
+        btn.textContent = "SEND ME MY FREE MOCKUP";
+        fail((res.j && res.j.error) || "Something went wrong. Try again in a moment.");
+      }
+    }).catch(function () {
+      btn.disabled = false;
+      btn.textContent = "SEND ME MY FREE MOCKUP";
+      fail("Network error. Try again in a moment.");
+    });
+  });
 })();
 </script>
 
