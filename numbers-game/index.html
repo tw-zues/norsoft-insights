@@ -946,6 +946,15 @@ not a security boundary.
     floats.push({ x: x, y: y, txt: txt, color: color, t: dur || 1.2, size: size || 11 });
   }
 
+  function bankReplyDrops() {
+    if (!replyDrops.length) return 0;
+    var total = replyDrops.reduce(function (sum, rd) { return sum + rd.val; }, 0);
+    money += total;
+    replyDrops = [];
+    floatText(W / 2, UIY - 28, "REPLIES AUTO-BANKED +$" + total, "#39ff6e", 2.0, 11);
+    return total;
+  }
+
   var CREEP_DEF = {
     gate: { hp: 3, speed: 38, bounty: 28 },
     ops: { hp: 4, speed: 40, bounty: 42 },
@@ -1040,6 +1049,7 @@ not a security boundary.
   }
 
   function endDay() {
+    bankReplyDrops();
     money += Math.round(diff().endBonus || 100);
     dayClearN = day;
     marketShiftText = "";
