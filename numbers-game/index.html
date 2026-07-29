@@ -1365,6 +1365,18 @@ not a security boundary.
 
   function shopTap(key) {
     if (key === "domain") {
+      if (selected && !selected.burned) {
+        var stackCost = stackCostOf(selected);
+        if (money >= stackCost) {
+          money -= stackCost;
+          selected.stack++;
+          floatText(selected.x, selected.y - 36, "domain #" + selected.stack + " stacked", "#4de8ff");
+          beep(520, 0.1, "square", 0.04);
+        } else {
+          floatText(W / 2, UIY - 16, "need $" + stackCost, "#ff5544");
+        }
+        return;
+      }
       var domainCost = costOf("domain");
       if (money >= domainCost) { placing = true; selected = null; beep(400, 0.05, "square", 0.03); }
       else floatText(W / 2, UIY - 16, "need $" + domainCost, "#ff5544");
@@ -1906,7 +1918,7 @@ not a security boundary.
     text(hint, W / 2, UIY + 16, 9, hintColor);
     shopRects().forEach(function (rc, i) {
       var s = SHOP[i];
-      var itemCost = costOf(s.key);
+      var itemCost = s.key === "domain" && selected && !selected.burned ? stackCostOf(selected) : costOf(s.key);
       var locked = s.cert && !certs[s.cert];
       var afford = money >= itemCost && !locked;
       var owned = false;
@@ -1923,7 +1935,7 @@ not a security boundary.
       if (s.key === "swap" && anyBurned && pulse) edge = "#ff5544";
       cx.strokeStyle = edge;
       cx.strokeRect(rc.x + 0.5, rc.y + 0.5, rc.w, rc.h);
-      var label = owned ? (s.key === "inbox" ? "FULL" : "OWNED") : s.label;
+      var label = s.key === "domain" && selected && !selected.burned ? "STACK" : owned ? (s.key === "inbox" ? "FULL" : "OWNED") : s.label;
       text(label, rc.x + rc.w / 2, rc.y + 23, 10, afford ? "#cfe8d2" : "#555");
       var priceTxt = locked ? (s.cert === "target" ? "CERT 1" : "CERT 2") : "$" + itemCost;
       var priceColor = locked ? "#8a9a8a" : owned ? "#3d5544" : afford ? "#39ff6e" : "#555";
