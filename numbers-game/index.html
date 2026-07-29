@@ -620,17 +620,46 @@ not a security boundary.
   // Every WIN_DAY days is just a milestone beat, not an ending.
   var WIN_DAY = 10;
 
-  /* ---------- path & spots ---------- */
-  var PATH = [
-    [56, -20], [56, 120], [400, 120], [400, 250], [80, 250], [80, 380], [400, 380], [400, 510], [180, 510], [180, 596]
+  /* ---------- maps, path & spots ---------- */
+  var MAPS = [
+    {
+      label: "MARKET 1: STARTUP",
+      path: [[56, -20], [56, 120], [400, 120], [400, 250], [80, 250], [80, 380], [400, 380], [400, 510], [180, 510], [180, 596]],
+      spots: [
+        { x: 180, y: 72 }, { x: 320, y: 72 },
+        { x: 150, y: 185 }, { x: 300, y: 185 },
+        { x: 240, y: 315 }, { x: 120, y: 315 },
+        { x: 240, y: 445 }, { x: 340, y: 445 },
+        { x: 80, y: 545 }, { x: 330, y: 560 }
+      ]
+    },
+    {
+      label: "MARKET 2: EXPANSION",
+      path: [[420, -20], [420, 118], [84, 118], [84, 252], [360, 252], [360, 388], [140, 388], [140, 596]],
+      spots: [
+        { x: 240, y: 68 }, { x: 330, y: 68 },
+        { x: 170, y: 190 }, { x: 300, y: 190 },
+        { x: 210, y: 320 }, { x: 420, y: 330 },
+        { x: 70, y: 470 }, { x: 310, y: 520 }
+      ]
+    }
   ];
-  var SEGLEN = [], TOTLEN = 0;
-  (function () {
+  var mapIdx = 0, PATH = [], SPOTS = [], SEGLEN = [], TOTLEN = 0;
+  function currentMap() { return MAPS[mapIdx] || MAPS[0]; }
+  function rebuildPath() {
+    SEGLEN = []; TOTLEN = 0;
     for (var i = 0; i < PATH.length - 1; i++) {
       var l = Math.hypot(PATH[i + 1][0] - PATH[i][0], PATH[i + 1][1] - PATH[i][1]);
       SEGLEN.push(l); TOTLEN += l;
     }
-  })();
+  }
+  function setMap(idx) {
+    mapIdx = ((idx % MAPS.length) + MAPS.length) % MAPS.length;
+    PATH = currentMap().path;
+    SPOTS = currentMap().spots;
+    rebuildPath();
+  }
+  setMap(0);
   function pointAt(dist) {
     var d = dist;
     for (var i = 0; i < SEGLEN.length; i++) {
@@ -645,14 +674,6 @@ not a security boundary.
     }
     return { x: PATH[PATH.length - 1][0], y: PATH[PATH.length - 1][1] };
   }
-
-  var SPOTS = [
-    { x: 180, y: 72 }, { x: 320, y: 72 },
-    { x: 150, y: 185 }, { x: 300, y: 185 },
-    { x: 240, y: 315 }, { x: 120, y: 315 },
-    { x: 240, y: 445 }, { x: 340, y: 445 },
-    { x: 80, y: 545 }, { x: 330, y: 560 }
-  ];
 
   var COST = { domain: 150, inbox: 75, warmup: 100, target: 100, pers: 125, swap: 100 };
   var TARGETING_BAD_FIT_SKIP = 0.85;
@@ -870,7 +891,7 @@ not a security boundary.
   var fishIntroDone = false, complaintTaught = false, netRepTaught = false;
   var domains = [], creeps = [], shots = [], floats = [];
   var spawnQueue = [], spawnTimer = 0;
-  var stateTimer = 0, waveCardText = "";
+  var stateTimer = 0, waveCardText = "", marketShiftText = "";
   var selected = null, placing = false;
   var bubble = null, bubbleTimer = 2, promoTimer = 4;
   var subjIdx = 0;
@@ -961,6 +982,7 @@ not a security boundary.
 
   function cardFor(n) {
     if (n === 1) return "Prospects are walking to your competitor. Build inboxes. Convert them first. Do not email the fish.";
+    if (n > 1 && (n - 1) % WIN_DAY === 0) return "New quarter, new market. Your old infrastructure rolled into budget. Rebuild cleaner.";
     if (isBossDay(n)) {
       return bossTypeFor(n) === "committee"
         ? "THE COMMITTEE wants a demo. All of them. At once."
@@ -992,10 +1014,37 @@ not a security boundary.
     beep(520, 0.1, "square", 0.04);
   }
 
+  function portfolioRolloverBudget() {
+    var value = 0;
+    domains.forEach(function (d) {
+      if (d.burned) value += 30;
+      value += 35 * d.stack;
+      value += 18 * d.inboxes;
+      if (d.warm) value += 35;
+      if (d.target) value += 35;
+      if (d.pers) value += 45;
+    });
+    value += certCount() * 35;
+    return Math.min(900, Math.round(value / 5) * 5);
+  }
+
+  function rotateMarketAfterQuarter(closedDay) {
+    if (closedDay % WIN_DAY !== 0 || MAPS.length < 2) return;
+    var rollover = portfolioRolloverBudget();
+    setMap(Math.floor(closedDay / WIN_DAY) % MAPS.length);
+    domains = []; creeps = []; shots = []; replyDrops = []; floats = [];
+    selected = null; placing = false; bubble = null;
+    globalRep = 100; extraFish = 0;
+    money += rollover;
+    marketShiftText = currentMap().label + " OPENED" + (rollover ? " - $" + rollover + " ROLLOVER" : "");
+  }
+
   function endDay() {
     money += Math.round(diff().endBonus || 100);
     dayClearN = day;
+    marketShiftText = "";
     if (day % WIN_DAY === 0) {
+      rotateMarketAfterQuarter(day);
       dayClearT = 2.4;
       beep(880, 0.15, "square", 0.05);
       beep(1100, 0.2, "square", 0.05);
@@ -1120,6 +1169,7 @@ not a security boundary.
   }
 
   function reset() {
+    setMap(0);
     money = diff().money; quota = diff().quota; quotaMax = diff().quota; day = 0; meetings = 0; sentCount = 0; conversions = 0; burnedCount = 0; oversends = 0; bossesDown = 0;
     domains = []; creeps = []; shots = []; floats = []; selected = null; placing = false;
     certs = freshCerts();
@@ -1128,7 +1178,7 @@ not a security boundary.
     shuffledGates = freshGateOrder();
     gatesPassed = [];
     globalRep = 100;
-    quotaFlash = 0; dayClearT = 0; dayT = 0;
+    quotaFlash = 0; dayClearT = 0; dayT = 0; marketShiftText = "";
     fishIntroDone = false; complaintTaught = false; netRepTaught = false;
     perm = { spintax: false, founderFast: false };
     resetTodayMods(); draft = null;
@@ -1991,6 +2041,7 @@ not a security boundary.
     text("MTGS " + meetings + " · SENT " + sentCount, W - 12, 40, 9, "#8a9a8a", "right");
     text("SCORE " + scorePts, 12, 40, 11, "#cfe8d2", "left");
     if (streak >= 1 && state === "playing") text("STREAK x" + mult().toFixed(1), W / 2, 42, 10, "#ffb000");
+    else text(currentMap().label, W / 2, 42, 9, "#8a9a8a");
     // boss bar
     var boss = creeps.find(function (c) { return c.alive && (c.type === "committee" || c.type === "algorithm"); });
     if (boss) {
@@ -2317,7 +2368,7 @@ not a security boundary.
         cx.fillRect(0, 280, W, 96);
         text("QUARTER " + (dayClearN / WIN_DAY) + " CLOSED", W / 2, 312, 20, "#39ff6e");
         text("You hit your number.", W / 2, 336, 12, "#cfe8d2");
-        text("It does not get easier from here.", W / 2, 358, 11, "#8a9a8a");
+        text(marketShiftText || "It does not get easier from here.", W / 2, 358, 11, "#8a9a8a");
       } else if (dayClearT > 0) {
         cx.fillStyle = "rgba(0,0,0,.78)";
         cx.fillRect(0, 300, W, 60);
@@ -2364,6 +2415,7 @@ not a security boundary.
     row(SPR.fish, "THE FISH — $0", "Not your ICP. Every email that hits it is a spam complaint against the sending domain. Targeting filters most of them, not all. Let it walk.");
     row(SPR.committee, "THE COMMITTEE (boss, day 4)", "A decision that requires seven people. Huge. When it finally converts, it disbands into individual stakeholders you have to close one by one. Escapes cost 3 quota.", "BOSSES (EVERY 4TH DAY)");
     row(SPR.algorithm, "THE ALGORITHM (boss, day 8)", "While it's on the board, all domains heat up 50% faster and it randomly sends one to the Promotions Tab, silencing it. Convert it to restore order. Escapes cost 3 quota.");
+    row(null, "QUARTER TRANSITION", "Every 10 days, the run moves to a fresh market map. Existing infrastructure turns into rollover budget, certifications and score stay, and the board clears so scaling does not become visual soup.");
     row(SPR.compA, "DOMAIN", "A little computer with someone typing. Holds up to 3 inboxes that send on their own. Watch its two bars: green is reputation (spam complaints drain it; zero means BLACKLISTED until you SWAP), amber is send heat. Prices and forgiveness change by difficulty.", "YOUR INFRASTRUCTURE");
     row(null, "INBOX", "Adds a sender to the selected domain. More volume, more heat, and harder modes make every extra inbox cost more global reputation.");
     row(null, "WARMUP", "Faster sends, reputation regen, and heat resistance for that domain. What warmup is actually for.");
