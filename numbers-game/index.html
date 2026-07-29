@@ -882,6 +882,16 @@ not a security boundary.
   function stackHeatDivisor(d) {
     return 1 + (d.stack - 1) * (diff().stackHeatSplit || 1);
   }
+  function mailScaleOf(d) {
+    return Math.min(1.45, 1 + Math.log2(Math.max(1, d.stack)) * 0.18);
+  }
+  function swapCostOf(d) {
+    var mult = 1 + Math.max(0, d.stack - 1) * 0.45 + Math.max(0, d.inboxes - 1) * 0.12;
+    if (d.warm) mult += 0.25;
+    if (d.target) mult += 0.25;
+    if (d.pers) mult += 0.30;
+    return Math.max(5, Math.round((costOf("swap") * mult) / 5) * 5);
+  }
   function menuRect(i) { return { x: W / 2 - 130, y: 296 + i * 56, w: 260, h: 42 }; }
 
   /* ---------- state ---------- */
@@ -1491,8 +1501,8 @@ not a security boundary.
       } else floatText(W / 2, UIY - 16, "need $" + persCost, "#ff5544");
     }
     if (key === "swap") {
-      var swapCost = costOf("swap");
       if (!d.burned) { floatText(d.x, d.y - 30, "not burned (yet)", "#8a9a8a"); return; }
+      var swapCost = swapCostOf(d);
       if (money >= swapCost) {
         money -= swapCost; d.burned = false; d.rep = 60; d.heat = 0;
         floatText(d.x, d.y - 30, "fresh domain, same everything", "#4de8ff");
@@ -1556,7 +1566,7 @@ not a security boundary.
             shots.push({
               x: d.x, y: d.y - 12, target: target,
               dmg: (crit ? 3 : 1) * stackDamageOf(d), crit: crit, dom: d,
-              scale: 1 + (d.stack - 1) * 0.5,
+              scale: mailScaleOf(d),
               subj: SUBJECTS[subjIdx++ % SUBJECTS.length],
               showSubj: Math.random() < 0.33
             });
@@ -1984,7 +1994,11 @@ not a security boundary.
     text(hint, W / 2, UIY + 16, 9, hintColor);
     shopRects().forEach(function (rc, i) {
       var s = SHOP[i];
-      var itemCost = s.key === "domain" && selected && !selected.burned ? stackCostOf(selected) : costOf(s.key);
+      var itemCost = s.key === "domain" && selected && !selected.burned
+        ? stackCostOf(selected)
+        : s.key === "swap" && selected && selected.burned
+          ? swapCostOf(selected)
+          : costOf(s.key);
       var locked = s.cert && !certs[s.cert];
       var afford = money >= itemCost && !locked;
       var owned = false;
@@ -2431,21 +2445,21 @@ not a security boundary.
     row(null, "WARMUP", "Faster sends, reputation regen, and heat resistance for that domain. What warmup is actually for.");
     row(null, "TARGETING (T badge, needs Cert 1)", "The domain reads the list and filters most bad-fit contacts. It lowers complaint risk; it does not make the list perfect.");
     row(null, "PERSONALIZE (P badge, needs Cert 2)", "25% of sends land a critical hit for triple damage. It said their name, and they felt it.");
-    row(null, "SWAP", "Replaces a blacklisted domain. Fresh domain, same everything.");
+    row(null, "SWAP", "Replaces a blacklisted domain. Fresh domain, same everything, but the cost scales with stack size, inbox count, and installed upgrades.");
     row(null, "CERTIFICATIONS", "Starting day 3, prep phases pose real outbound questions. Answer right and skill gates unlock: Targeting, Personalization, Auto Follow-Up, DNS + SMTP, and Policy Radar. Harder modes pull harder questions earlier. Answer wrong and the game records the weak area.", "SKILL CHECKS");
     row(null, "DNS + SMTP", "SPF says which servers may send for the domain. DKIM signs the message. DMARC tells receivers what to do when SPF/DKIM alignment fails. Bulk sender infrastructure also needs valid forward/reverse DNS, TLS, and sane SMTP bounce handling. This is the part people skip right before blaming the subject line.", "DELIVERABILITY RULES");
     row(null, "GMAIL/YAHOO RADAR", "Current bulk-sender rules are operational requirements, not trivia: authenticate mail, align the From domain, keep complaint rates under 0.3% and preferably under 0.1%, monitor Postmaster data, and support one-click unsubscribe for marketing mail at bulk volume.");
     row(null, "SPAM WORDS", "There is no magic banned-word list. Fake urgency, deceptive RE:/FWD: subjects, all-caps hype, sketchy links, bad targeting, and complaint behavior do more damage than one ordinary word. Rewrite the message, but fix reputation and fit first.");
     row(null, "SMTP DIAGNOSTICS", "4xx means temporary failure: slow down, retry with backoff, and inspect reputation/auth. 5xx usually means permanent failure: suppress, fix, or stop retrying the same message. Codes like 5.7.1 point toward security, authorization, or policy refusal.");
     row(null, "CAN-SPAM BASICS", "Commercial email still needs truthful routing/header info, non-deceptive subjects, a valid physical postal address, a clear opt-out path, and opt-outs honored within 10 business days. B2B is not a loophole.");
-    row(SPR.mail, "THE EMAILS", "Sent automatically, subject lines included: 'just circling back', 'per my last email'. You never fire them yourself. You just own the machine.");
+    row(SPR.mail, "THE EMAILS", "Sent automatically, subject lines included: 'just circling back', 'per my last email'. Large stacks still hit harder, but envelope size is capped so the board stays readable.");
     row(null, "QUOTA", "Every real prospect who reaches the exit went with the guy. Boss escapes hit harder on harder modes. Zero quota is the end of the quarter.");
     row(SPR.mail, "REPLY BUBBLES", "Conversions drop a pulsing reply worth cash for ~2 seconds. Tap it to bank it. CEOs and bosses drop gold ones. Yes, the whole game is about tapping the reply notification. We know.", "THE ACTIVE LAYER");
     row(null, "FOUNDER SEND", "Tap any prospect directly to hit them with a personal email for 3 damage. Cooldown gets longer on harder modes. It comes from the real domain, which is why you can't do it constantly. Tapping a fish resets your streak, because you personally emailed a fish.");
     row(null, "REPLY STREAK", "Consecutive conversions build a score multiplier up to x3. Hitting a fish, oversending, or letting a prospect walk resets it. The leaderboard measures clean aggression, not survival.");
     row(null, "NET REP (global)", "Every inbox on the board shares ONE sending-reputation pool. Past 3 total active inboxes, each send costs more rep, and low rep slows EVERY domain's fire rate at once, not just the newest one. Warmed-up domains regen it faster. This is why real senders spread volume across many domains instead of stacking inboxes on one — buying more firepower stops being free past a certain scale.", "GLOBAL PRESSURE");
     row(null, "BOUNTY TAX", "Kills are worth less as the run goes on: full price through day 5, then 75%, 55%, 40%, and 30% of face value by day 18+. Your economy can't just out-earn the wave forever — the same thing BTD6 does to stop a strong early build from trivializing the back half.");
-    row(null, "DOMAIN STACKING", "In placing mode, tap an occupied desk to stack another domain there. Price scales by mode. Stacks add inbox capacity, range, and damage, but hard modes reduce the free lunch: heat and global reputation still catch up.", "QUALITY OF LIFE");
+    row(null, "DOMAIN STACKING", "In placing mode, tap an occupied desk to stack another domain there. Price scales by mode. Stacks add inbox capacity, range, and damage, but hard modes reduce the free lunch: heat, repair cost, and global reputation still catch up.", "QUALITY OF LIFE");
     row(null, "SPEED TOGGLE (▶▶)", "Bottom-right chip during waves cycles x1, x2, x3 game speed. For when you have built the machine and just want to watch it print.");
     row(null, "THE LEADERBOARD EMAIL", "Email is optional. In this public version the leaderboard stays on your device; if Norsoft wires it to a CRM later, the page should say that plainly.", "LEAD CAPTURE");
   })();
