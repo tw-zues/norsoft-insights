@@ -655,6 +655,7 @@ not a security boundary.
   ];
 
   var COST = { domain: 150, inbox: 75, warmup: 100, target: 100, pers: 125, swap: 100 };
+  var TARGETING_BAD_FIT_SKIP = 0.85;
 
   /* ---------- certifications (skill-gated unlocks) ---------- */
   function freshCerts() {
@@ -672,7 +673,7 @@ not a security boundary.
       correct: 1,
       cat: "Targeting",
       why: "list fit beats volume because bad fit turns into complaints",
-      reward: "TARGETING unlocked: domains can learn to skip the fish"
+      reward: "TARGETING unlocked: domains filter most bad-fit contacts"
     },
     {
       key: "pers", day: 5, title: "CERTIFICATION 2: PERSONALIZATION",
@@ -1416,7 +1417,7 @@ not a security boundary.
       if (d.target) { floatText(d.x, d.y - 30, "list already cleaned", "#8a9a8a"); return; }
       if (money >= targetCost) {
         money -= targetCost; d.target = true;
-        floatText(d.x, d.y - 30, "the list has been cleaned", "#4de8ff");
+        floatText(d.x, d.y - 30, "bad-fit contacts reduced", "#4de8ff");
         beep(700, 0.08, "square", 0.04);
       } else floatText(W / 2, UIY - 16, "need $" + targetCost, "#ff5544");
     }
@@ -1517,7 +1518,7 @@ not a security boundary.
               break;
             }
           } else {
-            d.cds[i] = 0.15;
+            d.cds[i] = d.avoidedBadFit ? rate * todayMods.rate : 0.15;
           }
         }
       }
@@ -1541,12 +1542,17 @@ not a security boundary.
 
   function acquire(d) {
     var best = null, bestDist = 1e9;
+    var avoidedBadFit = false;
     creeps.forEach(function (c) {
       if (!c.alive) return;
-      if (d.target && c.type === "fish") return;
+      if (d.target && c.type === "fish" && Math.random() < TARGETING_BAD_FIT_SKIP) {
+        avoidedBadFit = true;
+        return;
+      }
       var dist = Math.hypot(c.x - d.x, c.y - d.y);
       if (dist < rangeOf(d) && dist < bestDist) { best = c; bestDist = dist; }
     });
+    d.avoidedBadFit = avoidedBadFit && !best;
     return best;
   }
 
@@ -1702,7 +1708,7 @@ not a security boundary.
         floatText(c.x, c.y - 16, "SPAM COMPLAINT -15 REP", "#ff5544");
         if (!complaintTaught) {
           complaintTaught = true;
-          floatText(W / 2, 220, "untargeted domains email everyone · TARGETING (CERT 1) fixes this", "#8a9a8a", 3, 10);
+          floatText(W / 2, 220, "untargeted domains email everyone · TARGETING reduces this", "#8a9a8a", 3, 10);
         }
         beep(120, 0.15, "sawtooth", 0.04);
         c.hp -= s.dmg;
@@ -2042,7 +2048,7 @@ not a security boundary.
       drawSprite(SPR.fish, 70, 290); text("A FISH · NOT ICP · $0 + A COMPLAINT", 105, 295, 11, "#8a9a8a", "left");
 
       text("DOMAINS HOLD 3 INBOXES. INBOXES SEND ON THEIR OWN.", W / 2, 350, 10, "#cfe8d2");
-      text("UNTARGETED DOMAINS WILL EMAIL THE FISH.", W / 2, 372, 10, "#cfe8d2");
+      text("TARGETING REDUCES FISH. IT DOES NOT DELETE THEM.", W / 2, 372, 10, "#cfe8d2");
       text("SEND TOO FAST AND THE DOMAIN COOLS OFF.", W / 2, 394, 10, "#cfe8d2");
       text("STACK DOMAINS ON A DESK: BIGGER SENDS, LONGER REACH.", W / 2, 416, 10, "#cfe8d2");
       text("EVERY 4TH DAY: A BOSS.", W / 2, 438, 10, "#b26bff");
@@ -2355,13 +2361,13 @@ not a security boundary.
     row(SPR.ceo, "CEO — $120", "Fast walker. Converting one books a meeting. The whole point.", "PROSPECTS (THEY WALK. YOU CONVERT.)");
     row(SPR.ops, "OPS MANAGER — $60", "Takes two hits: first one is an open, second one caves.");
     row(SPR.gate, "GATEKEEPER — $40", "Cheap conversion. There are always more.");
-    row(SPR.fish, "THE FISH — $0", "Not your ICP. Every email that hits it is a spam complaint against the sending domain. Personalized domains know better. Let it walk.");
+    row(SPR.fish, "THE FISH — $0", "Not your ICP. Every email that hits it is a spam complaint against the sending domain. Targeting filters most of them, not all. Let it walk.");
     row(SPR.committee, "THE COMMITTEE (boss, day 4)", "A decision that requires seven people. Huge. When it finally converts, it disbands into individual stakeholders you have to close one by one. Escapes cost 3 quota.", "BOSSES (EVERY 4TH DAY)");
     row(SPR.algorithm, "THE ALGORITHM (boss, day 8)", "While it's on the board, all domains heat up 50% faster and it randomly sends one to the Promotions Tab, silencing it. Convert it to restore order. Escapes cost 3 quota.");
     row(SPR.compA, "DOMAIN", "A little computer with someone typing. Holds up to 3 inboxes that send on their own. Watch its two bars: green is reputation (spam complaints drain it; zero means BLACKLISTED until you SWAP), amber is send heat. Prices and forgiveness change by difficulty.", "YOUR INFRASTRUCTURE");
     row(null, "INBOX", "Adds a sender to the selected domain. More volume, more heat, and harder modes make every extra inbox cost more global reputation.");
     row(null, "WARMUP", "Faster sends, reputation regen, and heat resistance for that domain. What warmup is actually for.");
-    row(null, "TARGETING (T badge, needs Cert 1)", "The domain reads the list and stops emailing fish entirely. Filtering ICP from not-ICP is a skill, so you have to prove you have it first.");
+    row(null, "TARGETING (T badge, needs Cert 1)", "The domain reads the list and filters most bad-fit contacts. It lowers complaint risk; it does not make the list perfect.");
     row(null, "PERSONALIZE (P badge, needs Cert 2)", "25% of sends land a critical hit for triple damage. It said their name, and they felt it.");
     row(null, "SWAP", "Replaces a blacklisted domain. Fresh domain, same everything.");
     row(null, "CERTIFICATIONS", "Starting day 3, prep phases pose real outbound questions. Answer right and skill gates unlock: Targeting, Personalization, Auto Follow-Up, DNS + SMTP, and Policy Radar. Harder modes pull harder questions earlier. Answer wrong and the game records the weak area.", "SKILL CHECKS");
