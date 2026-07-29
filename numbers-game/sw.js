@@ -1,4 +1,4 @@
-const CACHE_NAME = "norsoft-cold-email-ops-v11";
+const CACHE_NAME = "norsoft-cold-email-ops-v12";
 const APP_ASSETS = [
   "./",
   "./index.html",
