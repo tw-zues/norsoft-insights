@@ -221,7 +221,7 @@ not a security boundary.
 <section class="under" aria-label="Norsoft AI Slop Cleanup">
   <div class="demo-copy">
     <p class="kicker">SOCIAL FEED ARCADE</p>
-    <p class="proofline"><b>Everyone thinks they can spot AI slop.</b> This game makes that confidence stupid on purpose: smash the obvious slop, spare the actual humans, and watch the feed get faster.</p>
+    <p class="proofline"><b>Everyone thinks they can spot AI slop.</b> Four readable feed screens make that confidence stupid on purpose: smash the obvious slop, spare the actual humans, and watch the feed get faster.</p>
     <p>Norsoft Labs builds small, specific software artifacts that prove taste, speed, and execution.</p>
   </div>
   <div class="demo-actions">
@@ -529,15 +529,10 @@ not a security boundary.
 
   /* ---------- state ---------- */
   var slots = [
-    { x: 48, y: 96, w: 124, h: 126, kind: "phone" },
-    { x: 188, y: 84, w: 128, h: 116, kind: "monitor" },
-    { x: 332, y: 96, w: 104, h: 132, kind: "phone" },
-    { x: 42, y: 258, w: 130, h: 118, kind: "monitor" },
-    { x: 188, y: 246, w: 118, h: 142, kind: "phone" },
-    { x: 330, y: 266, w: 112, h: 116, kind: "monitor" },
-    { x: 56, y: 434, w: 112, h: 126, kind: "phone" },
-    { x: 190, y: 420, w: 132, h: 126, kind: "monitor" },
-    { x: 342, y: 428, w: 104, h: 140, kind: "phone" }
+    { x: 38, y: 92, w: 186, h: 218, kind: "monitor" },
+    { x: 256, y: 92, w: 186, h: 218, kind: "monitor" },
+    { x: 38, y: 354, w: 186, h: 218, kind: "monitor" },
+    { x: 256, y: 354, w: 186, h: 218, kind: "monitor" }
   ];
   var state = "title";
   var score = 0, best = 0, credibility = 3, streak = 0, smashed = 0, spared = 0, escaped = 0;
@@ -586,7 +581,8 @@ not a security boundary.
   }
   function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
   function pickPost() {
-    var slop = Math.random() < 0.57;
+    var slopRate = Math.min(0.7, 0.54 + elapsed * 0.0018);
+    var slop = Math.random() < slopRate;
     var src = slop ? SLOP_POSTS : HUMAN_POSTS;
     var p = src[Math.floor(Math.random() * src.length)];
     return { slop: slop, by: p.by, tag: p.tag, body: p.body, tell: p.tell, burn: p.burn, mock: p.mock };
@@ -605,9 +601,9 @@ not a security boundary.
     }
     beep(90, 0.45, "sawtooth", 0.06);
   }
-  function maxActive() { return Math.min(8, 2 + Math.floor(elapsed / 19)); }
-  function spawnGap() { return Math.max(0.34, 1.25 * Math.pow(0.985, elapsed)); }
-  function postLife() { return Math.max(1.05, 3.15 - elapsed * 0.018); }
+  function maxActive() { return Math.min(4, 1 + Math.floor(elapsed / 24)); }
+  function spawnGap() { return Math.max(0.46, 1.55 * Math.pow(0.987, elapsed)); }
+  function postLife() { return Math.max(1.35, 4.35 - elapsed * 0.02); }
   function spawnOne() {
     if (active.length >= maxActive()) return;
     var free = slots.map(function (_, i) { return i; }).filter(function (i) {
@@ -624,7 +620,7 @@ not a security boundary.
       verdictT: 0,
       color: "#35ff7c",
       line: "",
-      scroll: Math.random() * 18
+      scroll: 0
     });
   }
   function burst(x, y, color) {
@@ -753,7 +749,6 @@ not a security boundary.
     active.forEach(function (a) {
       if (a.mode === "up") {
         a.age += dt;
-        a.scroll += dt * 10;
         if (a.age >= a.life) miss(a);
       } else if (a.mode === "smashed") {
         a.verdictT -= dt;
@@ -765,43 +760,45 @@ not a security boundary.
 
   function drawPost(a, s) {
     var p = a.post;
-    var pad = 8;
+    var pad = 12;
     var up = a.mode === "up";
     var pct = up ? Math.min(1, a.age / Math.max(0.1, a.life)) : 1;
     var warning = p.slop ? "#ffbf2f" : "#52e6ff";
     cx.save();
-    cx.fillStyle = s.kind === "phone" ? "#11131a" : "#12151a";
+    cx.fillStyle = "#12151a";
     cx.fillRect(s.x, s.y, s.w, s.h);
     cx.strokeStyle = up ? "#384c43" : a.color;
     cx.lineWidth = 2;
     cx.strokeRect(s.x + 0.5, s.y + 0.5, s.w, s.h);
-    if (s.kind === "monitor") {
-      cx.fillStyle = "#25252d";
-      cx.fillRect(s.x + s.w / 2 - 14, s.y + s.h, 28, 8);
-      cx.fillRect(s.x + s.w / 2 - 30, s.y + s.h + 8, 60, 5);
-    }
+    cx.fillStyle = "#25252d";
+    cx.fillRect(s.x + s.w / 2 - 18, s.y + s.h, 36, 9);
+    cx.fillRect(s.x + s.w / 2 - 38, s.y + s.h + 9, 76, 6);
     cx.beginPath();
     cx.rect(s.x + 5, s.y + 5, s.w - 10, s.h - 10);
     cx.clip();
     cx.fillStyle = "#07090c";
     cx.fillRect(s.x + 5, s.y + 5, s.w - 10, s.h - 10);
     cx.fillStyle = "#10151a";
-    cx.fillRect(s.x + 9, s.y + 10, s.w - 18, 22);
-    cx.fillStyle = p.slop ? "#3a2512" : "#142632";
-    cx.fillRect(s.x + 13, s.y + 14, 13, 13);
-    text(p.slop ? "A" : "H", s.x + 19, s.y + 24, 9, p.slop ? "#ffbf2f" : "#52e6ff");
-    text(p.by.slice(0, 18), s.x + 31, s.y + 24, 7, "#d8f5dc", "left");
-    text("...", s.x + s.w - 17, s.y + 24, 10, "#8c9c91");
+    cx.fillRect(s.x + 10, s.y + 10, s.w - 20, 38);
+    cx.fillStyle = "#183026";
+    cx.fillRect(s.x + 16, s.y + 16, 22, 22);
+    text("@", s.x + 27, s.y + 31, 12, "#35ff7c");
+    text(p.by.slice(0, 22), s.x + 46, s.y + 27, 9, "#d8f5dc", "left");
+    text("public post", s.x + 46, s.y + 39, 8, "#8c9c91", "left");
+    text("...", s.x + s.w - 22, s.y + 32, 12, "#8c9c91");
     cx.fillStyle = "#161b20";
-    cx.fillRect(s.x + 9, s.y + 36, s.w - 18, 15);
-    text("!! Seems like AI slop", s.x + 14, s.y + 47, 7, warning, "left");
+    cx.fillRect(s.x + 10, s.y + 55, s.w - 20, 22);
+    text("!! Seems like AI slop", s.x + 19, s.y + 70, 10, warning, "left");
     cx.fillStyle = "#090b0e";
-    cx.fillRect(s.x + pad, s.y + 56, s.w - pad * 2, s.h - 72);
-    var lines = wrapLines(p.body, s.w - pad * 2 - 6, 8);
-    var baseY = s.y + 68 - (a.scroll % Math.max(18, lines.length * 10 - (s.h - 78)));
-    for (var i = 0; i < lines.length; i++) {
-      var yy = baseY + i * 10;
-      if (yy > s.y + 60 && yy < s.y + s.h - 12) text(lines[i], s.x + pad + 3, yy, 8, "#d8f5dc", "left");
+    cx.fillRect(s.x + pad, s.y + 88, s.w - pad * 2, s.h - 112);
+    var bodySize = 10;
+    var lineH = 13;
+    var lines = wrapLines(p.body, s.w - pad * 2 - 8, bodySize);
+    var maxLines = Math.floor((s.h - 124) / lineH);
+    for (var i = 0; i < Math.min(lines.length, maxLines); i++) {
+      var line = lines[i];
+      if (i === maxLines - 1 && lines.length > maxLines) line = line.replace(/[,.]$/, "") + "...";
+      text(line, s.x + pad + 4, s.y + 104 + i * lineH, bodySize, "#d8f5dc", "left");
     }
     cx.restore();
 
@@ -812,7 +809,7 @@ not a security boundary.
       cx.moveTo(s.x + 4, s.y + s.h - 5);
       cx.lineTo(s.x + 4 + (s.w - 8) * (1 - pct), s.y + s.h - 5);
       cx.stroke();
-      if (pct > 0.72 && Math.floor(blink * 8) % 2) text("DUCKING", s.x + s.w / 2, s.y - 7, 8, "#ffbf2f");
+      if (pct > 0.72 && Math.floor(blink * 8) % 2) text("LEAVING", s.x + s.w / 2, s.y - 7, 9, "#ffbf2f");
     } else if (a.mode === "smashed") {
       cx.fillStyle = a.color === "#35ff7c" ? "rgba(53,255,124,.16)" : "rgba(255,77,95,.18)";
       cx.fillRect(s.x, s.y, s.w, s.h);
@@ -856,8 +853,8 @@ not a security boundary.
   function drawTitle() {
     text("NORSOFT", W / 2, 128, 34, "#35ff7c");
     text("AI SLOP CLEANUP", W / 2, 162, 16, "#ffbf2f");
-    text("SMASH POSTS THAT DESERVE THE FLAG.", W / 2, 222, 12, "#ffffff");
-    text("SPARE ACTUAL HUMANS.", W / 2, 244, 12, "#52e6ff");
+    text("FOUR FEED SCREENS. READ FAST.", W / 2, 222, 12, "#ffffff");
+    text("SMASH SLOP. SPARE HUMANS.", W / 2, 244, 12, "#52e6ff");
     text("!! SEEMS LIKE AI SLOP", W / 2, 292, 14, "#ffbf2f");
     var bx = W / 2 - 125, by = 342;
     cx.fillStyle = Math.floor(blink * 2) % 2 ? "#1b3b28" : "#11251a";
@@ -937,9 +934,9 @@ not a security boundary.
     cx.fillRect(0, 615, W, 105);
     cx.strokeStyle = "#203037";
     cx.strokeRect(0.5, 615.5, W - 1, 104);
-    text("HAMMER ACTION: !! SEEMS LIKE AI SLOP", W / 2, 642, 11, "#ffbf2f");
+    text("TAP A SCREEN ONLY IF IT DESERVES THE FLAG", W / 2, 642, 11, "#ffbf2f");
     text("GREEN = SLOP REMOVED     RED = HUMAN DESTROYED", W / 2, 666, 10, "#d8f5dc");
-    text("SPARE NORMAL POSTS BY LETTING THEM LEAVE", W / 2, 690, 10, "#52e6ff");
+    text("NORMAL POSTS SCORE WHEN THEY LEAVE UNSMASHED", W / 2, 690, 10, "#52e6ff");
     drawHammer();
   }
 
