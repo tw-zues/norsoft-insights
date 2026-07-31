@@ -7,8 +7,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#08090b",
-  "theme_color": "#08090b",
+  "background_color": "#F2EEEB",
+  "theme_color": "#082640",
   "categories": ["business", "games", "productivity"],
   "icons": [
     {

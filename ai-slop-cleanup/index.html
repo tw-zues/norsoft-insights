@@ -14,12 +14,15 @@ not a security boundary.
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#08090b">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta name="theme-color" content="#082640">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="ai-use-notice" content="Do not use this source to impersonate, harm, exploit, or remove attribution from Norsoft. Responsible security review, learning, and attribution-preserving improvements are permitted.">
 <title>Slop or Not | Norsoft Labs</title>
 <meta name="description" content="A Norsoft Labs satire game: judge anonymized public-feed composites as AI slop or suspiciously formatted human writing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <link rel="canonical" href="https://tw-zues.github.io/norsoft-insights/ai-slop-cleanup/">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
@@ -38,37 +41,46 @@ not a security boundary.
 <body>
 <style>
   :root {
-    --bg: #08090b;
-    --panel: #11161a;
-    --panel2: #171d22;
-    --line: #2b363c;
-    --ink: #f3f6e8;
-    --muted: #97a59d;
-    --dim: #687870;
-    --green: #35ff7c;
-    --cyan: #62dcff;
-    --amber: #ffbf2f;
-    --red: #ff5268;
-    --paper: #ebe4c9;
-    --paperInk: #171716;
+    --porcelain: #F2EEEB;
+    --white: #FFFFFF;
+    --navy: #082640;
+    --timber: #594B39;
+    --terracotta: #C4673A;
+    --terracotta-hover: #b35a31;
+    --sandstone: #D9CEBA;
+    --sandstone-soft: #efe9df;
+    --clay: #8C8070;
+    --cream: #fffdf9;
+    --border: #e5dfda;
+    --bg: var(--porcelain);
+    --panel: var(--white);
+    --panel2: var(--sandstone-soft);
+    --line: var(--border);
+    --ink: var(--navy);
+    --muted: var(--timber);
+    --dim: var(--clay);
+    --green: var(--navy);
+    --cyan: var(--terracotta);
+    --amber: var(--terracotta);
+    --red: var(--terracotta);
+    --paper: var(--cream);
+    --paperInk: var(--navy);
   }
 
   * { box-sizing: border-box; }
 
-  html { background: var(--bg); }
+  html { background: var(--porcelain); }
 
   body {
     margin: 0;
     min-height: 100vh;
     display: grid;
     justify-items: center;
-    gap: 14px;
-    padding: 18px 12px 40px;
-    background:
-      radial-gradient(760px 360px at 50% -10%, rgba(88, 62, 100, .34), transparent 68%),
-      linear-gradient(180deg, #08090b, #0d0c10 62%, #050607);
+    gap: 18px;
+    padding: 22px 12px 48px;
+    background: var(--porcelain);
     color: var(--ink);
-    font: 14px/1.45 "Courier New", ui-monospace, monospace;
+    font: 15px/1.55 "Inter", system-ui, sans-serif;
     letter-spacing: 0;
     overflow-x: hidden;
   }
@@ -77,6 +89,7 @@ not a security boundary.
 
   .brand {
     width: min(920px, 100%);
+    max-width: calc(100vw - 24px);
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 14px;
@@ -84,53 +97,51 @@ not a security boundary.
   }
 
   .wordmark {
-    color: var(--green);
+    color: var(--navy);
+    font-family: "Lora", Georgia, serif;
     font-size: 72px;
-    line-height: .88;
-    font-weight: 900;
+    line-height: .92;
+    font-weight: 500;
     letter-spacing: 0;
-    text-shadow: 0 0 22px rgba(53, 255, 124, .45);
   }
 
   .wordmark span {
-    color: var(--red);
-    text-shadow: 0 0 22px rgba(255, 82, 104, .34);
+    color: var(--terracotta);
   }
 
   .submark {
     margin-top: 6px;
-    color: var(--amber);
-    font-size: 11px;
-    font-weight: 900;
+    color: var(--terracotta);
+    font-size: 13px;
+    font-weight: 700;
     letter-spacing: 0;
   }
 
   .tag {
     justify-self: end;
     border: 1px solid var(--line);
-    background: #11161a;
+    background: var(--white);
     color: var(--muted);
-    border-radius: 6px;
-    padding: 8px 10px;
-    font-size: 11px;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
     text-align: right;
   }
 
   .game {
     width: min(920px, 100%);
-    border: 1px solid #2e3039;
-    border-radius: 8px;
+    max-width: calc(100vw - 24px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
     overflow: hidden;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.045), transparent 72%),
-      var(--panel);
-    box-shadow: 0 32px 80px rgba(0,0,0,.58), inset 0 1px 0 rgba(255,255,255,.05);
+    background: var(--white);
+    box-shadow: 0 18px 48px rgba(8,38,64,.08);
   }
 
   .hud {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    background: #0c1114;
+    background: var(--white);
     border-bottom: 1px solid var(--line);
   }
 
@@ -147,14 +158,14 @@ not a security boundary.
 
   .hud-label {
     color: var(--dim);
-    font-size: 10px;
-    font-weight: 900;
+    font-size: 11px;
+    font-weight: 700;
   }
 
   .hud-value {
     color: var(--ink);
     font-size: 18px;
-    font-weight: 900;
+    font-weight: 700;
   }
 
   .hud-value.good { color: var(--green); }
@@ -165,26 +176,27 @@ not a security boundary.
     display: grid;
     grid-template-columns: 1fr;
     width: min(640px, 100%);
+    min-width: 0;
     min-height: 0;
     margin: 0 auto;
   }
 
   .left {
+    min-width: 0;
     padding: 18px;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto auto;
     gap: 14px;
-    background:
-      repeating-linear-gradient(0deg, rgba(98,220,255,.025) 0 1px, transparent 1px 5px),
-      #101418;
+    background: var(--sandstone-soft);
   }
 
   .right {
+    min-width: 0;
     display: none;
     padding: 18px;
     gap: 14px;
     align-content: start;
-    background: #0b1013;
+    background: var(--white);
     border-top: 1px solid var(--line);
   }
 
@@ -198,8 +210,8 @@ not a security boundary.
     justify-content: space-between;
     gap: 12px;
     color: var(--amber);
-    font-size: 11px;
-    font-weight: 900;
+    font-size: 12px;
+    font-weight: 700;
     letter-spacing: 0;
   }
 
@@ -210,15 +222,16 @@ not a security boundary.
   }
 
   .post-card {
+    min-width: 0;
     min-height: 330px;
     display: grid;
     grid-template-rows: auto minmax(210px, 1fr) auto;
     color: var(--paperInk);
     background: var(--paper);
-    border: 1px solid #776f57;
-    border-radius: 8px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 18px 36px rgba(0,0,0,.27);
+    box-shadow: 0 12px 32px rgba(8,38,64,.08);
   }
 
   .post-card.has-image {
@@ -231,26 +244,26 @@ not a security boundary.
     grid-template-columns: 42px minmax(0, 1fr) auto;
     gap: 10px;
     align-items: center;
-    background: rgba(255,255,255,.24);
-    border-bottom: 1px solid rgba(23,23,22,.16);
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
   }
 
   .avatar {
     width: 42px;
     height: 42px;
-    border-radius: 6px;
-    background: #14231d;
-    color: var(--green);
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--white);
     display: grid;
     place-items: center;
     font-size: 22px;
-    font-weight: 900;
+    font-weight: 700;
   }
 
   .author-wrap { min-width: 0; display: grid; gap: 2px; }
 
   .author {
-    font-weight: 900;
+    font-weight: 700;
     font-size: 14px;
     white-space: nowrap;
     overflow: hidden;
@@ -258,24 +271,26 @@ not a security boundary.
   }
 
   .meta {
-    color: #5f5942;
+    color: var(--clay);
     font-size: 11px;
     font-weight: 800;
   }
 
   .dots {
-    color: #514b39;
+    color: var(--clay);
     font-size: 22px;
     line-height: 1;
   }
 
   .post-body {
     padding: 22px;
+    font-family: "Lora", Georgia, serif;
     font-size: 28px;
-    line-height: 1.28;
-    font-weight: 900;
-    display: flex;
-    align-items: center;
+    line-height: 1.32;
+    font-weight: 600;
+    display: grid;
+    align-content: center;
+    min-width: 0;
     overflow-wrap: anywhere;
   }
 
@@ -300,9 +315,9 @@ not a security boundary.
     width: 100%;
     max-height: 360px;
     object-fit: contain;
-    border: 1px solid rgba(23,23,22,.22);
-    border-radius: 6px;
-    background: #0b0c0e;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--white);
   }
 
   .post-foot {
@@ -310,38 +325,47 @@ not a security boundary.
     justify-content: space-between;
     gap: 10px;
     padding: 12px 14px;
-    border-top: 1px solid rgba(23,23,22,.16);
-    color: #5f5942;
+    border-top: 1px solid var(--border);
+    color: var(--clay);
     font-size: 11px;
-    font-weight: 900;
+    font-weight: 700;
+  }
+
+  .post-foot span {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .choice-row {
+    min-width: 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
 
   .choice {
+    min-width: 0;
     min-height: 86px;
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: 14px;
     cursor: pointer;
-    color: var(--ink);
-    background: #12191d;
+    color: var(--navy);
+    background: var(--white);
     display: grid;
     align-content: center;
     justify-items: center;
     gap: 4px;
     padding: 12px;
-    font-weight: 900;
+    font-weight: 700;
     position: relative;
     overflow: hidden;
   }
 
   .choice strong {
+    font-family: "Lora", Georgia, serif;
     font-size: 34px;
     line-height: 1;
+    font-weight: 600;
   }
 
   .choice span {
@@ -350,19 +374,22 @@ not a security boundary.
   }
 
   .choice.slop {
-    border-color: rgba(255,82,104,.65);
+    border-color: var(--terracotta);
+    background: var(--terracotta);
+    color: var(--white);
   }
 
   .choice.not {
-    border-color: rgba(53,255,124,.62);
+    border-color: rgba(8,38,64,.22);
   }
 
-  .choice.slop strong { color: var(--red); }
-  .choice.not strong { color: var(--green); }
+  .choice.slop strong,
+  .choice.slop span { color: var(--white); }
+  .choice.not strong { color: var(--navy); }
 
   .choice:hover, .choice:focus-visible,
   .small-button:hover, .small-button:focus-visible {
-    outline: 2px solid var(--cyan);
+    outline: 2px solid var(--terracotta);
     outline-offset: 2px;
   }
 
@@ -374,8 +401,8 @@ not a security boundary.
   .reveal {
     display: none;
     border: 1px solid var(--line);
-    border-radius: 8px;
-    background: #0b1013;
+    border-radius: 14px;
+    background: var(--white);
     overflow: hidden;
   }
 
@@ -390,7 +417,7 @@ not a security boundary.
     justify-content: space-between;
     gap: 12px;
     align-items: center;
-    font-weight: 900;
+    font-weight: 700;
   }
 
   .reveal-head.good { color: var(--green); }
@@ -404,40 +431,40 @@ not a security boundary.
 
   .punchline {
     color: var(--ink);
-    font-size: 14px;
-    font-weight: 900;
+    font-size: 15px;
+    font-weight: 700;
   }
 
   .explain {
     color: var(--muted);
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .small-button {
     min-height: 42px;
     border: 1px solid var(--line);
-    border-radius: 6px;
-    color: var(--ink);
-    background: #131a1e;
-    padding: 8px 13px;
+    border-radius: 14px;
+    color: var(--navy);
+    background: var(--white);
+    padding: 9px 15px;
     cursor: pointer;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: 900;
+    font-weight: 700;
   }
 
   .small-button.primary {
-    color: #061109;
-    background: var(--green);
-    border-color: var(--green);
+    color: var(--white);
+    background: var(--terracotta);
+    border-color: var(--terracotta);
   }
 
   .panel {
     border: 1px solid var(--line);
-    border-radius: 8px;
-    background: #11171a;
+    border-radius: 14px;
+    background: var(--white);
     overflow: hidden;
   }
 
@@ -448,8 +475,8 @@ not a security boundary.
     justify-content: space-between;
     gap: 10px;
     color: var(--amber);
-    font-size: 11px;
-    font-weight: 900;
+    font-size: 12px;
+    font-weight: 700;
     letter-spacing: 0;
   }
 
@@ -478,7 +505,7 @@ not a security boundary.
   }
 
   .score-big strong {
-    color: var(--green);
+    color: var(--terracotta);
     font-size: 42px;
     line-height: .95;
   }
@@ -493,15 +520,16 @@ not a security boundary.
   .bar {
     height: 14px;
     border: 1px solid var(--line);
-    background: #06090b;
+    background: var(--porcelain);
     overflow: hidden;
+    border-radius: 999px;
   }
 
   .bar i {
     display: block;
     width: 0;
     height: 100%;
-    background: linear-gradient(90deg, var(--green), var(--amber), var(--red));
+    background: linear-gradient(90deg, var(--sandstone), var(--terracotta));
     transition: width .22s ease;
   }
 
@@ -511,10 +539,10 @@ not a security boundary.
   }
 
   .chip {
-    border: 1px solid #2a363c;
-    background: #0a0f12;
+    border: 1px solid var(--border);
+    background: var(--porcelain);
     color: var(--ink);
-    border-radius: 6px;
+    border-radius: 10px;
     padding: 9px 10px;
     font-size: 12px;
     font-weight: 800;
@@ -536,7 +564,7 @@ not a security boundary.
   }
 
   .log-line {
-    border-bottom: 1px solid rgba(255,255,255,.06);
+    border-bottom: 1px solid var(--border);
     padding-bottom: 8px;
     color: var(--muted);
     font-size: 12px;
@@ -561,22 +589,23 @@ not a security boundary.
   .split-bar {
     height: 14px;
     border: 1px solid var(--line);
-    background: #06090b;
+    background: var(--porcelain);
     overflow: hidden;
+    border-radius: 999px;
   }
 
   .split-bar i {
     display: block;
     width: 50%;
     height: 100%;
-    background: linear-gradient(90deg, var(--red), #bc384d);
+    background: linear-gradient(90deg, var(--terracotta), var(--terracotta-hover));
   }
 
   .end {
     display: none;
     padding: 18px;
     border-top: 1px solid var(--line);
-    background: #0a0e11;
+    background: var(--white);
   }
 
   .end.active {
@@ -592,15 +621,15 @@ not a security boundary.
 
   .end-card {
     border: 1px solid var(--line);
-    border-radius: 6px;
-    background: #11171a;
+    border-radius: 14px;
+    background: var(--porcelain);
     padding: 12px;
     display: grid;
     gap: 4px;
   }
 
   .end-card strong {
-    color: var(--green);
+    color: var(--terracotta);
     font-size: 24px;
   }
 
@@ -612,9 +641,10 @@ not a security boundary.
 
   .community {
     width: min(640px, 100%);
-    border: 1px solid #2e3039;
-    border-radius: 8px;
-    background: #0d1114;
+    max-width: calc(100vw - 24px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--white);
     overflow: hidden;
     display: grid;
     grid-template-columns: 1fr;
@@ -639,7 +669,8 @@ not a security boundary.
 
   .under {
     width: min(920px, 100%);
-    border-top: 1px solid #20242a;
+    max-width: calc(100vw - 24px);
+    border-top: 1px solid var(--border);
     padding-top: 18px;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -687,6 +718,20 @@ not a security boundary.
       padding: 10px 6px 32px;
       gap: 10px;
       font-size: 13px;
+    }
+
+    .brand,
+    .game,
+    .community,
+    .under {
+      width: calc(100vw - 12px);
+      max-width: calc(100vw - 12px);
+    }
+
+    .stage,
+    .post-card,
+    .choice-row {
+      width: 100%;
     }
 
     .brand {
