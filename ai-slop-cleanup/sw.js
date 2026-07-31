@@ -1,4 +1,4 @@
-const CACHE_NAME = "norsoft-ai-slop-cleanup-v14";
+const CACHE_NAME = "norsoft-ai-slop-cleanup-v15";
 const APP_ASSETS = [
   "./",
   "./index.html",

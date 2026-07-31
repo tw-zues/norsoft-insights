@@ -92,47 +92,6 @@ not a security boundary.
 
   button, a { font: inherit; letter-spacing: 0; }
 
-  .brand {
-    width: min(720px, 100%);
-    max-width: calc(100vw - 24px);
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 12px;
-    align-items: center;
-  }
-
-  .wordmark {
-    color: var(--on-dark);
-    font-family: "Lora", Georgia, serif;
-    font-size: 58px;
-    line-height: .92;
-    font-weight: 500;
-    letter-spacing: 0;
-  }
-
-  .wordmark span {
-    color: var(--accent-on-dark);
-  }
-
-  .submark {
-    margin-top: 6px;
-    color: var(--accent-on-dark);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0;
-  }
-
-  .tag {
-    justify-self: end;
-    border: 1px solid var(--on-dark-line);
-    background: rgba(255,255,255,.08);
-    color: var(--on-dark-muted);
-    border-radius: 999px;
-    padding: 7px 12px;
-    font-size: 12px;
-    text-align: right;
-  }
-
   .game {
     width: min(720px, 100%);
     max-width: calc(100vw - 24px);
@@ -142,45 +101,6 @@ not a security boundary.
     background: var(--white);
     box-shadow: 0 18px 44px rgba(0,0,0,.28);
   }
-
-  .hud {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    background: var(--white);
-    border-bottom: 1px solid var(--line);
-  }
-
-  .hud-item:nth-child(2),
-  .hud-item:nth-child(3) {
-    display: none;
-  }
-
-  .hud-item {
-    min-height: 50px;
-    padding: 8px 12px;
-    display: grid;
-    gap: 0;
-    align-content: center;
-    border-right: 1px solid var(--line);
-  }
-
-  .hud-item:last-child { border-right: 0; }
-
-  .hud-label {
-    color: var(--dim);
-    font-size: 11px;
-    font-weight: 700;
-  }
-
-  .hud-value {
-    color: var(--ink);
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .hud-value.good { color: var(--green); }
-  .hud-value.warn { color: var(--amber); }
-  .hud-value.bad { color: var(--red); }
 
   .stage {
     display: grid;
@@ -666,7 +586,6 @@ not a security boundary.
       font-size: 13px;
     }
 
-    .brand,
     .game,
     .community,
     .under {
@@ -678,45 +597,6 @@ not a security boundary.
     .post-card,
     .choice-row {
       width: 100%;
-    }
-
-    .brand {
-      grid-template-columns: 1fr;
-      text-align: center;
-      gap: 8px;
-    }
-
-    .wordmark {
-      font-size: 31px;
-    }
-
-    .tag {
-      display: none;
-      justify-self: center;
-      text-align: center;
-    }
-
-    .submark {
-      font-size: 9px;
-      letter-spacing: 0;
-    }
-
-    .hud {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .hud-item:nth-child(2),
-    .hud-item:nth-child(3) {
-      display: none;
-    }
-
-    .hud-item {
-      min-height: 42px;
-    }
-
-    .hud-item:nth-child(4) { border-right: 1px solid var(--line); }
-    .hud-item:last-child {
-      grid-column: auto;
     }
 
     .left {
@@ -779,23 +659,7 @@ not a security boundary.
   }
 </style>
 
-<header class="brand">
-  <div>
-    <div class="wordmark">SLOP <span>OR</span> NOT</div>
-    <div class="submark">Read it. Judge it. See if your taste survives.</div>
-  </div>
-  <div class="tag">Norsoft Labs micro-demo</div>
-</header>
-
 <main id="game" class="game" aria-label="Slop or Not game">
-  <section id="hud" class="hud" aria-live="polite">
-    <div class="hud-item"><span class="hud-label">SCORE</span><span id="score" class="hud-value good">0</span></div>
-    <div class="hud-item"><span class="hud-label">TASTE</span><span id="taste" class="hud-value good">100%</span></div>
-    <div class="hud-item"><span class="hud-label">MISFIRES</span><span id="lives" class="hud-value">0</span></div>
-    <div class="hud-item"><span class="hud-label">CARD</span><span id="cardCount" class="hud-value">1/15</span></div>
-    <div class="hud-item"><span class="hud-label">STREAK</span><span id="streak" class="hud-value warn">0</span></div>
-  </section>
-
   <section id="stage" class="stage">
     <div class="left">
       <div class="prompt-row">
@@ -1260,7 +1124,7 @@ not a security boundary.
   var queue = [];
   var el = {};
   [
-    "game", "score", "taste", "lives", "cardCount", "streak", "avatar", "author",
+    "game", "avatar", "author",
     "meta", "body", "postCard", "imageWrap", "postImage", "genre", "fakeStats", "slopBtn", "notBtn", "reveal", "revealHead",
     "verdict", "delta", "punchline", "explain", "nextBtn", "slopScore", "slopBar",
     "meterLabel", "stage", "end", "endTitle", "endLine",
@@ -1364,13 +1228,6 @@ not a security boundary.
   function render() {
     var c = state.current;
     if (!c) return;
-    el.score.textContent = state.score;
-    el.taste.textContent = state.taste + "%";
-    el.taste.className = "hud-value " + (state.taste < 45 ? "bad" : state.taste < 72 ? "warn" : "good");
-    el.lives.textContent = state.wrong;
-    el.lives.className = "hud-value " + (state.wrong >= 6 ? "bad" : state.wrong >= 3 ? "warn" : "");
-    el.cardCount.textContent = Math.min(state.index + 1, state.total) + "/" + state.total;
-    el.streak.textContent = state.streak;
     el.avatar.textContent = c.author.slice(0, 1).toUpperCase();
     el.author.textContent = c.author;
     el.meta.textContent = c.meta;
