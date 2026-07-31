@@ -677,45 +677,18 @@ not a security boundary.
     padding-top: 16px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     gap: 14px;
     align-items: start;
     color: var(--on-dark-muted);
-  }
-
-  .under-copy {
-    display: grid;
-    gap: 8px;
-  }
-
-  .under p { margin: 0; overflow-wrap: anywhere; }
-  .under b { color: var(--on-dark); }
-
-  .under-copy {
-    flex: 1 1 380px;
   }
 
   .footer-actions {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: center;
   }
-
-  .pwa-tools {
-    color: var(--on-dark-muted);
-    font-size: 11px;
-    display: none;
-    gap: 6px;
-    justify-items: end;
-    margin-top: 6px;
-  }
-
-  .pwa-tools.active {
-    display: grid;
-  }
-
-  .pwa-tools button[hidden] { display: none; }
 
   .screen-reader {
     position: absolute;
@@ -841,10 +814,6 @@ not a security boundary.
 
     .footer-actions .small-button {
       flex: 1 1 160px;
-    }
-
-    .pwa-tools {
-      justify-items: stretch;
     }
   }
 </style>
@@ -977,20 +946,10 @@ not a security boundary.
   </div>
 </section>
 
-<section class="under" aria-label="Norsoft Labs note">
-  <div class="under-copy">
-    <p><b>This is not an AI detector.</b> It is a tiny joke about turning taste into a button and calling the result truth. The posts are anonymized composites, not real user quotes.</p>
-    <p>Norsoft Labs builds small, specific software artifacts that make weird operating logic concrete.</p>
-  </div>
-  <div>
-    <div class="footer-actions">
-      <a class="small-button primary" href="https://norsoft.com/labs/" target="_blank" rel="noopener">NORSOFT LABS</a>
-      <a class="small-button" href="https://norsoft.com" target="_blank" rel="noopener">NORSOFT.COM</a>
-    </div>
-    <div class="pwa-tools" aria-live="polite">
-      <button id="installPwa" class="small-button" type="button" hidden>INSTALL APP</button>
-      <span id="pwaStatus">Installable on supported browsers.</span>
-    </div>
+<section class="under" aria-label="Norsoft links">
+  <div class="footer-actions">
+    <a class="small-button primary" href="https://norsoft.com/labs/" target="_blank" rel="noopener">NORSOFT LABS</a>
+    <a class="small-button" href="https://norsoft.com" target="_blank" rel="noopener">NORSOFT.COM</a>
   </div>
 </section>
 
@@ -1683,47 +1642,9 @@ not a security boundary.
     }
   });
 
-  var installPrompt = null;
-  var installBtn = document.getElementById("installPwa");
-  var pwaStatus = document.getElementById("pwaStatus");
-  var pwaTools = document.querySelector(".pwa-tools");
-  var standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-  var isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  function setPwaStatus(msg) {
-    if (pwaStatus) pwaStatus.textContent = msg;
-    if (pwaTools) pwaTools.classList.add("active");
-  }
-  if (standalone) setPwaStatus("Running in app mode.");
-  else if (isiOS) setPwaStatus("iPhone: Share -> Add to Home Screen.");
-  window.addEventListener("beforeinstallprompt", function (e) {
-    e.preventDefault();
-    installPrompt = e;
-    if (installBtn) installBtn.hidden = false;
-    setPwaStatus("Ready to install as a standalone app.");
-  });
-  if (installBtn) {
-    installBtn.addEventListener("click", function () {
-      if (!installPrompt) {
-        setPwaStatus(isiOS ? "iPhone: Share -> Add to Home Screen." : "Use browser menu to install.");
-        return;
-      }
-      installPrompt.prompt();
-      installPrompt.userChoice.finally(function () {
-        installPrompt = null;
-        installBtn.hidden = true;
-      });
-    });
-  }
-  window.addEventListener("appinstalled", function () {
-    installPrompt = null;
-    if (installBtn) installBtn.hidden = true;
-    setPwaStatus("Installed.");
-  });
   if ("serviceWorker" in navigator && location.protocol !== "file:") {
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(function () {
-        setPwaStatus("Serve over HTTPS to enable install.");
-      });
+      navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(function () {});
     });
   }
 
