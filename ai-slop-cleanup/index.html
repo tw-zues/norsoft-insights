@@ -870,7 +870,6 @@ not a security boundary.
     <div class="left">
       <div class="prompt-row">
         <span>IS THIS AI SLOP?</span>
-        <span id="timer">14.0 SEC</span>
       </div>
 
       <article id="postCard" class="post-card" aria-label="Post under rating">
@@ -1359,8 +1358,6 @@ not a security boundary.
     total: 15,
     right: 0,
     wrong: 0,
-    time: 14,
-    limit: 14,
     locked: false,
     ended: false,
     current: null,
@@ -1370,7 +1367,7 @@ not a security boundary.
   var queue = [];
   var el = {};
   [
-    "game", "score", "taste", "lives", "cardCount", "streak", "timer", "avatar", "author",
+    "game", "score", "taste", "lives", "cardCount", "streak", "avatar", "author",
     "meta", "body", "postCard", "imageWrap", "postImage", "genre", "fakeStats", "slopBtn", "notBtn", "reveal", "revealHead",
     "verdict", "delta", "punchline", "explain", "nextBtn", "slopScore", "slopBar",
     "meterLabel", "tells", "log", "modeLabel", "stage", "end", "endTitle", "endLine",
@@ -1473,8 +1470,6 @@ not a security boundary.
     state.current.extraTells = [pick(NEUTRAL_TELLS)];
     if (state.index > 5) state.current.extraTells.push(pick(NEUTRAL_TELLS));
     state.locked = false;
-    state.limit = clamp(14 - Math.floor(state.index / 5) * 1.5, 9, 14);
-    state.time = state.limit;
     el.reveal.classList.remove("active");
     el.game.classList.remove("rated");
     render();
@@ -1533,8 +1528,6 @@ not a security boundary.
     el.fakeStats.textContent = c.stats;
     el.slopBtn.disabled = state.locked;
     el.notBtn.disabled = state.locked;
-    el.timer.textContent = state.time.toFixed(1) + " SEC";
-    el.timer.style.color = state.time < 4 ? "var(--red)" : state.time < 7 ? "var(--amber)" : "var(--muted)";
     if (!state.locked) {
       el.slopScore.textContent = "?";
       el.slopBar.style.width = "0";
@@ -1550,10 +1543,9 @@ not a security boundary.
     state.locked = true;
     var c = state.current;
     var correct = choice === c.answer;
-    var timeBonus = Math.round(state.time * 6);
     var delta;
     if (correct) {
-      delta = 120 + timeBonus + state.streak * 20;
+      delta = 140 + state.streak * 20;
       state.score += delta;
       state.right += 1;
       state.streak += 1;
@@ -1664,30 +1656,6 @@ not a security boundary.
     loadCard();
   }
 
-  var last = performance.now();
-  function tick(now) {
-    var dt = Math.min(.08, (now - last) / 1000);
-    last = now;
-    if (!state.locked && !state.ended && state.current) {
-      state.time -= dt;
-      if (state.time <= 0) {
-        state.time = 0;
-        state.lives += 1;
-        state.taste = clamp(state.taste - 10, 0, 100);
-        state.wrong += 1;
-        state.streak = 0;
-        state.locked = true;
-        addLog("TIMEOUT", "The post escaped into a committee.");
-        showReveal("none", false, -90);
-        render();
-      } else {
-        el.timer.textContent = state.time.toFixed(1) + " SEC";
-        el.timer.style.color = state.time < 4 ? "var(--red)" : state.time < 7 ? "var(--amber)" : "var(--muted)";
-      }
-    }
-    requestAnimationFrame(tick);
-  }
-
   el.slopBtn.addEventListener("click", function () {
     if (!state.locked && state.current) recordVote(state.current, "slop");
     judge("slop");
@@ -1760,7 +1728,6 @@ not a security boundary.
   }
 
   restart();
-  requestAnimationFrame(tick);
 })();
 </script>
 </body>
