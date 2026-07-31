@@ -92,6 +92,28 @@ not a security boundary.
 
   button, a { font: inherit; letter-spacing: 0; }
 
+  .brand {
+    width: min(720px, 100%);
+    max-width: calc(100vw - 24px);
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .wordmark {
+    margin: 0;
+    color: var(--on-dark);
+    font-family: "Lora", Georgia, serif;
+    font-size: 58px;
+    line-height: .92;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .wordmark span {
+    color: var(--accent-on-dark);
+  }
+
   .game {
     width: min(720px, 100%);
     max-width: calc(100vw - 24px);
@@ -593,6 +615,15 @@ not a security boundary.
       max-width: calc(100vw - 12px);
     }
 
+    .brand {
+      width: calc(100vw - 12px);
+      max-width: calc(100vw - 12px);
+    }
+
+    .wordmark {
+      font-size: 40px;
+    }
+
     .stage,
     .post-card,
     .choice-row {
@@ -658,6 +689,10 @@ not a security boundary.
     }
   }
 </style>
+
+<header class="brand" aria-label="Slop or Not">
+  <h1 class="wordmark">SLOP <span>OR</span> NOT</h1>
+</header>
 
 <main id="game" class="game" aria-label="Slop or Not game">
   <section id="stage" class="stage">
