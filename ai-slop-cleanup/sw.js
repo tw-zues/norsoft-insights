@@ -1,7 +1,8 @@
-const CACHE_NAME = "norsoft-ai-slop-cleanup-v6";
+const CACHE_NAME = "norsoft-ai-slop-cleanup-v8";
 const APP_ASSETS = [
   "./",
   "./index.html",
+  "./submit.html",
   "./manifest.webmanifest",
   "./icon.svg"
 ];
@@ -29,7 +30,9 @@ self.addEventListener("fetch", (event) => {
 
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match("./index.html"))
+      fetch(event.request).catch(() => (
+        caches.match(event.request).then((cached) => cached || caches.match("./index.html"))
+      ))
     );
     return;
   }
