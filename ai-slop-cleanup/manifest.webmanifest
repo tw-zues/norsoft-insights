@@ -1,14 +1,14 @@
 {
-  "name": "Norsoft AI Slop Cleanup",
-  "short_name": "Slop Cleanup",
-  "description": "A Norsoft Labs arcade game about smashing obvious AI slop while sparing real human posts.",
+  "name": "Slop or Not by Norsoft Labs",
+  "short_name": "Slop or Not",
+  "description": "A Norsoft Labs satire game where you judge anonymized public-feed composites as AI slop or suspiciously formatted human writing.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#09080c",
-  "theme_color": "#09080c",
+  "background_color": "#08090b",
+  "theme_color": "#08090b",
   "categories": ["business", "games", "productivity"],
   "icons": [
     {

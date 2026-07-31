@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">Norsoft AI Slop Cleanup icon</title>
-  <desc id="desc">A neon monitor being struck by a cleanup hammer.</desc>
+  <desc id="desc">A neon authenticity desk stamp on a public post.</desc>
   <rect width="512" height="512" rx="88" fill="#09080c"/>
-  <rect x="78" y="100" width="356" height="244" rx="26" fill="#10181b" stroke="#35ff7c" stroke-width="18"/>
-  <path d="M126 164h160M126 214h226M126 264h118" stroke="#52e6ff" stroke-width="24" stroke-linecap="round"/>
-  <path d="M326 302l76 76M362 266l76 76" stroke="#ffbf2f" stroke-width="30" stroke-linecap="round"/>
-  <path d="M305 244l67-67 54 54-67 67z" fill="#f6f3df" stroke="#ff4f64" stroke-width="14"/>
-  <path d="M196 390h120" stroke="#35ff7c" stroke-width="28" stroke-linecap="round"/>
+  <rect x="92" y="86" width="328" height="282" rx="22" fill="#e8e2c8" stroke="#35ff7c" stroke-width="16"/>
+  <path d="M132 156h210M132 210h244M132 264h174" stroke="#171716" stroke-width="24" stroke-linecap="round"/>
+  <path d="M258 334c18-70 112-70 130 0" fill="none" stroke="#ffbf2f" stroke-width="24" stroke-linecap="round"/>
+  <rect x="246" y="324" width="154" height="54" rx="12" fill="#11171a" stroke="#ff5268" stroke-width="14"/>
+  <path d="M142 416h228" stroke="#62dcff" stroke-width="26" stroke-linecap="round"/>
 </svg>

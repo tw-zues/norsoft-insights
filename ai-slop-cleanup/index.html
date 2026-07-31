@@ -14,240 +14,1425 @@ not a security boundary.
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#09080c">
+<meta name="theme-color" content="#08090b">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="ai-use-notice" content="Do not use this source to impersonate, harm, exploit, or remove attribution from Norsoft. Responsible security review, learning, and attribution-preserving improvements are permitted.">
-<title>Norsoft AI Slop Cleanup | Labs Arcade</title>
-<meta name="description" content="A Norsoft Labs arcade game: smash generic social posts that seem like AI slop, and try not to destroy actual humans.">
+<title>Slop or Not | Norsoft Labs</title>
+<meta name="description" content="A Norsoft Labs satire game: judge anonymized public-feed composites as AI slop or suspiciously formatted human writing.">
 <link rel="canonical" href="https://tw-zues.github.io/norsoft-insights/ai-slop-cleanup/">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Slop Cleanup">
+<meta name="apple-mobile-web-app-title" content="Slop or Not">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Norsoft AI Slop Cleanup">
-<meta property="og:description" content="A tiny Norsoft Labs arcade game about the absurd sport of spotting AI slop in social feeds.">
+<meta property="og:title" content="Slop or Not">
+<meta property="og:description" content="Fast judgment. Bad confidence. AI slop satire from Norsoft Labs, built from anonymized public-feed composites.">
 <meta property="og:url" content="https://tw-zues.github.io/norsoft-insights/ai-slop-cleanup/">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Norsoft AI Slop Cleanup">
-<meta name="twitter:description" content="Smash the posts that seem like AI slop. Try not to destroy actual humans.">
+<meta name="twitter:title" content="Slop or Not">
+<meta name="twitter:description" content="Judge the composite post. Then find out whether you flagged slop or just a human with punctuation.">
 </head>
 <body>
 <style>
   :root {
-    --phos: #35ff7c;
+    --bg: #08090b;
+    --panel: #11161a;
+    --panel2: #171d22;
+    --line: #2b363c;
+    --ink: #f3f6e8;
+    --muted: #97a59d;
+    --dim: #687870;
+    --green: #35ff7c;
+    --cyan: #62dcff;
     --amber: #ffbf2f;
-    --red: #ff4d5f;
-    --cyan: #52e6ff;
-    --ink: #09080c;
-    --panel: #17171d;
-    --muted: #8c9c91;
+    --red: #ff5268;
+    --paper: #ebe4c9;
+    --paperInk: #171716;
   }
+
   * { box-sizing: border-box; }
+
+  html { background: var(--bg); }
+
   body {
     margin: 0;
-    width: 100%;
     min-height: 100vh;
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    padding: 18px 12px 40px;
     background:
-      radial-gradient(900px 500px at 50% -12%, #251b31, transparent 65%),
-      linear-gradient(180deg, #07080b, #0b090d 62%, #050607);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    padding: 22px 12px 48px;
-    font-family: "Courier New", ui-monospace, monospace;
-    color: #d8f5dc;
+      radial-gradient(760px 360px at 50% -10%, rgba(88, 62, 100, .34), transparent 68%),
+      linear-gradient(180deg, #08090b, #0d0c10 62%, #050607);
+    color: var(--ink);
+    font: 14px/1.45 "Courier New", ui-monospace, monospace;
+    letter-spacing: 0;
     overflow-x: hidden;
   }
-  .marquee { max-width: 100%; text-align: center; line-height: 1.1; }
-  .marquee .title {
-    font-size: clamp(26px, 6vw, 44px);
-    font-weight: bold;
-    letter-spacing: 5px;
-    color: var(--phos);
-    text-shadow: 0 0 18px rgba(53,255,124,.52), 0 0 2px rgba(53,255,124,.9);
+
+  button, a { font: inherit; letter-spacing: 0; }
+
+  .brand {
+    width: min(920px, 100%);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: end;
   }
-  .marquee .sub {
+
+  .wordmark {
+    color: var(--green);
+    font-size: clamp(34px, 8vw, 72px);
+    line-height: .88;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-shadow: 0 0 22px rgba(53, 255, 124, .45);
+  }
+
+  .wordmark span {
+    color: var(--red);
+    text-shadow: 0 0 22px rgba(255, 82, 104, .34);
+  }
+
+  .submark {
     margin-top: 6px;
     color: var(--amber);
-    font-size: 12px;
-    letter-spacing: 3px;
-    text-shadow: 0 0 10px rgba(255,191,47,.35);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
   }
-  .cabinet {
-    width: min(508px, calc(100vw - 8px));
-    max-width: 100%;
-    min-width: 0;
-    background: var(--panel);
-    border: 1px solid #2b2b34;
-    border-radius: 14px;
-    padding: 14px;
-    box-shadow: 0 30px 70px rgba(0,0,0,.72), inset 0 1px 0 #34343d;
+
+  .tag {
+    justify-self: end;
+    border: 1px solid var(--line);
+    background: #11161a;
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    text-align: right;
   }
-  .screen-wrap {
-    position: relative;
-    width: 100%;
-    min-width: 0;
-    background: #000;
+
+  .game {
+    width: min(920px, 100%);
+    border: 1px solid #2e3039;
     border-radius: 8px;
     overflow: hidden;
-    line-height: 0;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.045), transparent 72%),
+      var(--panel);
+    box-shadow: 0 32px 80px rgba(0,0,0,.58), inset 0 1px 0 rgba(255,255,255,.05);
   }
-  canvas#game {
-    image-rendering: pixelated;
-    display: block;
-    max-width: 100%;
-    min-width: 0;
-    max-height: 82vh;
-    width: 100%;
-    height: auto;
-    margin: 0 auto;
-    background: #000;
-    cursor: none;
-    touch-action: none;
-  }
-  .scanlines {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px);
-    mix-blend-mode: multiply;
-  }
-  .glow {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    box-shadow: inset 0 0 90px rgba(82,230,255,.08), inset 0 0 40px rgba(53,255,124,.07);
-  }
-  .under {
-    width: min(590px, calc(100vw - 24px));
-    max-width: 100%;
-    min-width: 0;
+
+  .hud {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 190px;
-    gap: 18px 24px;
-    align-items: start;
-    border-top: 1px solid #20242a;
-    padding: 18px 0 4px;
-    font-size: 13px;
-    line-height: 1.58;
-    color: #98aa9d;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    background: #0c1114;
+    border-bottom: 1px solid var(--line);
   }
-  .under b { color: #e3f8e7; }
-  .under p { margin: 0; overflow-wrap: anywhere; }
-  .demo-copy { display: grid; gap: 9px; min-width: 0; }
-  .kicker {
-    color: var(--amber);
+
+  .hud-item {
+    min-height: 58px;
+    padding: 10px 12px;
+    display: grid;
+    gap: 2px;
+    align-content: center;
+    border-right: 1px solid var(--line);
+  }
+
+  .hud-item:last-child { border-right: 0; }
+
+  .hud-label {
+    color: var(--dim);
     font-size: 10px;
-    font-weight: bold;
-    letter-spacing: 2px;
-    line-height: 1.3;
-    text-transform: uppercase;
+    font-weight: 900;
   }
-  .proofline { color: #d8f5dc; }
-  .proofline b { display: block; margin-bottom: 4px; }
-  .demo-actions { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
-  .cta, .ghost {
+
+  .hud-value {
+    color: var(--ink);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .hud-value.good { color: var(--green); }
+  .hud-value.warn { color: var(--amber); }
+  .hud-value.bad { color: var(--red); }
+
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    min-height: 590px;
+  }
+
+  .left {
+    padding: 18px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 14px;
+    background:
+      repeating-linear-gradient(0deg, rgba(98,220,255,.025) 0 1px, transparent 1px 5px),
+      #101418;
+    border-right: 1px solid var(--line);
+  }
+
+  .right {
+    padding: 18px;
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    background: #0b1013;
+  }
+
+  .prompt-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--amber);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+
+  .prompt-row span:last-child {
+    color: var(--muted);
+    letter-spacing: 0;
+    text-align: right;
+  }
+
+  .post-card {
+    min-height: 330px;
+    display: grid;
+    grid-template-rows: auto minmax(210px, 1fr) auto;
+    color: var(--paperInk);
+    background: var(--paper);
+    border: 1px solid #776f57;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 18px 36px rgba(0,0,0,.27);
+  }
+
+  .post-head {
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    background: rgba(255,255,255,.24);
+    border-bottom: 1px solid rgba(23,23,22,.16);
+  }
+
+  .avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 6px;
+    background: #14231d;
+    color: var(--green);
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .author-wrap { min-width: 0; display: grid; gap: 2px; }
+
+  .author {
+    font-weight: 900;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .meta {
+    color: #5f5942;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .dots {
+    color: #514b39;
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .post-body {
+    padding: 22px;
+    font-size: clamp(20px, 2.4vw, 28px);
+    line-height: 1.28;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    overflow-wrap: anywhere;
+  }
+
+  .post-foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    border-top: 1px solid rgba(23,23,22,.16);
+    color: #5f5942;
+    font-size: 11px;
+    font-weight: 900;
+  }
+
+  .choice-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .choice {
+    min-height: 86px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--ink);
+    background: #12191d;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 4px;
+    padding: 12px;
+    font-weight: 900;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .choice strong {
+    font-size: clamp(22px, 4vw, 34px);
+    line-height: 1;
+  }
+
+  .choice span {
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .choice.slop {
+    border-color: rgba(255,82,104,.65);
+  }
+
+  .choice.not {
+    border-color: rgba(53,255,124,.62);
+  }
+
+  .choice.slop strong { color: var(--red); }
+  .choice.not strong { color: var(--green); }
+
+  .choice:hover, .choice:focus-visible,
+  .small-button:hover, .small-button:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+  }
+
+  .choice:disabled {
+    opacity: .42;
+    cursor: not-allowed;
+  }
+
+  .reveal {
+    display: none;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #0b1013;
+    overflow: hidden;
+  }
+
+  .reveal.active {
+    display: grid;
+  }
+
+  .reveal-head {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    font-weight: 900;
+  }
+
+  .reveal-head.good { color: var(--green); }
+  .reveal-head.bad { color: var(--red); }
+
+  .reveal-body {
+    padding: 14px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .punchline {
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .explain {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .small-button {
+    min-height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--ink);
+    background: #131a1e;
+    padding: 8px 13px;
+    cursor: pointer;
+    text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 38px;
-    padding: 8px 13px;
-    border-radius: 6px;
-    font-family: inherit;
-    font-weight: bold;
-    letter-spacing: 1px;
-    text-decoration: none;
+    font-weight: 900;
   }
-  .cta {
-    color: #07110a;
-    background: var(--phos);
-    border: 1px solid var(--phos);
+
+  .small-button.primary {
+    color: #061109;
+    background: var(--green);
+    border-color: var(--green);
   }
-  .ghost {
-    color: #d8f5dc;
+
+  .panel {
+    border: 1px solid var(--line);
+    border-radius: 8px;
     background: #11171a;
-    border: 1px solid #2d3337;
+    overflow: hidden;
   }
-  .pwa-tools {
+
+  .panel-head {
+    border-bottom: 1px solid var(--line);
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--amber);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+
+  .panel-head span:last-child {
+    color: var(--dim);
+    letter-spacing: 0;
+    text-align: right;
+  }
+
+  .panel-body {
+    padding: 12px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .slopometer {
     display: grid;
     gap: 8px;
-    color: #75867a;
+  }
+
+  .score-big {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 10px;
+  }
+
+  .score-big strong {
+    color: var(--green);
+    font-size: 42px;
+    line-height: .95;
+  }
+
+  .score-big span {
+    color: var(--muted);
     font-size: 11px;
-    line-height: 1.45;
+    text-align: right;
+    font-weight: 800;
   }
-  .pwa-tools .ghost { width: 100%; cursor: pointer; }
+
+  .bar {
+    height: 14px;
+    border: 1px solid var(--line);
+    background: #06090b;
+    overflow: hidden;
+  }
+
+  .bar i {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--amber), var(--red));
+    transition: width .22s ease;
+  }
+
+  .chips {
+    display: grid;
+    gap: 8px;
+  }
+
+  .chip {
+    border: 1px solid #2a363c;
+    background: #0a0f12;
+    color: var(--ink);
+    border-radius: 6px;
+    padding: 9px 10px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .chip small {
+    display: block;
+    margin-top: 3px;
+    color: var(--dim);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .log {
+    min-height: 140px;
+    max-height: 190px;
+    overflow: auto;
+    align-content: start;
+  }
+
+  .log-line {
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    padding-bottom: 8px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .log-line b { color: var(--ink); }
+
+  .end {
+    display: none;
+    padding: 18px;
+    border-top: 1px solid var(--line);
+    background: #0a0e11;
+  }
+
+  .end.active {
+    display: grid;
+    gap: 14px;
+  }
+
+  .end-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .end-card {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #11171a;
+    padding: 12px;
+    display: grid;
+    gap: 4px;
+  }
+
+  .end-card strong {
+    color: var(--green);
+    font-size: 24px;
+  }
+
+  .end-card span {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .under {
+    width: min(920px, 100%);
+    border-top: 1px solid #20242a;
+    padding-top: 18px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: start;
+    color: var(--muted);
+  }
+
+  .under-copy {
+    display: grid;
+    gap: 8px;
+  }
+
+  .under p { margin: 0; overflow-wrap: anywhere; }
+  .under b { color: var(--ink); }
+
+  .footer-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .pwa-tools {
+    color: var(--dim);
+    font-size: 11px;
+    display: grid;
+    gap: 6px;
+    justify-items: end;
+    margin-top: 6px;
+  }
+
   .pwa-tools button[hidden] { display: none; }
-  @media (max-width: 540px) {
-    body { padding: 8px 4px 32px; gap: 8px; }
-    .marquee .title { font-size: 20px; letter-spacing: 3px; }
-    .marquee .sub { font-size: 8px; letter-spacing: 1.4px; line-height: 1.45; margin-top: 2px; }
-    .cabinet { padding: 6px; border-radius: 10px; }
-    canvas#game { max-height: 84vh; }
-    .under {
-      width: 100%;
-      max-width: calc(100vw - 8px);
-      grid-template-columns: 1fr;
-      gap: 14px;
-      padding: 16px 12px 0;
-      font-size: 11px;
-      line-height: 1.6;
-    }
-    .kicker { letter-spacing: 1.5px; }
-    .cta, .ghost { width: 100%; }
+
+  .screen-reader {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
   }
-  @media (display-mode: standalone) {
-    .pwa-tools { display: none; }
+
+  @media (max-width: 780px) {
+    body {
+      padding: 10px 6px 32px;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .brand {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 8px;
+    }
+
+    .tag {
+      justify-self: center;
+      text-align: center;
+    }
+
+    .submark {
+      font-size: 9px;
+      letter-spacing: 1px;
+    }
+
+    .hud {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hud-item {
+      min-height: 52px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hud-item:nth-child(2n) { border-right: 0; }
+    .hud-item:last-child {
+      grid-column: 1 / -1;
+      border-bottom: 0;
+    }
+
+    .stage {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .left {
+      padding: 12px;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .right {
+      padding: 12px;
+    }
+
+    .post-card {
+      min-height: 360px;
+      grid-template-rows: auto minmax(240px, 1fr) auto;
+    }
+
+    .post-body {
+      padding: 18px;
+      font-size: 20px;
+      line-height: 1.32;
+    }
+
+    .choice-row {
+      grid-template-columns: 1fr;
+    }
+
+    .choice {
+      min-height: 72px;
+    }
+
+    .end-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .under {
+      grid-template-columns: 1fr;
+      padding-inline: 8px;
+    }
+
+    .footer-actions {
+      justify-content: stretch;
+    }
+
+    .footer-actions .small-button {
+      flex: 1 1 160px;
+    }
+
+    .pwa-tools {
+      justify-items: stretch;
+    }
   }
 </style>
 
-<div class="marquee">
-  <div class="title">NORSOFT</div>
-  <div class="sub">AI SLOP CLEANUP - LABS ARCADE</div>
-</div>
-
-<div class="cabinet">
-  <div class="screen-wrap">
-    <canvas id="game" width="480" height="720" aria-label="AI Slop Cleanup arcade game"></canvas>
-    <div class="scanlines"></div>
-    <div class="glow"></div>
+<header class="brand">
+  <div>
+    <div class="wordmark">SLOP <span>OR</span> NOT</div>
+    <div class="submark">NORSOFT LABS - PUBLIC CONFIDENCE SPEEDRUN</div>
   </div>
-</div>
+  <div class="tag">COMPOSITE FEED DECK / CURRENT-DAY CONTENT PANIC</div>
+</header>
 
-<section class="under" aria-label="Norsoft AI Slop Cleanup">
-  <div class="demo-copy">
-    <p class="kicker">SOCIAL FEED ARCADE</p>
-    <p class="proofline"><b>Everyone thinks they can spot AI slop.</b> Four readable feed screens make that confidence stupid on purpose: smash the obvious slop, spare the actual humans, and watch the feed get faster.</p>
-    <p>Norsoft Labs builds small, specific software artifacts that prove taste, speed, and execution.</p>
+<main class="game" aria-label="Slop or Not game">
+  <section id="hud" class="hud" aria-live="polite">
+    <div class="hud-item"><span class="hud-label">SCORE</span><span id="score" class="hud-value good">0</span></div>
+    <div class="hud-item"><span class="hud-label">TASTE</span><span id="taste" class="hud-value good">100%</span></div>
+    <div class="hud-item"><span class="hud-label">MISFIRES</span><span id="lives" class="hud-value">0</span></div>
+    <div class="hud-item"><span class="hud-label">CARD</span><span id="cardCount" class="hud-value">1/15</span></div>
+    <div class="hud-item"><span class="hud-label">STREAK</span><span id="streak" class="hud-value warn">0</span></div>
+  </section>
+
+  <section id="stage" class="stage">
+    <div class="left">
+      <div class="prompt-row">
+        <span>WOULD YOU REPORT THIS?</span>
+        <span id="timer">VIBE CLOCK 14.0</span>
+      </div>
+
+      <article class="post-card" aria-label="Post under rating">
+        <div class="post-head">
+          <div id="avatar" class="avatar">@</div>
+          <div class="author-wrap">
+            <div id="author" class="author">Loading</div>
+            <div id="meta" class="meta">public post / confidence pending</div>
+          </div>
+          <div class="dots">...</div>
+        </div>
+        <div id="body" class="post-body">Loading post.</div>
+        <div class="post-foot">
+          <span id="genre">classification pending</span>
+        <span id="fakeStats">composite sample</span>
+        </div>
+      </article>
+
+      <div class="choice-row" aria-label="Rating choices">
+        <button id="slopBtn" class="choice slop" type="button">
+          <strong>SLOP</strong>
+          <span>report it with confidence</span>
+        </button>
+        <button id="notBtn" class="choice not" type="button">
+          <strong>NOT</strong>
+          <span>let the human speak</span>
+        </button>
+      </div>
+
+      <section id="reveal" class="reveal" aria-live="polite">
+        <div id="revealHead" class="reveal-head">
+          <span id="verdict">VERDICT</span>
+          <span id="delta">+0</span>
+        </div>
+        <div class="reveal-body">
+          <div id="punchline" class="punchline">Pick a side.</div>
+          <div id="explain" class="explain">Fast judgment is the whole problem.</div>
+          <button id="nextBtn" class="small-button primary" type="button">NEXT POST</button>
+        </div>
+      </section>
+    </div>
+
+    <aside class="right" aria-label="Slopometer">
+      <div class="panel">
+        <div class="panel-head">
+          <span>SLOPOMETER</span>
+          <span id="meterLabel">hidden until you judge</span>
+        </div>
+        <div class="panel-body slopometer">
+          <div class="score-big">
+            <strong id="slopScore">?</strong>
+            <span>official-looking<br>meaning-light rating</span>
+          </div>
+          <div class="bar" aria-hidden="true"><i id="slopBar"></i></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span>SUSPICIOUS TELLS</span>
+          <span>not evidence</span>
+        </div>
+        <div id="tells" class="panel-body chips"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span>PUBLIC SHAME LOG</span>
+          <span id="modeLabel">normal mode</span>
+        </div>
+        <div id="log" class="panel-body log"></div>
+      </div>
+    </aside>
+  </section>
+
+  <section id="end" class="end" aria-live="polite">
+    <div class="prompt-row">
+      <span id="endTitle">RATING COMPLETE</span>
+      <span id="endLine">the feed remains itself</span>
+    </div>
+    <div class="end-grid">
+      <div class="end-card"><strong id="finalScore">0</strong><span>score</span></div>
+      <div class="end-card"><strong id="finalRight">0</strong><span>right calls</span></div>
+      <div class="end-card"><strong id="finalWrong">0</strong><span>wrong calls</span></div>
+      <div class="end-card"><strong id="finalBest">0</strong><span>best local score</span></div>
+    </div>
+    <button id="againBtn" class="small-button primary" type="button">PLAY AGAIN</button>
+  </section>
+</main>
+
+<section class="under" aria-label="Norsoft Labs note">
+  <div class="under-copy">
+    <p><b>This is not an AI detector.</b> It is a tiny joke about turning taste into a button and calling the result truth. The posts are anonymized composites, not real user quotes.</p>
+    <p>Norsoft Labs builds small, specific software artifacts that make weird operating logic concrete.</p>
   </div>
-  <div class="demo-actions">
-    <a class="cta" href="https://norsoft.com/labs/" target="_blank" rel="noopener">NORSOFT LABS</a>
-    <a class="ghost" href="https://norsoft.com" target="_blank" rel="noopener">NORSOFT.COM</a>
+  <div>
+    <div class="footer-actions">
+      <a class="small-button primary" href="https://norsoft.com/labs/" target="_blank" rel="noopener">NORSOFT LABS</a>
+      <a class="small-button" href="https://norsoft.com" target="_blank" rel="noopener">NORSOFT.COM</a>
+    </div>
     <div class="pwa-tools" aria-live="polite">
-      <button id="installPwa" class="ghost" type="button" hidden>INSTALL APP</button>
+      <button id="installPwa" class="small-button" type="button" hidden>INSTALL APP</button>
       <span id="pwaStatus">Installable on supported browsers.</span>
     </div>
   </div>
 </section>
 
+<span id="liveState" class="screen-reader" aria-live="polite"></span>
+
 <script>
 (function () {
   "use strict";
 
-  var cv = document.getElementById("game");
-  var cx = cv.getContext("2d");
-  var W = 480, H = 720;
-  var DPR = Math.min(3, window.devicePixelRatio || 1);
-  cv.width = W * DPR;
-  cv.height = H * DPR;
-  cv.style.aspectRatio = W + " / " + H;
-  cx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  var params = new URLSearchParams(location.search);
+  var seedRaw = params.get("seed") || String(Date.now()).slice(-8);
+  var seed = 0;
+  for (var si = 0; si < seedRaw.length; si++) seed = ((seed << 5) - seed + seedRaw.charCodeAt(si)) >>> 0;
+  function rand() {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  }
+  function pick(arr) { return arr[Math.floor(rand() * arr.length)]; }
+  function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 
-  /* ---------- pwa install ---------- */
+  var CARDS = [
+    {
+      answer: "slop",
+      score: 9.4,
+      author: "Founder with one screenshot",
+      meta: "growth lesson / suspiciously airport-adjacent",
+      genre: "manufactured revelation",
+      body: "This two-word message changed how I build companies: ship it. No deck. No committee. No permission. Six months later, the pipeline was unrecognizable. The lesson is not speed. The lesson is identity.",
+      tells: [
+        ["normal message promoted to scripture", "one Slack reply is now a belief system"],
+        ["not speed, but identity", "fake-depth turn detected"],
+        ["pipeline appears after emotional fog", "attribution model missing"]
+      ],
+      hit: "Correct. A normal message tried to become a management religion.",
+      miss: "You let a screenshot wearing a leadership badge back into the feed."
+    },
+    {
+      answer: "slop",
+      score: 9.7,
+      author: "Guy whose child studies CAC",
+      meta: "family anecdote / boardroom bedtime",
+      genre: "fake child quote",
+      body: "My 6-year-old asked why our CAC payback was longer than bedtime. I stopped cold. Children understand simplicity because they have not been trained to worship complexity. Build like a kid asking why.",
+      tells: [
+        ["child knows CAC payback", "household finance currently unbelievable"],
+        ["family moment becomes funnel doctrine", "emotional laundering detected"],
+        ["build like a kid", "sentence generated by a conference tote"]
+      ],
+      hit: "Correct. No first grader has ever requested a payback analysis.",
+      miss: "You approved toddler-as-operating-partner content."
+    },
+    {
+      answer: "slop",
+      score: 8.8,
+      author: "Revenue monk",
+      meta: "discipline content / CRM spirituality",
+      genre: "hustle sermon",
+      body: "I deleted comfort. Deleted excuses. Deleted every meeting that did not respect the number. The result was not productivity. It was alignment. Most teams do not need more tools. They need a harder mirror.",
+      tells: [
+        ["deleted three abstract nouns", "the ritual is doing too much"],
+        ["harder mirror", "software sales entered its monastery phase"],
+        ["not productivity, but alignment", "sentence is wearing a vest"]
+      ],
+      hit: "Correct. The mirror has requested a normal sentence.",
+      miss: "You approved a spreadsheet wearing a robe."
+    },
+    {
+      answer: "slop",
+      score: 9.1,
+      author: "Narrative moat consultant",
+      meta: "personal brand / strategy fog",
+      genre: "buzzword soup",
+      body: "The next category leader will not win through distribution. It will win through cultural gravity across agentic surfaces. Trust is no longer earned. It is metabolized through narrative infrastructure.",
+      tells: [
+        ["agentic surfaces", "term arrived without supervision"],
+        ["trust metabolized", "biology has left the meeting"],
+        ["narrative infrastructure", "invoice likely attached"]
+      ],
+      hit: "Correct. Four nouns formed a holding company.",
+      miss: "You let cultural gravity touch the feed."
+    },
+    {
+      answer: "slop",
+      score: 8.2,
+      author: "Airport operator",
+      meta: "travel delay / leadership doctrine",
+      genre: "airport wisdom",
+      body: "A delayed flight taught me more about leadership than my MBA. The gate agent had no OKRs, no deck, no offsite. Just calm execution under pressure. Build teams like Terminal B.",
+      tells: [
+        ["minor inconvenience becomes doctrine", "boarding group insight risk high"],
+        ["no OKRs, no deck, no offsite", "triplet detected"],
+        ["Terminal B used as org chart", "airport did not consent"]
+      ],
+      hit: "Correct. The delay was real. The leadership lesson was aftermarket.",
+      miss: "You approved airport wisdom with a carry-on strategy."
+    },
+    {
+      answer: "slop",
+      score: 8.6,
+      author: "AI agency founder",
+      meta: "automation thread / soft mysticism",
+      genre: "robot sincerity",
+      body: "Content is not writing. Content is becoming the person your market already trusts before they know why. The best creators do not post. They pre-answer belief.",
+      tells: [
+        ["not writing but becoming", "identity swap maneuver"],
+        ["market trusts before knowing why", "consent model unclear"],
+        ["pre-answer belief", "phrase failed inspection"]
+      ],
+      hit: "Correct. The post pre-answered nothing and billed for it.",
+      miss: "You approved a fortune cookie with analytics access."
+    },
+    {
+      answer: "slop",
+      score: 7.8,
+      author: "Operator in a lobby",
+      meta: "chance meeting / fake attribution",
+      genre: "manufactured lesson",
+      body: "A stranger complimented my laptop sticker. We talked for nine minutes. He became a customer. Your brand is selling when you are silent. Design the surface area you are afraid to measure.",
+      tells: [
+        ["sticker became attribution model", "funnel math missing"],
+        ["nine minutes suspiciously exact", "precision cosplay"],
+        ["surface area afraid to measure", "sentence dodged accounting"]
+      ],
+      hit: "Correct. The sticker is not a sales team.",
+      miss: "You approved sticker-based revenue operations."
+    },
+    {
+      answer: "slop",
+      score: 8.5,
+      author: "Fractional clarity officer",
+      meta: "framework thread / premium vagueness",
+      genre: "triadic listicle",
+      body: "Most teams chase tactics. Better teams chase leverage. Elite teams chase silence. Clarity compounds. Noise taxes. Taste converts. Let that sink in.",
+      tells: [
+        ["three-tier ladder", "ordinary thought in ceremonial robes"],
+        ["three clipped maxims", "fortune-cookie array detected"],
+        ["let that sink in", "sink refused delivery"]
+      ],
+      hit: "Correct. The sink had no obligation to participate.",
+      miss: "You approved silence as a go-to-market motion."
+    },
+    {
+      answer: "slop",
+      score: 9.0,
+      author: "Confessional SaaS person",
+      meta: "vulnerability / demo pipeline",
+      genre: "fake rawness",
+      body: "I almost did not post this. I cried in a conference room, sent the uncomfortable email, and booked 14 demos. Burnout was not the obstacle. Burnout was the moat.",
+      tells: [
+        ["almost did not post this", "always posted this"],
+        ["tears converted to demos", "pipeline empathy mismatch"],
+        ["burnout called a moat", "HR has entered the chat"]
+      ],
+      hit: "Correct. Burnout is not a competitive advantage.",
+      miss: "You approved a wellness violation with demo counts."
+    },
+    {
+      answer: "slop",
+      score: 8.9,
+      author: "Scale whisperer",
+      meta: "boardroom prophecy / vague future",
+      genre: "empty futurism",
+      body: "The winners of 2027 will not own audiences. They will own rituals. Every workflow is becoming a belief system. Every dashboard is becoming a confession.",
+      tells: [
+        ["future-year certainty", "calendar abuse"],
+        ["workflow becomes belief system", "software asked for boundaries"],
+        ["dashboard confession", "analytics got uncomfortable"]
+      ],
+      hit: "Correct. The dashboard did not need a priest.",
+      miss: "You approved fiscal-year mysticism."
+    },
+    {
+      answer: "not",
+      score: 3.1,
+      author: "Operations manager",
+      meta: "bad morning / actual work",
+      genre: "false positive: tidy list",
+      body: "Things that broke before 9am: printer, batch labeler, my coffee mug. Things still working: one forklift and Brenda's patience. Calling that a win.",
+      tells: [
+        ["list structure", "detector has unresolved bullet trauma"],
+        ["one specific name", "may be authentic, which is suspicious"],
+        ["mild optimism", "not yet a thread"]
+      ],
+      hit: "Correct. Sometimes a list is just a morning with parts.",
+      miss: "You flagged Brenda's patience. It was load-bearing."
+    },
+    {
+      answer: "not",
+      score: 2.8,
+      author: "Small shop owner",
+      meta: "marketing attempt / no funnel",
+      genre: "false positive: leverage",
+      body: "I am trying to leverage the one good photo of our trailer because I forgot to take pictures at the job site again. Marketing is just evidence with shoes on.",
+      tells: [
+        ["said leverage once", "system became theatrical"],
+        ["clean little metaphor", "not all metaphors are crimes"],
+        ["trailer photo", "too specific for bulk slop"]
+      ],
+      hit: "Correct. The trailer photo was innocent.",
+      miss: "You destroyed a small business trying to remember marketing."
+    },
+    {
+      answer: "not",
+      score: 3.4,
+      author: "Bookkeeper",
+      meta: "file naming / survival note",
+      genre: "false positive: three things",
+      body: "Three things I learned this week: save the receipt, name the file, do not trust the file named final-final-v7. That's the whole post.",
+      tells: [
+        ["three things", "detector assumes every trio is a thread"],
+        ["clear advice", "clarity unfairly suspicious"],
+        ["final-final-v7", "authentic pain signature"]
+      ],
+      hit: "Correct. File names are allowed to suffer in public.",
+      miss: "You reported a receipt PSA as synthetic thought leadership."
+    },
+    {
+      answer: "not",
+      score: 3.7,
+      author: "Person using punctuation",
+      meta: "minor complaint / cultural panic",
+      genre: "false positive: dash",
+      body: "I used an em dash once - now three people think I am a chatbot. I am not. I am just old enough to have opinions about punctuation.",
+      tells: [
+        ["dash panic", "the current era is not serious"],
+        ["mentions chatbot", "self-reference loop detected"],
+        ["clean paragraph", "human writers remain possible"]
+      ],
+      hit: "Correct. Punctuation is not a confession.",
+      miss: "You became the joke and filed paperwork."
+    },
+    {
+      answer: "not",
+      score: 2.4,
+      author: "Sales rep",
+      meta: "outbound fatigue / honest math",
+      genre: "false positive: prospecting",
+      body: "Sent 42 emails. Got two replies. One was 'wrong Mike.' The other was actually useful. Calling it a day before I start saying 'quick question' to my family.",
+      tells: [
+        ["email numbers", "could be a thread, could be Tuesday"],
+        ["quick question", "phrase has priors"],
+        ["wrong Mike", "human specificity detected"]
+      ],
+      hit: "Correct. That is just outbound with a pulse.",
+      miss: "You flagged the one honest sales post."
+    },
+    {
+      answer: "not",
+      score: 1.9,
+      author: "Local contractor",
+      meta: "shop update / gravel situation",
+      genre: "false positive: typo",
+      body: "If your coming by the shop today use the side door. Front is blocked by gravel and one of those cones that makes everyone act confused.",
+      tells: [
+        ["typo present", "machine calmed down immediately"],
+        ["gravel logistics", "hyperlocal truth signature"],
+        ["side door", "ordinary public service"]
+      ],
+      hit: "Correct. The side door mattered.",
+      miss: "You reported useful gravel information."
+    },
+    {
+      answer: "not",
+      score: 3.0,
+      author: "Product manager",
+      meta: "roadmap update / meeting residue",
+      genre: "false positive: rectangle",
+      body: "Roadmap update: the thing everyone wants is blocked by the thing nobody wants to admit exists. Please enjoy this rectangle in the meantime.",
+      tells: [
+        ["balanced sentence", "could be software, could be exhaustion"],
+        ["rectangle", "visual asset placeholder grief"],
+        ["nobody wants to admit", "likely typed after meeting"]
+      ],
+      hit: "Correct. That rectangle has been through enough.",
+      miss: "You flagged a roadmap hostage note."
+    },
+    {
+      answer: "not",
+      score: 2.6,
+      author: "Designer",
+      meta: "interface complaint / public begging",
+      genre: "false positive: taste words",
+      body: "Rounded cards inside rounded cards inside rounded cards. Please let one surface be a surface. I am begging in public because Slack failed.",
+      tells: [
+        ["repetition", "style alarm misfired"],
+        ["taste complaint", "specific enough to be real"],
+        ["Slack failed", "private channel exhausted"]
+      ],
+      hit: "Correct. Nested cards are a real workplace event.",
+      miss: "You sided with the nested cards."
+    },
+    {
+      answer: "not",
+      score: 3.3,
+      author: "Founder having a normal bad day",
+      meta: "lost deal / no lesson",
+      genre: "false positive: vulnerable",
+      body: "Lost a deal today and handled it with the emotional grace of a printer jam during payroll. Tomorrow I will send the follow-up like an adult.",
+      tells: [
+        ["vulnerable sentence", "detector suspects feelings"],
+        ["printer jam detail", "too ugly to be optimized"],
+        ["tomorrow follow-up", "no framework attached"]
+      ],
+      hit: "Correct. That was a bad day, not an e-book funnel.",
+      miss: "You reported a printer jam with feelings."
+    },
+    {
+      answer: "not",
+      score: 2.1,
+      author: "Solo consultant",
+      meta: "billing reminder / self-own",
+      genre: "false positive: clean writing",
+      body: "Reminder to myself: send the invoice before starting the next thing. This is not wisdom. I just keep forgetting and then acting surprised.",
+      tells: [
+        ["colon after reminder", "formatting alert"],
+        ["this is not wisdom", "self-awareness reduced threat"],
+        ["invoice regret", "ordinary business pain"]
+      ],
+      hit: "Correct. Self-awareness remains human-coded.",
+      miss: "You reported someone for remembering billing."
+    }
+  ];
+
+  var NEUTRAL_TELLS = [
+    ["sounds confident", "confidence is not a source"],
+    ["sentence has shape", "shape panic remains high"],
+    ["business noun present", "machine grew up around webinars"],
+    ["one phrase feels expensive", "invoice odor inconclusive"],
+    ["could fit on a carousel", "not all rectangles are crimes"],
+    ["human detail detected", "detector unsure if bait"],
+    ["tone is suspiciously useful", "utility makes policy nervous"],
+    ["format looks clean", "cleanliness now controversial"]
+  ];
+
+  var GOOD_LINES = [
+    "Your taste briefly outperformed the machine.",
+    "Fast judgment worked this time. Dangerous lesson.",
+    "The feed got cleaner and learned nothing.",
+    "Correct. Please do not become confident.",
+    "You touched grass inside a spreadsheet."
+  ];
+
+  var BAD_LINES = [
+    "You confused style with source.",
+    "The detector feels validated. That is bad.",
+    "Public language got slightly worse.",
+    "A dashboard somewhere is smiling.",
+    "Fast judgment remains undefeated and wrong."
+  ];
+
+  var state = {
+    score: 0,
+    taste: 100,
+    lives: 0,
+    streak: 0,
+    index: 0,
+    total: 15,
+    right: 0,
+    wrong: 0,
+    time: 14,
+    limit: 14,
+    locked: false,
+    ended: false,
+    current: null,
+    log: []
+  };
+
+  var queue = [];
+  var el = {};
+  [
+    "score", "taste", "lives", "cardCount", "streak", "timer", "avatar", "author",
+    "meta", "body", "genre", "fakeStats", "slopBtn", "notBtn", "reveal", "revealHead",
+    "verdict", "delta", "punchline", "explain", "nextBtn", "slopScore", "slopBar",
+    "meterLabel", "tells", "log", "modeLabel", "stage", "end", "endTitle", "endLine",
+    "finalScore", "finalRight", "finalWrong", "finalBest", "againBtn", "liveState"
+  ].forEach(function (id) { el[id] = document.getElementById(id); });
+
+  function shuffleCards() {
+    var copy = CARDS.slice();
+    for (var i = copy.length - 1; i > 0; i--) {
+      var j = Math.floor(rand() * (i + 1));
+      var tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
+    }
+    return copy.slice(0, state.total);
+  }
+
+  function addLog(title, copy) {
+    state.log.unshift({ title: title, copy: copy });
+    state.log = state.log.slice(0, 6);
+  }
+
+  function fakeStats(card) {
+    var base = card.answer === "slop" ? 280 + Math.floor(rand() * 1900) : 8 + Math.floor(rand() * 260);
+    var comments = card.answer === "slop" ? 19 + Math.floor(rand() * 240) : Math.floor(rand() * 31);
+    return base + " reactions / " + comments + " comments";
+  }
+
+  function loadCard() {
+    if (state.index >= state.total) {
+      endGame();
+      return;
+    }
+    state.current = queue[state.index];
+    state.current.stats = fakeStats(state.current);
+    state.current.extraTells = [pick(NEUTRAL_TELLS)];
+    if (state.index > 5) state.current.extraTells.push(pick(NEUTRAL_TELLS));
+    state.locked = false;
+    state.limit = clamp(14 - Math.floor(state.index / 5) * 1.5, 9, 14);
+    state.time = state.limit;
+    el.reveal.classList.remove("active");
+    render();
+  }
+
+  function renderTells(showTruth) {
+    var tells = state.current.tells.slice(0, showTruth ? 3 : 2).concat(showTruth ? [] : state.current.extraTells);
+    el.tells.textContent = "";
+    tells.forEach(function (tell) {
+      var chip = document.createElement("div");
+      var small = document.createElement("small");
+      chip.className = "chip";
+      chip.textContent = tell[0];
+      small.textContent = tell[1];
+      chip.appendChild(small);
+      el.tells.appendChild(chip);
+    });
+  }
+
+  function renderLog() {
+    el.log.textContent = "";
+    state.log.forEach(function (line) {
+      var node = document.createElement("div");
+      var bold = document.createElement("b");
+      node.className = "log-line";
+      bold.textContent = line.title;
+      node.appendChild(bold);
+      node.appendChild(document.createTextNode(" " + line.copy));
+      el.log.appendChild(node);
+    });
+  }
+
+  function render() {
+    var c = state.current;
+    if (!c) return;
+    el.score.textContent = state.score;
+    el.taste.textContent = state.taste + "%";
+    el.taste.className = "hud-value " + (state.taste < 45 ? "bad" : state.taste < 72 ? "warn" : "good");
+    el.lives.textContent = state.wrong;
+    el.lives.className = "hud-value " + (state.wrong >= 6 ? "bad" : state.wrong >= 3 ? "warn" : "");
+    el.cardCount.textContent = Math.min(state.index + 1, state.total) + "/" + state.total;
+    el.streak.textContent = state.streak;
+    el.avatar.textContent = c.author.slice(0, 1).toUpperCase();
+    el.author.textContent = c.author;
+    el.meta.textContent = c.meta;
+    el.body.textContent = c.body;
+    el.genre.textContent = "composite / " + c.genre;
+    el.fakeStats.textContent = c.stats;
+    el.slopBtn.disabled = state.locked;
+    el.notBtn.disabled = state.locked;
+    el.timer.textContent = "VIBE CLOCK " + state.time.toFixed(1);
+    el.timer.style.color = state.time < 4 ? "var(--red)" : state.time < 7 ? "var(--amber)" : "var(--muted)";
+    if (!state.locked) {
+      el.slopScore.textContent = "?";
+      el.slopBar.style.width = "0";
+      el.meterLabel.textContent = "hidden until you judge";
+      renderTells(false);
+    }
+    renderLog();
+    el.liveState.textContent = "Card " + (state.index + 1) + " of " + state.total + ". " + c.genre;
+  }
+
+  function judge(choice) {
+    if (state.locked || state.ended) return;
+    state.locked = true;
+    var c = state.current;
+    var correct = choice === c.answer;
+    var timeBonus = Math.round(state.time * 6);
+    var delta;
+    if (correct) {
+      delta = 120 + timeBonus + state.streak * 20;
+      state.score += delta;
+      state.right += 1;
+      state.streak += 1;
+      addLog("RIGHT +" + delta, c.hit);
+    } else {
+      delta = -110;
+      state.score = Math.max(0, state.score + delta);
+      state.taste = clamp(state.taste - 14, 0, 100);
+      state.lives += 1;
+      state.wrong += 1;
+      state.streak = 0;
+      addLog("WRONG", c.miss);
+    }
+    showReveal(choice, correct, delta);
+    render();
+  }
+
+  function showReveal(choice, correct, delta) {
+    var c = state.current;
+    var human = c.answer === "not";
+    var title = correct
+      ? (human ? "NOT SLOP" : "SLOP")
+      : (human ? "FALSE SLOP ALARM" : "SLOP MISSED");
+    var copy = correct ? c.hit : c.miss;
+    var aside = correct ? pick(GOOD_LINES) : pick(BAD_LINES);
+    el.reveal.classList.add("active");
+    el.revealHead.className = "reveal-head " + (correct ? "good" : "bad");
+    el.verdict.textContent = title;
+    el.delta.textContent = delta > 0 ? "+" + delta : String(delta);
+    el.punchline.textContent = copy;
+    var picked = choice === "none" ? "NOTHING" : choice === "slop" ? "SLOP" : "NOT";
+    el.explain.textContent = "Official slop score: " + c.score.toFixed(1) + "/10. You picked " + picked + ". " + aside;
+    el.slopScore.textContent = c.score.toFixed(1);
+    el.slopScore.style.color = c.score >= 7 ? "var(--red)" : c.score >= 4.5 ? "var(--amber)" : "var(--green)";
+    el.slopBar.style.width = (c.score * 10) + "%";
+    el.meterLabel.textContent = c.answer === "slop" ? "slop confirmed" : "human, somehow";
+    renderTells(true);
+    renderLog();
+    if (state.index >= state.total - 1) {
+      el.nextBtn.textContent = "FINAL RATING";
+    } else {
+      el.nextBtn.textContent = "NEXT POST";
+    }
+  }
+
+  function next() {
+    if (!state.locked) return;
+    state.index += 1;
+    loadCard();
+  }
+
+  function endGame() {
+    state.ended = true;
+    el.stage.style.display = "none";
+    el.end.classList.add("active");
+    var best = getBest();
+    if (state.score > best) {
+      best = state.score;
+      try { localStorage.setItem("slop-or-not-best", String(best)); } catch (e) {}
+    }
+    el.finalScore.textContent = state.score;
+    el.finalRight.textContent = state.right;
+    el.finalWrong.textContent = state.wrong;
+    el.finalBest.textContent = best;
+    if (state.right >= 12) {
+      el.endTitle.textContent = "DANGEROUSLY GOOD TASTE";
+      el.endLine.textContent = "do not let this become a dashboard";
+    } else if (state.right >= 9) {
+      el.endTitle.textContent = "MOSTLY HUMAN";
+      el.endLine.textContent = "solid judgment, questionable confidence";
+    } else {
+      el.endTitle.textContent = "CONTENT PANIC WON";
+      el.endLine.textContent = "you became the button";
+    }
+  }
+
+  function getBest() {
+    try { return parseInt(localStorage.getItem("slop-or-not-best") || "0", 10) || 0; }
+    catch (e) { return 0; }
+  }
+
+  function restart() {
+    state.score = 0;
+    state.taste = 100;
+    state.lives = 0;
+    state.streak = 0;
+    state.index = 0;
+    state.right = 0;
+    state.wrong = 0;
+    state.locked = false;
+    state.ended = false;
+    state.log = [];
+    queue = shuffleCards();
+    el.stage.style.display = "";
+    el.end.classList.remove("active");
+    addLog("NEW RUN", "You are about to turn taste into a button.");
+    loadCard();
+  }
+
+  var last = performance.now();
+  function tick(now) {
+    var dt = Math.min(.08, (now - last) / 1000);
+    last = now;
+    if (!state.locked && !state.ended && state.current) {
+      state.time -= dt;
+      if (state.time <= 0) {
+        state.time = 0;
+        state.lives += 1;
+        state.taste = clamp(state.taste - 10, 0, 100);
+        state.wrong += 1;
+        state.streak = 0;
+        state.locked = true;
+        addLog("TIMEOUT", "The post escaped into a committee.");
+        showReveal("none", false, -90);
+        render();
+      } else {
+        el.timer.textContent = "VIBE CLOCK " + state.time.toFixed(1);
+        el.timer.style.color = state.time < 4 ? "var(--red)" : state.time < 7 ? "var(--amber)" : "var(--muted)";
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  el.slopBtn.addEventListener("click", function () { judge("slop"); });
+  el.notBtn.addEventListener("click", function () { judge("not"); });
+  el.nextBtn.addEventListener("click", next);
+  el.againBtn.addEventListener("click", restart);
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft" || e.key === "s" || e.key === "S") {
+      judge("slop");
+      e.preventDefault();
+    }
+    if (e.key === "ArrowRight" || e.key === "n" || e.key === "N") {
+      judge("not");
+      e.preventDefault();
+    }
+    if (e.key === "Enter" || e.key === " ") {
+      if (state.locked) next();
+      e.preventDefault();
+    }
+  });
+
   var installPrompt = null;
   var installBtn = document.getElementById("installPwa");
   var pwaStatus = document.getElementById("pwaStatus");
@@ -260,7 +1445,7 @@ not a security boundary.
     e.preventDefault();
     installPrompt = e;
     if (installBtn) installBtn.hidden = false;
-    setPwaStatus("Opens as a standalone app.");
+    setPwaStatus("Ready to install as a standalone app.");
   });
   if (installBtn) {
     installBtn.addEventListener("click", function () {
@@ -288,666 +1473,8 @@ not a security boundary.
     });
   }
 
-  /* ---------- content bank ---------- */
-  var SLOP_POSTS = [
-    {
-      by: "Founder who just discovered adversity",
-      tag: "hustle monologue",
-      body: "Three years ago I was sleeping in my car. Today I closed a $50M Series B. The difference? I stopped asking for permission and started treating rejection like customer discovery. Here are 17 uncomfortable truths about winning.",
-      tell: "Origin story, fake vulnerability, numbered prophecy.",
-      burn: "That thread already has a podcast invite."
-    },
-    {
-      by: "Revenue oracle in a black turtleneck",
-      tag: "engagement bait",
-      body: "I fired my entire marketing team and replaced them with one spreadsheet, one cold shower, and radical ownership. Pipeline tripled. Morale? A lagging indicator. Agree?",
-      tell: "Cruelty dressed as operating wisdom.",
-      burn: "The spreadsheet has a premium social account."
-    },
-    {
-      by: "Guy whose toddler has CAC opinions",
-      tag: "fake child quote",
-      body: "My 5-year-old asked why our CAC payback period was longer than bedtime. I had to sit down. Children see systems adults ignore. Build companies like a kid asking why.",
-      tell: "No child has ever said CAC payback.",
-      burn: "The child has requested a board observer seat."
-    },
-    {
-      by: "Fractional thought leader",
-      tag: "triadic listicle",
-      body: "Most people chase tactics. The best operators chase leverage. The elite chase silence. Clarity compounds. Noise taxes. Taste converts. Let that sink in.",
-      tell: "Sentence fragments pretending to be a business model.",
-      burn: "It sank. Unfortunately."
-    },
-    {
-      by: "AI ghostwriter with a vest",
-      tag: "humblebrag",
-      body: "I almost did not post this. But if one founder needs to hear it: your burnout is not a weakness, it is your moat. I cried in a WeWork bathroom, then booked 14 demos.",
-      tell: "Therapy words welded to pipeline math.",
-      burn: "The WeWork bathroom has filed a cease and desist."
-    },
-    {
-      by: "B2B monk mode consultant",
-      tag: "fake austerity",
-      body: "Deleted Netflix. Deleted DoorDash. Deleted friends who said 'relax.' Six months later, I have 41 inbound leads and a jawline my CRM respects.",
-      tell: "Self-improvement post accidentally became software sales.",
-      burn: "CRM jawline verified."
-    },
-    {
-      by: "Operator posting from seat 12C",
-      tag: "airport wisdom",
-      body: "A delayed flight taught me more about leadership than my MBA. The gate agent owned the room. No deck. No OKRs. Just calm execution. Build teams like Terminal B.",
-      tell: "Airport inconvenience turned into management doctrine.",
-      burn: "Terminal B declined the leadership ebook."
-    },
-    {
-      by: "SaaS confession booth",
-      tag: "fake rawness",
-      body: "Revenue is easy when you stop selling software and start selling identity transformation. Your product is not a tool. It is a mirror. Your demo is not a demo. It is a reckoning.",
-      tell: "A checkout page wearing a robe.",
-      burn: "The mirror asked for an annual contract."
-    },
-    {
-      by: "Founder with one screenshot",
-      tag: "screenshot gospel",
-      body: "This Slack message changed my life: 'ship it.' Two words. Zero punctuation. $8.2M ARR later, I still hear it before every launch.",
-      tell: "One normal message promoted to scripture.",
-      burn: "The Slack thread has left the company."
-    },
-    {
-      by: "Scale coach who owns a ring light",
-      tag: "unhinged metaphor",
-      body: "Your funnel is weather. Your offer is pressure. Your calendar is fog. Your no-shows are static. Stop blaming static. Build a signal.",
-      tell: "Metaphor escaped containment.",
-      burn: "The forecast asked to unsubscribe."
-    },
-    {
-      by: "Ex-big-tech now human",
-      tag: "personal brand arc",
-      body: "I left a $900k comp package because my soul was not in the spreadsheet. Now I help founders find their narrative moat. Funny how abundance starts after surrender.",
-      tell: "Soul/spreadsheet ratio exceeded safe limits.",
-      burn: "The spreadsheet kept the equity."
-    },
-    {
-      by: "Boardroom poet",
-      tag: "buzzword soup",
-      body: "In 2026, defensibility is not distribution. It is cultural gravity across agentic surfaces. The next unicorn will not acquire users. It will metabolize trust.",
-      tell: "Words met at a networking event and formed a sentence.",
-      burn: "Trust has not consented to metabolism."
-    },
-    {
-      by: "Cold plunge capitalist",
-      tag: "discipline cosplay",
-      body: "Your competitor is not smarter. They just wake up at 4:11, write the uncomfortable email, and do not negotiate with their nervous system.",
-      tell: "Alarm clock moral superiority.",
-      burn: "The nervous system has retained counsel."
-    },
-    {
-      by: "Viral teardown person",
-      tag: "empty framework",
-      body: "I reviewed 1,000 landing pages. The winners all had these 3 things: tension, specificity, and a button that knows where it is going. Steal this framework.",
-      tell: "Not wrong enough to be useful. Not useful enough to be human.",
-      burn: "The button has no memory of this event."
-    },
-    {
-      by: "AI agency founder",
-      tag: "robot sincerity",
-      body: "I used to think content was about writing. I was wrong. Content is about becoming the kind of person your market already trusts before they know why.",
-      tell: "A fortune cookie wearing a sales navigator login.",
-      burn: "The market still does not know why."
-    },
-    {
-      by: "Growth guy in a hotel lobby",
-      tag: "manufactured lesson",
-      body: "A stranger complimented my laptop sticker. We talked for nine minutes. He became a customer. Lesson: your brand is selling when you are silent.",
-      tell: "Sticker became an attribution model.",
-      burn: "The sticker wants commission."
-    }
-  ];
-
-  var HUMAN_POSTS = [
-    {
-      by: "Actual person with a cracked phone",
-      tag: "false positive: em dash",
-      body: "Does anybody in Mankato know an emergency plumber? Basement is doing a lake impression - not the fun kind. I can pay today. Please do not DM me a funnel.",
-      tell: "One dash, zero thought leadership.",
-      mock: "That was a basement emergency, not a content strategy."
-    },
-    {
-      by: "Tired ops manager",
-      tag: "false positive: bullets",
-      body: "Things that broke before 9am: printer, batch labeler, my coffee mug. Things still working: one forklift and Brenda's patience. Calling that a win.",
-      tell: "A list because mornings have parts.",
-      mock: "You smashed Brenda's patience. Impressive."
-    },
-    {
-      by: "Coffee spiller, not a brand architect",
-      tag: "false positive: emotional story",
-      body: "My laptop survived a full iced coffee today. The keyboard is sticky, my pride is worse, and the repair guy used the phrase 'we will see' like a sentence.",
-      tell: "Normal bad day, no funnel.",
-      mock: "That was someone's actual laptop problem."
-    },
-    {
-      by: "Small shop owner",
-      tag: "false positive: word 'leverage'",
-      body: "I am trying to leverage the one good photo of our trailer because I forgot to take pictures at the job site again. Marketing is just evidence with shoes on.",
-      tell: "Said leverage once under duress.",
-      mock: "You obliterated a trailer photo."
-    },
-    {
-      by: "Human who writes too clean",
-      tag: "false positive: tidy paragraph",
-      body: "Reminder to myself: send the invoice before starting the next thing. This is not wisdom. I just keep forgetting and then acting surprised.",
-      tell: "Clear writing is not automatically a robot.",
-      mock: "You punished a man for remembering billing."
-    },
-    {
-      by: "Someone's uncle",
-      tag: "false positive: weird sincerity",
-      body: "Proud of my niece. First week at the hospital and already sounds exhausted in the exact way good nurses sound exhausted. Bought her dinner.",
-      tell: "Human pride. No lesson carousel.",
-      mock: "You hammered an uncle. Solid platform hygiene."
-    },
-    {
-      by: "Local contractor",
-      tag: "false positive: typo swarm",
-      body: "If your coming by the shop today use the side door. Front is blocked by gravel and one of those cones that makes everyone act confused.",
-      tell: "Typos from a person with gravel outside.",
-      mock: "That cone did not deserve this."
-    },
-    {
-      by: "Designer with one complaint",
-      tag: "false positive: taste words",
-      body: "Rounded cards inside rounded cards inside rounded cards. Please let one surface be a surface. I am begging in public because Slack failed.",
-      tell: "Design pain, not synthetic insight.",
-      mock: "You just defended nested cards by force."
-    },
-    {
-      by: "Founder having a normal bad day",
-      tag: "false positive: vulnerable",
-      body: "Lost a deal today and handled it with the emotional grace of a printer jam during payroll. Tomorrow I will send the follow-up like an adult.",
-      tell: "Messy joke with actual stakes.",
-      mock: "That was too specific to be slop and you knew it."
-    },
-    {
-      by: "Bookkeeper with no funnel",
-      tag: "false positive: three lessons",
-      body: "Three things I learned this week: save the receipt, name the file, do not trust the file named final-final-v7. That's the whole post.",
-      tell: "Three things can just be three things.",
-      mock: "You smashed a file naming PSA."
-    },
-    {
-      by: "Person at an airport",
-      tag: "false positive: airport",
-      body: "Gate changed twice. Sandwich was $17 and damp. A baby made eye contact like he knew. This airport has defeated every founder lesson ever written.",
-      tell: "Airport post refusing to become doctrine.",
-      mock: "That sandwich died twice."
-    },
-    {
-      by: "Sales rep with dignity left",
-      tag: "false positive: prospecting",
-      body: "Sent 42 emails. Got two replies. One was 'wrong Mike.' The other was actually useful. Calling it a day before I start saying 'quick question' to my family.",
-      tell: "Outbound fatigue, not ghostwritten hustle.",
-      mock: "You hit the one honest sales post."
-    },
-    {
-      by: "Product manager with a headache",
-      tag: "false positive: roadmap",
-      body: "Roadmap update: the thing everyone wants is blocked by the thing nobody wants to admit exists. Please enjoy this rectangle in the meantime.",
-      tell: "This was probably typed during a meeting.",
-      mock: "You smashed a rectangle. The roadmap remains."
-    },
-    {
-      by: "Human using an em dash badly",
-      tag: "false positive: punctuation",
-      body: "I used an em dash once - now three people think I am a chatbot. I am not. I am just old enough to have opinions about punctuation.",
-      tell: "The joke is literally the tell.",
-      mock: "You became the joke. Clean hit, wrong target."
-    }
-  ];
-
-  var GOOD_LINES = [
-    "SLOP CONFIRMED",
-    "THREAD TERMINATED",
-    "ENGAGEMENT BAIT REMOVED",
-    "THE FEED BREATHES AGAIN",
-    "HUSTLE FOG CLEARED",
-    "FORTUNE COOKIE DESTROYED"
-  ];
-  var BAD_LINES = [
-    "THAT WAS A HUMAN",
-    "REAL POST. REAL DAMAGE.",
-    "THE HAMMER HAS TRUST ISSUES",
-    "PLATFORM JUST GOT WORSE",
-    "YOU ARE THE MODERATION PROBLEM"
-  ];
-  var MISS_LINES = [
-    "SLOP ESCAPED INTO COMMENTS",
-    "ANOTHER THREAD ABOUT LEVERAGE GOT THROUGH",
-    "THE FEED IS NOW WORSE",
-    "A FUNNEL METAPHOR SURVIVED"
-  ];
-
-  /* ---------- state ---------- */
-  var slots = [
-    { x: 38, y: 92, w: 186, h: 218, kind: "monitor" },
-    { x: 256, y: 92, w: 186, h: 218, kind: "monitor" },
-    { x: 38, y: 354, w: 186, h: 218, kind: "monitor" },
-    { x: 256, y: 354, w: 186, h: 218, kind: "monitor" }
-  ];
-  var state = "title";
-  var score = 0, best = 0, credibility = 3, streak = 0, smashed = 0, spared = 0, escaped = 0;
-  var elapsed = 0, spawnT = 0, last = 0, blink = 0;
-  var active = [], particles = [], floats = [];
-  var pointer = { x: W / 2, y: H / 2, inside: false, down: false };
-  var muted = false;
-  try { best = parseInt(localStorage.getItem("ai-slop-cleanup-best") || "0", 10) || 0; } catch (e) {}
-
-  function beep(freq, dur, type, vol) {
-    if (muted) return;
-    try {
-      var AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      if (!beep.ctx) beep.ctx = new AC();
-      var ctx = beep.ctx, osc = ctx.createOscillator(), gain = ctx.createGain();
-      osc.type = type || "square";
-      osc.frequency.value = freq || 440;
-      gain.gain.value = vol || 0.035;
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start();
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (dur || 0.08));
-      osc.stop(ctx.currentTime + (dur || 0.08));
-    } catch (e) {}
-  }
-  function text(t, x, y, size, color, align) {
-    cx.fillStyle = color || "#d8f5dc";
-    cx.font = "bold " + Math.max(9, Math.round(size || 12)) + "px 'Courier New', monospace";
-    cx.textAlign = align || "center";
-    cx.fillText(t, x, y);
-  }
-  function wrapLines(t, maxW, size) {
-    cx.font = "bold " + Math.max(9, Math.round(size || 11)) + "px 'Courier New', monospace";
-    var words = String(t).split(" "), lines = [], line = "";
-    words.forEach(function (w) {
-      var test = line ? line + " " + w : w;
-      if (cx.measureText(test).width > maxW && line) { lines.push(line); line = w; }
-      else line = test;
-    });
-    if (line) lines.push(line);
-    return lines;
-  }
-  function floatText(x, y, msg, color, dur, size) {
-    if (floats.length > 16) floats.shift();
-    floats.push({ x: x, y: y, msg: msg, color: color, t: dur || 1.2, life: dur || 1.2, size: size || 11 });
-  }
-  function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-  function pickPost() {
-    var slopRate = Math.min(0.7, 0.54 + elapsed * 0.0018);
-    var slop = Math.random() < slopRate;
-    var src = slop ? SLOP_POSTS : HUMAN_POSTS;
-    var p = src[Math.floor(Math.random() * src.length)];
-    return { slop: slop, by: p.by, tag: p.tag, body: p.body, tell: p.tell, burn: p.burn, mock: p.mock };
-  }
-  function startGame() {
-    state = "playing";
-    score = 0; credibility = 3; streak = 0; smashed = 0; spared = 0; escaped = 0;
-    elapsed = 0; spawnT = 0.2; active = []; particles = []; floats = [];
-    beep(520, 0.08, "square", 0.04);
-  }
-  function endGame() {
-    state = "gameover";
-    if (score > best) {
-      best = score;
-      try { localStorage.setItem("ai-slop-cleanup-best", String(best)); } catch (e) {}
-    }
-    beep(90, 0.45, "sawtooth", 0.06);
-  }
-  function maxActive() { return Math.min(4, 1 + Math.floor(elapsed / 24)); }
-  function spawnGap() { return Math.max(0.46, 1.55 * Math.pow(0.987, elapsed)); }
-  function postLife() { return Math.max(1.35, 4.35 - elapsed * 0.02); }
-  function spawnOne() {
-    if (active.length >= maxActive()) return;
-    var free = slots.map(function (_, i) { return i; }).filter(function (i) {
-      return !active.some(function (a) { return a.slot === i && a.mode !== "gone"; });
-    });
-    if (!free.length) return;
-    var slot = free[Math.floor(Math.random() * free.length)];
-    active.push({
-      slot: slot,
-      post: pickPost(),
-      age: 0,
-      life: postLife() * (0.88 + Math.random() * 0.24),
-      mode: "up",
-      verdictT: 0,
-      color: "#35ff7c",
-      line: "",
-      scroll: 0
-    });
-  }
-  function burst(x, y, color) {
-    for (var i = 0; i < 18; i++) {
-      var a = Math.random() * Math.PI * 2;
-      var sp = 70 + Math.random() * 180;
-      particles.push({
-        x: x, y: y,
-        vx: Math.cos(a) * sp,
-        vy: Math.sin(a) * sp,
-        t: 0.45 + Math.random() * 0.35,
-        life: 0.7,
-        color: color,
-        s: 2 + Math.random() * 4
-      });
-    }
-  }
-  function smash(a) {
-    if (a.mode !== "up") return;
-    var s = slots[a.slot];
-    if (a.post.slop) {
-      var mult = 1 + Math.min(3, streak * 0.15);
-      var pts = Math.round(100 * mult + Math.min(120, elapsed));
-      score += pts;
-      streak++;
-      smashed++;
-      a.color = "#35ff7c";
-      a.line = rnd(GOOD_LINES) + " +" + pts;
-      floatText(s.x + s.w / 2, s.y + 12, a.post.burn || rnd(GOOD_LINES), "#35ff7c", 1.3, 9);
-      beep(980, 0.07, "square", 0.04);
-    } else {
-      score = Math.max(0, score - 140);
-      credibility--;
-      streak = 0;
-      a.color = "#ff4d5f";
-      a.line = a.post.mock || rnd(BAD_LINES);
-      floatText(s.x + s.w / 2, s.y + 12, a.line, "#ff4d5f", 1.5, 9);
-      beep(120, 0.24, "sawtooth", 0.06);
-    }
-    a.mode = "smashed";
-    a.verdictT = 0.55;
-    burst(s.x + s.w / 2, s.y + s.h / 2, a.color);
-    if (credibility <= 0) endGame();
-  }
-  function miss(a) {
-    if (a.post.slop) {
-      credibility--;
-      streak = 0;
-      escaped++;
-      score = Math.max(0, score - 50);
-      a.color = "#ffbf2f";
-      a.line = rnd(MISS_LINES);
-      floatText(slots[a.slot].x + slots[a.slot].w / 2, slots[a.slot].y + 12, a.line, "#ffbf2f", 1.2, 9);
-      beep(180, 0.18, "sawtooth", 0.04);
-      if (credibility <= 0) endGame();
-    } else {
-      score += 25 + Math.min(75, Math.floor(elapsed / 4));
-      spared++;
-      a.color = "#52e6ff";
-      a.line = "HUMAN SPARED";
-    }
-    a.mode = "gone";
-  }
-
-  function coords(e) {
-    var r = cv.getBoundingClientRect();
-    var touch = e.touches && e.touches[0] ? e.touches[0] : e.changedTouches && e.changedTouches[0] ? e.changedTouches[0] : e;
-    return {
-      x: (touch.clientX - r.left) * (W / r.width),
-      y: (touch.clientY - r.top) * (H / r.height)
-    };
-  }
-  function hitTest(x, y) {
-    for (var i = active.length - 1; i >= 0; i--) {
-      var a = active[i], s = slots[a.slot];
-      if (a.mode === "up" && x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h) return a;
-    }
-    return null;
-  }
-  function pointerMove(e) {
-    var p = coords(e);
-    pointer.x = p.x; pointer.y = p.y; pointer.inside = true;
-  }
-  function pointerDown(e) {
-    e.preventDefault();
-    var p = coords(e);
-    pointer.x = p.x; pointer.y = p.y; pointer.inside = true; pointer.down = true;
-    if (state === "title") { startGame(); return; }
-    if (state === "gameover") { state = "title"; return; }
-    if (state !== "playing") return;
-    var a = hitTest(p.x, p.y);
-    if (a) smash(a);
-  }
-  function pointerUp() { pointer.down = false; }
-  cv.addEventListener("mousemove", pointerMove);
-  cv.addEventListener("mouseenter", function () { pointer.inside = true; });
-  cv.addEventListener("mouseleave", function () { pointer.inside = false; pointer.down = false; });
-  cv.addEventListener("mousedown", pointerDown);
-  window.addEventListener("mouseup", pointerUp);
-  cv.addEventListener("touchstart", pointerDown, { passive: false });
-  cv.addEventListener("touchmove", function (e) { e.preventDefault(); pointerMove(e); }, { passive: false });
-  cv.addEventListener("touchend", pointerUp);
-  window.addEventListener("keydown", function (e) {
-    if (e.key === " " || e.key === "Enter") {
-      if (state === "title") startGame();
-      else if (state === "gameover") state = "title";
-      e.preventDefault();
-    }
-    if (e.key === "m" || e.key === "M") muted = !muted;
-  });
-
-  function update(dt) {
-    blink += dt;
-    particles.forEach(function (p) { p.t -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 180 * dt; });
-    particles = particles.filter(function (p) { return p.t > 0; });
-    floats.forEach(function (f) { f.t -= dt; f.y -= 22 * dt; });
-    floats = floats.filter(function (f) { return f.t > 0; });
-    if (state !== "playing") return;
-    elapsed += dt;
-    spawnT -= dt;
-    if (spawnT <= 0) {
-      spawnOne();
-      spawnT = spawnGap();
-      if (elapsed > 35 && Math.random() < 0.25) spawnT *= 0.45;
-    }
-    active.forEach(function (a) {
-      if (a.mode === "up") {
-        a.age += dt;
-        if (a.age >= a.life) miss(a);
-      } else if (a.mode === "smashed") {
-        a.verdictT -= dt;
-        if (a.verdictT <= 0) a.mode = "gone";
-      }
-    });
-    active = active.filter(function (a) { return a.mode !== "gone"; });
-  }
-
-  function drawPost(a, s) {
-    var p = a.post;
-    var pad = 12;
-    var up = a.mode === "up";
-    var pct = up ? Math.min(1, a.age / Math.max(0.1, a.life)) : 1;
-    var warning = p.slop ? "#ffbf2f" : "#52e6ff";
-    cx.save();
-    cx.fillStyle = "#12151a";
-    cx.fillRect(s.x, s.y, s.w, s.h);
-    cx.strokeStyle = up ? "#384c43" : a.color;
-    cx.lineWidth = 2;
-    cx.strokeRect(s.x + 0.5, s.y + 0.5, s.w, s.h);
-    cx.fillStyle = "#25252d";
-    cx.fillRect(s.x + s.w / 2 - 18, s.y + s.h, 36, 9);
-    cx.fillRect(s.x + s.w / 2 - 38, s.y + s.h + 9, 76, 6);
-    cx.beginPath();
-    cx.rect(s.x + 5, s.y + 5, s.w - 10, s.h - 10);
-    cx.clip();
-    cx.fillStyle = "#07090c";
-    cx.fillRect(s.x + 5, s.y + 5, s.w - 10, s.h - 10);
-    cx.fillStyle = "#10151a";
-    cx.fillRect(s.x + 10, s.y + 10, s.w - 20, 38);
-    cx.fillStyle = "#183026";
-    cx.fillRect(s.x + 16, s.y + 16, 22, 22);
-    text("@", s.x + 27, s.y + 31, 12, "#35ff7c");
-    text(p.by.slice(0, 22), s.x + 46, s.y + 27, 9, "#d8f5dc", "left");
-    text("public post", s.x + 46, s.y + 39, 8, "#8c9c91", "left");
-    text("...", s.x + s.w - 22, s.y + 32, 12, "#8c9c91");
-    cx.fillStyle = "#161b20";
-    cx.fillRect(s.x + 10, s.y + 55, s.w - 20, 22);
-    text("!! Seems like AI slop", s.x + 19, s.y + 70, 10, warning, "left");
-    cx.fillStyle = "#090b0e";
-    cx.fillRect(s.x + pad, s.y + 88, s.w - pad * 2, s.h - 112);
-    var bodySize = 10;
-    var lineH = 13;
-    var lines = wrapLines(p.body, s.w - pad * 2 - 8, bodySize);
-    var maxLines = Math.floor((s.h - 124) / lineH);
-    for (var i = 0; i < Math.min(lines.length, maxLines); i++) {
-      var line = lines[i];
-      if (i === maxLines - 1 && lines.length > maxLines) line = line.replace(/[,.]$/, "") + "...";
-      text(line, s.x + pad + 4, s.y + 104 + i * lineH, bodySize, "#d8f5dc", "left");
-    }
-    cx.restore();
-
-    if (up) {
-      cx.strokeStyle = pct > 0.78 ? "#ff4d5f" : "#35ff7c";
-      cx.lineWidth = 3;
-      cx.beginPath();
-      cx.moveTo(s.x + 4, s.y + s.h - 5);
-      cx.lineTo(s.x + 4 + (s.w - 8) * (1 - pct), s.y + s.h - 5);
-      cx.stroke();
-      if (pct > 0.72 && Math.floor(blink * 8) % 2) text("LEAVING", s.x + s.w / 2, s.y - 7, 9, "#ffbf2f");
-    } else if (a.mode === "smashed") {
-      cx.fillStyle = a.color === "#35ff7c" ? "rgba(53,255,124,.16)" : "rgba(255,77,95,.18)";
-      cx.fillRect(s.x, s.y, s.w, s.h);
-      cx.strokeStyle = a.color;
-      for (var k = 0; k < 8; k++) {
-        cx.beginPath();
-        cx.moveTo(s.x + s.w / 2, s.y + s.h / 2);
-        cx.lineTo(s.x + 8 + ((k * 37) % Math.max(1, s.w - 16)), s.y + 8 + ((k * 23) % Math.max(1, s.h - 16)));
-        cx.stroke();
-      }
-      text(a.post.slop ? "GREEN SHATTER" : "RED SHATTER", s.x + s.w / 2, s.y + s.h / 2 - 4, 8, a.color);
-      text(a.post.slop ? "CORRECT" : "REAL HUMAN", s.x + s.w / 2, s.y + s.h / 2 + 10, 9, "#ffffff");
-    }
-  }
-
-  function drawHammer() {
-    if (!pointer.inside) return;
-    var x = pointer.x, y = pointer.y;
-    cx.save();
-    cx.translate(x, y);
-    cx.rotate(pointer.down ? -0.72 : -0.35);
-    cx.fillStyle = "#8a6a3a";
-    cx.fillRect(-4, -2, 8, 42);
-    cx.fillStyle = pointer.down ? "#ff4d5f" : "#cfd6d2";
-    cx.fillRect(-22, -14, 44, 17);
-    cx.strokeStyle = "#0b0b0e";
-    cx.strokeRect(-22.5, -14.5, 45, 18);
-    cx.fillStyle = "#ffffff";
-    cx.fillRect(-16, -10, 10, 5);
-    cx.restore();
-  }
-
-  function drawHud() {
-    text("SCORE " + score, 12, 24, 13, "#35ff7c", "left");
-    text("CRED " + credibility + "/3", W - 12, 24, 13, credibility <= 1 ? "#ff4d5f" : "#d8f5dc", "right");
-    text("BEST " + best, 12, 42, 10, "#8c9c91", "left");
-    text("STREAK x" + (1 + Math.min(3, streak * 0.15)).toFixed(1), W / 2, 42, 10, streak ? "#ffbf2f" : "#8c9c91");
-    text("TIME " + Math.floor(elapsed), W - 12, 42, 10, "#8c9c91", "right");
-  }
-
-  function drawTitle() {
-    text("NORSOFT", W / 2, 128, 34, "#35ff7c");
-    text("AI SLOP CLEANUP", W / 2, 162, 16, "#ffbf2f");
-    text("FOUR FEED SCREENS. READ FAST.", W / 2, 222, 12, "#ffffff");
-    text("SMASH SLOP. SPARE HUMANS.", W / 2, 244, 12, "#52e6ff");
-    text("!! SEEMS LIKE AI SLOP", W / 2, 292, 14, "#ffbf2f");
-    var bx = W / 2 - 125, by = 342;
-    cx.fillStyle = Math.floor(blink * 2) % 2 ? "#1b3b28" : "#11251a";
-    cx.fillRect(bx, by, 250, 46);
-    cx.strokeStyle = "#35ff7c";
-    cx.strokeRect(bx + 0.5, by + 0.5, 250, 46);
-    text("START CLEANUP", W / 2, by + 29, 13, "#35ff7c");
-    text("No quiz. No lesson. Just public confidence with a hammer.", W / 2, 434, 10, "#8c9c91");
-    text("BEST " + best, W / 2, 462, 11, "#d8f5dc");
-    text("tap or click", W / 2, 612, 10, "#8c9c91");
-  }
-
-  function drawGameOver() {
-    text("FEED MODERATION FAILED", W / 2, 150, 20, "#ff4d5f");
-    text("SCORE " + score, W / 2, 206, 16, "#35ff7c");
-    text("BEST " + best, W / 2, 232, 12, "#ffbf2f");
-    text("SLOP SMASHED ..... " + smashed, W / 2, 302, 12, "#d8f5dc");
-    text("HUMANS SPARED .... " + spared, W / 2, 328, 12, "#52e6ff");
-    text("SLOP ESCAPED ..... " + escaped, W / 2, 354, 12, "#ffbf2f");
-    text(rnd(BAD_LINES), W / 2, 420, 12, "#8c9c91");
-    var bx = W / 2 - 125, by = 516;
-    cx.fillStyle = "#11171a";
-    cx.fillRect(bx, by, 250, 46);
-    cx.strokeStyle = "#35ff7c";
-    cx.strokeRect(bx + 0.5, by + 0.5, 250, 46);
-    text("BACK TO MENU", W / 2, by + 29, 13, "#35ff7c");
-  }
-
-  function drawBackground() {
-    cx.fillStyle = "#030506";
-    cx.fillRect(0, 0, W, H);
-    cx.fillStyle = "#07120d";
-    for (var y = 76; y < 610; y += 36) {
-      cx.fillRect(22, y, W - 44, 1);
-    }
-    cx.strokeStyle = "rgba(82,230,255,.08)";
-    cx.strokeRect(18.5, 72.5, W - 37, 520);
-    cx.fillStyle = "rgba(255,191,47,.08)";
-    cx.fillRect(0, 602, W, 1);
-  }
-
-  function draw() {
-    cx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    drawBackground();
-    if (state === "title") {
-      drawTitle();
-      drawHammer();
-      return;
-    }
-    if (state === "gameover") {
-      drawGameOver();
-      drawHammer();
-      return;
-    }
-    drawHud();
-    slots.forEach(function (s) {
-      cx.fillStyle = "#080a0d";
-      cx.fillRect(s.x, s.y, s.w, s.h);
-      cx.strokeStyle = "#26323a";
-      cx.setLineDash([4, 5]);
-      cx.strokeRect(s.x + 0.5, s.y + 0.5, s.w, s.h);
-      cx.setLineDash([]);
-    });
-    active.forEach(function (a) { drawPost(a, slots[a.slot]); });
-    particles.forEach(function (p) {
-      cx.globalAlpha = Math.max(0, Math.min(1, p.t / p.life));
-      cx.fillStyle = p.color;
-      cx.fillRect(p.x, p.y, p.s, p.s);
-      cx.globalAlpha = 1;
-    });
-    floats.forEach(function (f) {
-      cx.globalAlpha = Math.max(0, Math.min(1, f.t / f.life));
-      text(f.msg, f.x, f.y, f.size, f.color);
-      cx.globalAlpha = 1;
-    });
-    cx.fillStyle = "#0b0f10";
-    cx.fillRect(0, 615, W, 105);
-    cx.strokeStyle = "#203037";
-    cx.strokeRect(0.5, 615.5, W - 1, 104);
-    text("TAP A SCREEN ONLY IF IT DESERVES THE FLAG", W / 2, 642, 11, "#ffbf2f");
-    text("GREEN = SLOP REMOVED     RED = HUMAN DESTROYED", W / 2, 666, 10, "#d8f5dc");
-    text("NORMAL POSTS SCORE WHEN THEY LEAVE UNSMASHED", W / 2, 690, 10, "#52e6ff");
-    drawHammer();
-  }
-
-  function frame(ts) {
-    var dt = Math.min(0.05, (ts - last) / 1000 || 0.016);
-    last = ts;
-    update(dt);
-    draw();
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
+  restart();
+  requestAnimationFrame(tick);
 })();
 </script>
 </body>
