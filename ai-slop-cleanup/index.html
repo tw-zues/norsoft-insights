@@ -508,6 +508,34 @@ not a security boundary.
 
   .log-line b { color: var(--ink); }
 
+  .vote-split {
+    display: grid;
+    gap: 6px;
+  }
+
+  .vote-copy {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .split-bar {
+    height: 14px;
+    border: 1px solid var(--line);
+    background: #06090b;
+    overflow: hidden;
+  }
+
+  .split-bar i {
+    display: block;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), #bc384d);
+  }
+
   .end {
     display: none;
     padding: 18px;
@@ -544,6 +572,97 @@ not a security boundary.
     color: var(--muted);
     font-size: 11px;
     font-weight: 800;
+  }
+
+  .community {
+    width: min(920px, 100%);
+    border: 1px solid #2e3039;
+    border-radius: 8px;
+    background: #0d1114;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, .8fr);
+  }
+
+  .community > section {
+    padding: 16px;
+    display: grid;
+    gap: 12px;
+    align-content: start;
+  }
+
+  .community > section:first-child {
+    border-right: 1px solid var(--line);
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .field label {
+    color: var(--amber);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+
+  textarea, select, input {
+    width: 100%;
+    color: var(--ink);
+    background: #080c0f;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 10px;
+    font: inherit;
+  }
+
+  textarea {
+    min-height: 128px;
+    resize: vertical;
+  }
+
+  .fine {
+    color: var(--dim);
+    font-size: 11px;
+  }
+
+  .status-line {
+    min-height: 22px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .admin-panel[hidden] {
+    display: none;
+  }
+
+  .submission-list {
+    display: grid;
+    gap: 10px;
+    max-height: 360px;
+    overflow: auto;
+  }
+
+  .submission-item {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #11171a;
+    padding: 10px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .submission-item p {
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .submission-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
   .under {
@@ -667,6 +786,15 @@ not a security boundary.
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .community {
+      grid-template-columns: 1fr;
+    }
+
+    .community > section:first-child {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
     .under {
       grid-template-columns: 1fr;
       padding-inline: 8px;
@@ -745,6 +873,13 @@ not a security boundary.
         <div class="reveal-body">
           <div id="punchline" class="punchline">Pick a side.</div>
           <div id="explain" class="explain">Fast judgment is the whole problem.</div>
+          <div class="vote-split" aria-label="Crowd vote split">
+            <div class="vote-copy">
+              <span id="crowdSlop">Crowd: 0% slop</span>
+              <span id="crowdTotal">0 votes</span>
+            </div>
+            <div class="split-bar" aria-hidden="true"><i id="crowdBar"></i></div>
+          </div>
           <button id="nextBtn" class="small-button primary" type="button">NEXT POST</button>
         </div>
       </section>
@@ -798,6 +933,42 @@ not a security boundary.
   </section>
 </main>
 
+<section class="community" aria-label="Community Slop or Not MVP">
+  <section>
+    <div class="prompt-row">
+      <span>SUBMIT A POST</span>
+      <span>admin-reviewed before publishing</span>
+    </div>
+    <div class="field">
+      <label for="submissionText">POST TEXT</label>
+      <textarea id="submissionText" maxlength="700" placeholder="Paste the post text here. Remove names, handles, links, emails, screenshots, and anything identifying."></textarea>
+      <div class="fine">MVP rule: submissions stay pending until reviewed. This static version stores them locally in this browser.</div>
+    </div>
+    <div class="field">
+      <label for="submissionGuess">YOUR GUESS</label>
+      <select id="submissionGuess">
+        <option value="slop">Probably slop</option>
+        <option value="not">Probably not slop</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="submissionNote">WHY IT BELONGS HERE</label>
+      <input id="submissionNote" maxlength="160" placeholder="Example: fake child quote, too polished, actually just punctuation">
+    </div>
+    <button id="submitPostBtn" class="small-button primary" type="button">SUBMIT FOR REVIEW</button>
+    <div id="submitStatus" class="status-line" aria-live="polite"></div>
+  </section>
+
+  <section id="adminPanel" class="admin-panel" hidden>
+    <div class="prompt-row">
+      <span>ADMIN QUEUE</span>
+      <span>open with ?admin=1</span>
+    </div>
+    <div class="fine">Approve turns a local pending submission into a playable composite card. Reject removes it from this browser queue.</div>
+    <div id="submissionList" class="submission-list"></div>
+  </section>
+</section>
+
 <section class="under" aria-label="Norsoft Labs note">
   <div class="under-copy">
     <p><b>This is not an AI detector.</b> It is a tiny joke about turning taste into a button and calling the result truth. The posts are anonymized composites, not real user quotes.</p>
@@ -831,6 +1002,18 @@ not a security boundary.
   }
   function pick(arr) { return arr[Math.floor(rand() * arr.length)]; }
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+  function cleanText(value, max) {
+    return String(value || "")
+      .replace(/\s+/g, " ")
+      .replace(/https?:\/\/\S+/gi, "[link removed]")
+      .replace(/@\w+/g, "@removed")
+      .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email removed]")
+      .trim()
+      .slice(0, max || 700);
+  }
+  function slugify(value) {
+    return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 64) || "card";
+  }
 
   var CARDS = [
     {
@@ -1135,6 +1318,11 @@ not a security boundary.
     }
   ];
 
+  CARDS.forEach(function (card, index) {
+    card.id = "seed-" + (index + 1) + "-" + slugify(card.author);
+    card.seeded = true;
+  });
+
   var NEUTRAL_TELLS = [
     ["sounds confident", "confidence is not a source"],
     ["sentence has shape", "shape panic remains high"],
@@ -1186,11 +1374,80 @@ not a security boundary.
     "meta", "body", "genre", "fakeStats", "slopBtn", "notBtn", "reveal", "revealHead",
     "verdict", "delta", "punchline", "explain", "nextBtn", "slopScore", "slopBar",
     "meterLabel", "tells", "log", "modeLabel", "stage", "end", "endTitle", "endLine",
-    "finalScore", "finalRight", "finalWrong", "finalBest", "againBtn", "liveState"
+    "finalScore", "finalRight", "finalWrong", "finalBest", "againBtn", "liveState",
+    "crowdSlop", "crowdTotal", "crowdBar", "submissionText", "submissionGuess",
+    "submissionNote", "submitPostBtn", "submitStatus", "adminPanel", "submissionList"
   ].forEach(function (id) { el[id] = document.getElementById(id); });
 
+  function readJson(key, fallback) {
+    try {
+      var value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  function writeJson(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+  }
+
+  function localVotes() { return readJson("slop-or-not-votes", {}); }
+  function saveLocalVotes(votes) { writeJson("slop-or-not-votes", votes); }
+  function pendingSubmissions() { return readJson("slop-or-not-submissions", []); }
+  function savePendingSubmissions(items) { writeJson("slop-or-not-submissions", items); }
+  function approvedCards() { return readJson("slop-or-not-approved", []); }
+  function saveApprovedCards(items) { writeJson("slop-or-not-approved", items); }
+
+  function baselineVotes(card) {
+    var hash = 0;
+    var raw = card.id || card.author + card.body;
+    for (var i = 0; i < raw.length; i++) hash = ((hash << 5) - hash + raw.charCodeAt(i)) >>> 0;
+    var total = 23 + (hash % 240);
+    var target = card.answer === "slop" ? card.score / 10 : card.score / 10;
+    var noise = (((hash >>> 8) % 17) - 8) / 100;
+    var slopRate = clamp(target + noise, .04, .96);
+    return { slop: Math.round(total * slopRate), not: total - Math.round(total * slopRate) };
+  }
+
+  function voteCounts(card) {
+    var base = baselineVotes(card);
+    var votes = localVotes()[card.id] || { slop: 0, not: 0 };
+    return { slop: base.slop + (votes.slop || 0), not: base.not + (votes.not || 0) };
+  }
+
+  function recordVote(card, choice) {
+    var votes = localVotes();
+    if (!votes[card.id]) votes[card.id] = { slop: 0, not: 0 };
+    votes[card.id][choice] = (votes[card.id][choice] || 0) + 1;
+    saveLocalVotes(votes);
+  }
+
+  function allPlayableCards() {
+    var approved = approvedCards().map(function (item, index) {
+      return {
+        id: item.id || "approved-" + index,
+        answer: item.guess === "not" ? "not" : "slop",
+        score: item.guess === "not" ? 3.8 : 8.1,
+        author: "Community submission",
+        meta: "reader-submitted / admin-approved composite",
+        genre: item.note || "community sample",
+        body: item.text,
+        tells: [
+          [item.note || "reader-submitted tell", "approved from the MVP queue"],
+          ["crowd will decide", "the slopometer remains dramatic"],
+          ["names removed", "composite mode protects the joke"]
+        ],
+        hit: item.guess === "not" ? "Correct. The crowd tried to panic, but this one still reads human." : "Correct. The submission had premium slop energy.",
+        miss: item.guess === "not" ? "You flagged a community-submitted human-ish post." : "You let a reader-submitted slop specimen roam free.",
+        seeded: false
+      };
+    });
+    return CARDS.concat(approved);
+  }
+
   function shuffleCards() {
-    var copy = CARDS.slice();
+    var copy = allPlayableCards();
     for (var i = copy.length - 1; i > 0; i--) {
       var j = Math.floor(rand() * (i + 1));
       var tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
@@ -1327,6 +1584,7 @@ not a security boundary.
     el.slopScore.style.color = c.score >= 7 ? "var(--red)" : c.score >= 4.5 ? "var(--amber)" : "var(--green)";
     el.slopBar.style.width = (c.score * 10) + "%";
     el.meterLabel.textContent = c.answer === "slop" ? "slop confirmed" : "human, somehow";
+    renderCrowd(c);
     renderTells(true);
     renderLog();
     if (state.index >= state.total - 1) {
@@ -1340,6 +1598,15 @@ not a security boundary.
     if (!state.locked) return;
     state.index += 1;
     loadCard();
+  }
+
+  function renderCrowd(card) {
+    var counts = voteCounts(card);
+    var total = counts.slop + counts.not;
+    var slopPct = total ? Math.round(counts.slop / total * 100) : 0;
+    el.crowdSlop.textContent = "Crowd: " + slopPct + "% slop";
+    el.crowdTotal.textContent = total + " votes";
+    el.crowdBar.style.width = slopPct + "%";
   }
 
   function endGame() {
@@ -1390,6 +1657,91 @@ not a security boundary.
     loadCard();
   }
 
+  function submitPost() {
+    var text = cleanText(el.submissionText.value, 700);
+    var note = cleanText(el.submissionNote.value, 160);
+    var guess = el.submissionGuess.value === "not" ? "not" : "slop";
+    if (text.length < 40) {
+      el.submitStatus.textContent = "Needs more post text before review.";
+      return;
+    }
+    var items = pendingSubmissions();
+    var item = {
+      id: "sub-" + Date.now().toString(36) + "-" + Math.floor(Math.random() * 10000).toString(36),
+      text: text,
+      note: note || (guess === "slop" ? "reader thinks this is slop" : "reader thinks this is human"),
+      guess: guess,
+      createdAt: new Date().toISOString()
+    };
+    items.unshift(item);
+    savePendingSubmissions(items.slice(0, 50));
+    el.submissionText.value = "";
+    el.submissionNote.value = "";
+    el.submitStatus.textContent = "Submitted to local MVP queue. Open ?admin=1 to review.";
+    renderAdmin();
+  }
+
+  function renderAdmin() {
+    var isAdmin = params.get("admin") === "1";
+    el.adminPanel.hidden = !isAdmin;
+    if (!isAdmin) return;
+    var items = pendingSubmissions();
+    el.submissionList.textContent = "";
+    if (!items.length) {
+      var empty = document.createElement("div");
+      empty.className = "fine";
+      empty.textContent = "No pending submissions in this browser.";
+      el.submissionList.appendChild(empty);
+      return;
+    }
+    items.forEach(function (item) {
+      var node = document.createElement("div");
+      var text = document.createElement("p");
+      var meta = document.createElement("div");
+      var actions = document.createElement("div");
+      var approve = document.createElement("button");
+      var reject = document.createElement("button");
+      node.className = "submission-item";
+      text.textContent = item.text;
+      meta.className = "fine";
+      meta.textContent = (item.guess === "slop" ? "Probably slop" : "Probably not") + " / " + item.note;
+      actions.className = "submission-actions";
+      approve.className = "small-button primary";
+      approve.type = "button";
+      approve.textContent = "APPROVE";
+      approve.addEventListener("click", function () { approveSubmission(item.id); });
+      reject.className = "small-button";
+      reject.type = "button";
+      reject.textContent = "REJECT";
+      reject.addEventListener("click", function () { rejectSubmission(item.id); });
+      actions.appendChild(approve);
+      actions.appendChild(reject);
+      node.appendChild(text);
+      node.appendChild(meta);
+      node.appendChild(actions);
+      el.submissionList.appendChild(node);
+    });
+  }
+
+  function approveSubmission(id) {
+    var pending = pendingSubmissions();
+    var item = pending.find(function (entry) { return entry.id === id; });
+    if (!item) return;
+    var approved = approvedCards();
+    approved.unshift(item);
+    saveApprovedCards(approved.slice(0, 100));
+    savePendingSubmissions(pending.filter(function (entry) { return entry.id !== id; }));
+    el.submitStatus.textContent = "Approved one local submission. It will appear in the next shuffled run.";
+    renderAdmin();
+  }
+
+  function rejectSubmission(id) {
+    var pending = pendingSubmissions();
+    savePendingSubmissions(pending.filter(function (entry) { return entry.id !== id; }));
+    el.submitStatus.textContent = "Rejected one local submission.";
+    renderAdmin();
+  }
+
   var last = performance.now();
   function tick(now) {
     var dt = Math.min(.08, (now - last) / 1000);
@@ -1414,16 +1766,25 @@ not a security boundary.
     requestAnimationFrame(tick);
   }
 
-  el.slopBtn.addEventListener("click", function () { judge("slop"); });
-  el.notBtn.addEventListener("click", function () { judge("not"); });
+  el.slopBtn.addEventListener("click", function () {
+    if (!state.locked && state.current) recordVote(state.current, "slop");
+    judge("slop");
+  });
+  el.notBtn.addEventListener("click", function () {
+    if (!state.locked && state.current) recordVote(state.current, "not");
+    judge("not");
+  });
   el.nextBtn.addEventListener("click", next);
   el.againBtn.addEventListener("click", restart);
+  el.submitPostBtn.addEventListener("click", submitPost);
   window.addEventListener("keydown", function (e) {
     if (e.key === "ArrowLeft" || e.key === "s" || e.key === "S") {
+      if (!state.locked && state.current) recordVote(state.current, "slop");
       judge("slop");
       e.preventDefault();
     }
     if (e.key === "ArrowRight" || e.key === "n" || e.key === "N") {
+      if (!state.locked && state.current) recordVote(state.current, "not");
       judge("not");
       e.preventDefault();
     }
@@ -1474,6 +1835,7 @@ not a security boundary.
   }
 
   restart();
+  renderAdmin();
   requestAnimationFrame(tick);
 })();
 </script>
