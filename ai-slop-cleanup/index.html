@@ -547,45 +547,6 @@ not a security boundary.
     transition: width .22s ease;
   }
 
-  .chips {
-    display: grid;
-    gap: 8px;
-  }
-
-  .chip {
-    border: 1px solid var(--border);
-    background: var(--porcelain);
-    color: var(--ink);
-    border-radius: 10px;
-    padding: 9px 10px;
-    font-size: 12px;
-    font-weight: 800;
-  }
-
-  .chip small {
-    display: block;
-    margin-top: 3px;
-    color: var(--dim);
-    font-size: 10px;
-    font-weight: 700;
-  }
-
-  .log {
-    min-height: 140px;
-    max-height: 190px;
-    overflow: auto;
-    align-content: start;
-  }
-
-  .log-line {
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 8px;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .log-line b { color: var(--ink); }
-
   .vote-split {
     display: grid;
     gap: 6px;
@@ -906,21 +867,6 @@ not a security boundary.
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-head">
-          <span>SUSPICIOUS TELLS</span>
-          <span>not evidence</span>
-        </div>
-        <div id="tells" class="panel-body chips"></div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <span>PUBLIC SHAME LOG</span>
-          <span id="modeLabel">normal mode</span>
-        </div>
-        <div id="log" class="panel-body log"></div>
-      </div>
     </aside>
   </section>
 
@@ -1281,17 +1227,6 @@ not a security boundary.
     card.seeded = true;
   });
 
-  var NEUTRAL_TELLS = [
-    ["sounds confident", "confidence is not a source"],
-    ["sentence has shape", "shape panic remains high"],
-    ["business noun present", "machine grew up around webinars"],
-    ["one phrase feels expensive", "invoice odor inconclusive"],
-    ["could fit on a carousel", "not all rectangles are crimes"],
-    ["human detail detected", "detector unsure if bait"],
-    ["tone is suspiciously useful", "utility makes policy nervous"],
-    ["format looks clean", "cleanliness now controversial"]
-  ];
-
   var GOOD_LINES = [
     "Your taste briefly outperformed the machine.",
     "Fast judgment worked this time. Dangerous lesson.",
@@ -1319,8 +1254,7 @@ not a security boundary.
     wrong: 0,
     locked: false,
     ended: false,
-    current: null,
-    log: []
+    current: null
   };
 
   var queue = [];
@@ -1329,7 +1263,7 @@ not a security boundary.
     "game", "score", "taste", "lives", "cardCount", "streak", "avatar", "author",
     "meta", "body", "postCard", "imageWrap", "postImage", "genre", "fakeStats", "slopBtn", "notBtn", "reveal", "revealHead",
     "verdict", "delta", "punchline", "explain", "nextBtn", "slopScore", "slopBar",
-    "meterLabel", "tells", "log", "modeLabel", "stage", "end", "endTitle", "endLine",
+    "meterLabel", "stage", "end", "endTitle", "endLine",
     "finalScore", "finalRight", "finalWrong", "finalBest", "againBtn", "liveState",
     "crowdSlop", "crowdTotal", "crowdBar"
   ].forEach(function (id) { el[id] = document.getElementById(id); });
@@ -1408,11 +1342,6 @@ not a security boundary.
     return copy.slice(0, state.total);
   }
 
-  function addLog(title, copy) {
-    state.log.unshift({ title: title, copy: copy });
-    state.log = state.log.slice(0, 6);
-  }
-
   function fakeStats(card) {
     var base = card.answer === "slop" ? 280 + Math.floor(rand() * 1900) : 8 + Math.floor(rand() * 260);
     var comments = card.answer === "slop" ? 19 + Math.floor(rand() * 240) : Math.floor(rand() * 31);
@@ -1426,39 +1355,10 @@ not a security boundary.
     }
     state.current = queue[state.index];
     state.current.stats = fakeStats(state.current);
-    state.current.extraTells = [pick(NEUTRAL_TELLS)];
-    if (state.index > 5) state.current.extraTells.push(pick(NEUTRAL_TELLS));
     state.locked = false;
     el.reveal.classList.remove("active");
     el.game.classList.remove("rated");
     render();
-  }
-
-  function renderTells(showTruth) {
-    var tells = state.current.tells.slice(0, showTruth ? 3 : 2).concat(showTruth ? [] : state.current.extraTells);
-    el.tells.textContent = "";
-    tells.forEach(function (tell) {
-      var chip = document.createElement("div");
-      var small = document.createElement("small");
-      chip.className = "chip";
-      chip.textContent = tell[0];
-      small.textContent = tell[1];
-      chip.appendChild(small);
-      el.tells.appendChild(chip);
-    });
-  }
-
-  function renderLog() {
-    el.log.textContent = "";
-    state.log.forEach(function (line) {
-      var node = document.createElement("div");
-      var bold = document.createElement("b");
-      node.className = "log-line";
-      bold.textContent = line.title;
-      node.appendChild(bold);
-      node.appendChild(document.createTextNode(" " + line.copy));
-      el.log.appendChild(node);
-    });
   }
 
   function render() {
@@ -1491,9 +1391,7 @@ not a security boundary.
       el.slopScore.textContent = "?";
       el.slopBar.style.width = "0";
       el.meterLabel.textContent = "hidden until you judge";
-      renderTells(false);
     }
-    renderLog();
     el.liveState.textContent = "Card " + (state.index + 1) + " of " + state.total + ". " + c.genre;
   }
 
@@ -1508,7 +1406,6 @@ not a security boundary.
       state.score += delta;
       state.right += 1;
       state.streak += 1;
-      addLog("RIGHT +" + delta, c.hit);
     } else {
       delta = -110;
       state.score = Math.max(0, state.score + delta);
@@ -1516,7 +1413,6 @@ not a security boundary.
       state.lives += 1;
       state.wrong += 1;
       state.streak = 0;
-      addLog("WRONG", c.miss);
     }
     showReveal(choice, correct, delta);
     render();
@@ -1543,8 +1439,6 @@ not a security boundary.
     el.slopBar.style.width = (c.score * 10) + "%";
     el.meterLabel.textContent = c.answer === "slop" ? "slop confirmed" : "human, somehow";
     renderCrowd(c);
-    renderTells(true);
-    renderLog();
     if (state.index >= state.total - 1) {
       el.nextBtn.textContent = "FINAL RATING";
     } else {
@@ -1607,11 +1501,9 @@ not a security boundary.
     state.wrong = 0;
     state.locked = false;
     state.ended = false;
-    state.log = [];
     queue = shuffleCards();
     el.stage.style.display = "";
     el.end.classList.remove("active");
-    addLog("NEW RUN", "You are about to turn taste into a button.");
     loadCard();
   }
 
