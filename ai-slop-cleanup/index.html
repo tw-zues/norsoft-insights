@@ -88,18 +88,18 @@ not a security boundary.
   button, a { font: inherit; letter-spacing: 0; }
 
   .brand {
-    width: min(920px, 100%);
+    width: min(720px, 100%);
     max-width: calc(100vw - 24px);
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 14px;
-    align-items: end;
+    gap: 12px;
+    align-items: center;
   }
 
   .wordmark {
     color: var(--navy);
     font-family: "Lora", Georgia, serif;
-    font-size: 72px;
+    font-size: 58px;
     line-height: .92;
     font-weight: 500;
     letter-spacing: 0;
@@ -112,7 +112,7 @@ not a security boundary.
   .submark {
     margin-top: 6px;
     color: var(--terracotta);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 0;
   }
@@ -123,33 +123,38 @@ not a security boundary.
     background: var(--white);
     color: var(--muted);
     border-radius: 999px;
-    padding: 8px 14px;
-    font-size: 13px;
+    padding: 7px 12px;
+    font-size: 12px;
     text-align: right;
   }
 
   .game {
-    width: min(920px, 100%);
+    width: min(720px, 100%);
     max-width: calc(100vw - 24px);
     border: 1px solid var(--border);
-    border-radius: 20px;
+    border-radius: 12px;
     overflow: hidden;
     background: var(--white);
-    box-shadow: 0 18px 48px rgba(8,38,64,.08);
+    box-shadow: 0 10px 28px rgba(8,38,64,.06);
   }
 
   .hud {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     background: var(--white);
     border-bottom: 1px solid var(--line);
   }
 
+  .hud-item:nth-child(2),
+  .hud-item:nth-child(3) {
+    display: none;
+  }
+
   .hud-item {
-    min-height: 58px;
-    padding: 10px 12px;
+    min-height: 50px;
+    padding: 8px 12px;
     display: grid;
-    gap: 2px;
+    gap: 0;
     align-content: center;
     border-right: 1px solid var(--line);
   }
@@ -175,7 +180,7 @@ not a security boundary.
   .stage {
     display: grid;
     grid-template-columns: 1fr;
-    width: min(640px, 100%);
+    width: 100%;
     min-width: 0;
     min-height: 0;
     margin: 0 auto;
@@ -183,11 +188,11 @@ not a security boundary.
 
   .left {
     min-width: 0;
-    padding: 18px;
+    padding: 16px;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto auto;
-    gap: 14px;
-    background: var(--sandstone-soft);
+    gap: 12px;
+    background: var(--white);
   }
 
   .right {
@@ -209,7 +214,7 @@ not a security boundary.
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    color: var(--amber);
+    color: var(--terracotta);
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0;
@@ -223,15 +228,15 @@ not a security boundary.
 
   .post-card {
     min-width: 0;
-    min-height: 330px;
+    min-height: 300px;
     display: grid;
-    grid-template-rows: auto minmax(210px, 1fr) auto;
+    grid-template-rows: auto minmax(176px, 1fr) auto;
     color: var(--paperInk);
     background: var(--paper);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 12px 32px rgba(8,38,64,.08);
+    box-shadow: none;
   }
 
   .post-card.has-image {
@@ -239,24 +244,24 @@ not a security boundary.
   }
 
   .post-head {
-    padding: 14px;
+    padding: 12px;
     display: grid;
     grid-template-columns: 42px minmax(0, 1fr) auto;
-    gap: 10px;
+    gap: 9px;
     align-items: center;
     background: var(--white);
     border-bottom: 1px solid var(--border);
   }
 
   .avatar {
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: var(--navy);
     color: var(--white);
     display: grid;
     place-items: center;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 700;
   }
 
@@ -280,12 +285,13 @@ not a security boundary.
     color: var(--clay);
     font-size: 22px;
     line-height: 1;
+    display: none;
   }
 
   .post-body {
-    padding: 22px;
+    padding: 20px 22px;
     font-family: "Lora", Georgia, serif;
-    font-size: 28px;
+    font-size: 24px;
     line-height: 1.32;
     font-weight: 600;
     display: grid;
@@ -324,7 +330,7 @@ not a security boundary.
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    padding: 12px 14px;
+    padding: 10px 12px;
     border-top: 1px solid var(--border);
     color: var(--clay);
     font-size: 11px;
@@ -340,32 +346,32 @@ not a security boundary.
     min-width: 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
   }
 
   .choice {
     min-width: 0;
-    min-height: 86px;
+    min-height: 72px;
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 10px;
     cursor: pointer;
     color: var(--navy);
     background: var(--white);
     display: grid;
     align-content: center;
     justify-items: center;
-    gap: 4px;
-    padding: 12px;
+    gap: 3px;
+    padding: 10px;
     font-weight: 700;
     position: relative;
     overflow: hidden;
   }
 
   .choice strong {
-    font-family: "Lora", Georgia, serif;
-    font-size: 34px;
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 24px;
     line-height: 1;
-    font-weight: 600;
+    font-weight: 800;
   }
 
   .choice span {
@@ -380,12 +386,15 @@ not a security boundary.
   }
 
   .choice.not {
-    border-color: rgba(8,38,64,.22);
+    border-color: var(--navy);
+    background: var(--navy);
+    color: var(--white);
   }
 
   .choice.slop strong,
   .choice.slop span { color: var(--white); }
-  .choice.not strong { color: var(--navy); }
+  .choice.not strong,
+  .choice.not span { color: var(--white); }
 
   .choice:hover, .choice:focus-visible,
   .small-button:hover, .small-button:focus-visible {
@@ -401,7 +410,7 @@ not a security boundary.
   .reveal {
     display: none;
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 10px;
     background: var(--white);
     overflow: hidden;
   }
@@ -443,7 +452,7 @@ not a security boundary.
   .small-button {
     min-height: 42px;
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 10px;
     color: var(--navy);
     background: var(--white);
     padding: 9px 15px;
@@ -463,7 +472,7 @@ not a security boundary.
 
   .panel {
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 10px;
     background: var(--white);
     overflow: hidden;
   }
@@ -621,7 +630,7 @@ not a security boundary.
 
   .end-card {
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 10px;
     background: var(--porcelain);
     padding: 12px;
     display: grid;
@@ -640,41 +649,31 @@ not a security boundary.
   }
 
   .community {
-    width: min(640px, 100%);
+    width: min(720px, 100%);
     max-width: calc(100vw - 24px);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    background: var(--white);
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: 1fr;
+    border: 0;
+    background: transparent;
+    display: block;
   }
 
-  .community > section {
-    padding: 16px;
-    display: grid;
-    gap: 12px;
-    align-content: start;
-  }
-
-  .community > section:first-child {
-    border-right: 0;
-  }
-
-  .submit-copy {
-    margin: 0;
-    color: var(--muted);
-    overflow-wrap: anywhere;
+  .submit-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--timber);
+    font-size: 14px;
   }
 
   .under {
-    width: min(920px, 100%);
+    width: min(720px, 100%);
     max-width: calc(100vw - 24px);
     border-top: 1px solid var(--border);
-    padding-top: 18px;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 18px;
+    padding-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 14px;
     align-items: start;
     color: var(--muted);
   }
@@ -687,6 +686,10 @@ not a security boundary.
   .under p { margin: 0; overflow-wrap: anywhere; }
   .under b { color: var(--ink); }
 
+  .under-copy {
+    flex: 1 1 380px;
+  }
+
   .footer-actions {
     display: flex;
     gap: 10px;
@@ -697,10 +700,14 @@ not a security boundary.
   .pwa-tools {
     color: var(--dim);
     font-size: 11px;
-    display: grid;
+    display: none;
     gap: 6px;
     justify-items: end;
     margin-top: 6px;
+  }
+
+  .pwa-tools.active {
+    display: grid;
   }
 
   .pwa-tools button[hidden] { display: none; }
@@ -741,7 +748,7 @@ not a security boundary.
     }
 
     .wordmark {
-      font-size: 34px;
+      font-size: 31px;
     }
 
     .tag {
@@ -765,7 +772,7 @@ not a security boundary.
     }
 
     .hud-item {
-      min-height: 44px;
+      min-height: 42px;
     }
 
     .hud-item:nth-child(4) { border-right: 1px solid var(--line); }
@@ -774,7 +781,7 @@ not a security boundary.
     }
 
     .left {
-      padding: 12px;
+      padding: 10px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -783,13 +790,13 @@ not a security boundary.
     }
 
     .post-card {
-      min-height: 330px;
-      grid-template-rows: auto minmax(210px, 1fr) auto;
+      min-height: 286px;
+      grid-template-rows: auto minmax(162px, 1fr) auto;
     }
 
     .post-body {
-      padding: 18px;
-      font-size: 20px;
+      padding: 16px;
+      font-size: 18px;
       line-height: 1.32;
     }
 
@@ -798,12 +805,12 @@ not a security boundary.
     }
 
     .choice {
-      min-height: 68px;
+      min-height: 60px;
       padding: 10px 8px;
     }
 
     .choice strong {
-      font-size: 28px;
+      font-size: 20px;
     }
 
     .choice span {
@@ -814,17 +821,12 @@ not a security boundary.
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .community {
-      grid-template-columns: 1fr;
-    }
-
-    .community > section:first-child {
-      border-right: 0;
-      border-bottom: 0;
+    .submit-strip {
+      justify-content: space-between;
+      padding: 0 6px;
     }
 
     .under {
-      grid-template-columns: 1fr;
       padding-inline: 8px;
     }
 
@@ -845,9 +847,9 @@ not a security boundary.
 <header class="brand">
   <div>
     <div class="wordmark">SLOP <span>OR</span> NOT</div>
-    <div class="submark">NORSOFT LABS - PUBLIC CONFIDENCE SPEEDRUN</div>
+    <div class="submark">Read it. Judge it. See if your taste survives.</div>
   </div>
-  <div class="tag">COMPOSITE FEED DECK / CURRENT-DAY CONTENT PANIC</div>
+  <div class="tag">Norsoft Labs micro-demo</div>
 </header>
 
 <main id="game" class="game" aria-label="Slop or Not game">
@@ -965,14 +967,10 @@ not a security boundary.
 </main>
 
 <section class="community" aria-label="Submit to Slop or Not">
-  <section>
-    <div class="prompt-row">
-      <span>FOUND A SUSPECT POST?</span>
-      <span>send it to the queue</span>
-    </div>
-    <p class="submit-copy">Submit an anonymized screenshot or post on its own page. The game stays clean: judge, swipe, move on.</p>
-    <a class="small-button primary" href="./submit.html">SUBMIT A POST</a>
-  </section>
+  <div class="submit-strip">
+    <span>Got one worth judging?</span>
+    <a class="small-button" href="./submit.html">SUBMIT A POST</a>
+  </div>
 </section>
 
 <section class="under" aria-label="Norsoft Labs note">
@@ -1715,9 +1713,13 @@ not a security boundary.
   var installPrompt = null;
   var installBtn = document.getElementById("installPwa");
   var pwaStatus = document.getElementById("pwaStatus");
+  var pwaTools = document.querySelector(".pwa-tools");
   var standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
   var isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  function setPwaStatus(msg) { if (pwaStatus) pwaStatus.textContent = msg; }
+  function setPwaStatus(msg) {
+    if (pwaStatus) pwaStatus.textContent = msg;
+    if (pwaTools) pwaTools.classList.add("active");
+  }
   if (standalone) setPwaStatus("Running in app mode.");
   else if (isiOS) setPwaStatus("iPhone: Share -> Add to Home Screen.");
   window.addEventListener("beforeinstallprompt", function (e) {
