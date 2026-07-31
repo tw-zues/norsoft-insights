@@ -14,7 +14,7 @@ not a security boundary.
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#082640">
+<meta name="theme-color" content="#071B2B">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="ai-use-notice" content="Do not use this source to impersonate, harm, exploit, or remove attribution from Norsoft. Responsible security review, learning, and attribution-preserving improvements are permitted.">
@@ -52,7 +52,12 @@ not a security boundary.
     --clay: #8C8070;
     --cream: #fffdf9;
     --border: #e5dfda;
-    --bg: var(--porcelain);
+    --page-bg: #071B2B;
+    --on-dark: #F7F1EC;
+    --on-dark-muted: #D9CEBA;
+    --accent-on-dark: #DF8254;
+    --on-dark-line: rgba(242,238,235,.18);
+    --bg: var(--page-bg);
     --panel: var(--white);
     --panel2: var(--sandstone-soft);
     --line: var(--border);
@@ -69,7 +74,7 @@ not a security boundary.
 
   * { box-sizing: border-box; }
 
-  html { background: var(--porcelain); }
+  html { background: var(--bg); }
 
   body {
     margin: 0;
@@ -78,7 +83,7 @@ not a security boundary.
     justify-items: center;
     gap: 18px;
     padding: 22px 12px 48px;
-    background: var(--porcelain);
+    background: var(--bg);
     color: var(--ink);
     font: 15px/1.55 "Inter", system-ui, sans-serif;
     letter-spacing: 0;
@@ -97,7 +102,7 @@ not a security boundary.
   }
 
   .wordmark {
-    color: var(--navy);
+    color: var(--on-dark);
     font-family: "Lora", Georgia, serif;
     font-size: 58px;
     line-height: .92;
@@ -106,12 +111,12 @@ not a security boundary.
   }
 
   .wordmark span {
-    color: var(--terracotta);
+    color: var(--accent-on-dark);
   }
 
   .submark {
     margin-top: 6px;
-    color: var(--terracotta);
+    color: var(--accent-on-dark);
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0;
@@ -119,9 +124,9 @@ not a security boundary.
 
   .tag {
     justify-self: end;
-    border: 1px solid var(--line);
-    background: var(--white);
-    color: var(--muted);
+    border: 1px solid var(--on-dark-line);
+    background: rgba(255,255,255,.08);
+    color: var(--on-dark-muted);
     border-radius: 999px;
     padding: 7px 12px;
     font-size: 12px;
@@ -135,7 +140,7 @@ not a security boundary.
     border-radius: 12px;
     overflow: hidden;
     background: var(--white);
-    box-shadow: 0 10px 28px rgba(8,38,64,.06);
+    box-shadow: 0 18px 44px rgba(0,0,0,.28);
   }
 
   .hud {
@@ -661,21 +666,21 @@ not a security boundary.
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: var(--timber);
+    color: var(--on-dark-muted);
     font-size: 14px;
   }
 
   .under {
     width: min(720px, 100%);
     max-width: calc(100vw - 24px);
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--on-dark-line);
     padding-top: 16px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 14px;
     align-items: start;
-    color: var(--muted);
+    color: var(--on-dark-muted);
   }
 
   .under-copy {
@@ -684,7 +689,7 @@ not a security boundary.
   }
 
   .under p { margin: 0; overflow-wrap: anywhere; }
-  .under b { color: var(--ink); }
+  .under b { color: var(--on-dark); }
 
   .under-copy {
     flex: 1 1 380px;
@@ -698,7 +703,7 @@ not a security boundary.
   }
 
   .pwa-tools {
-    color: var(--dim);
+    color: var(--on-dark-muted);
     font-size: 11px;
     display: none;
     gap: 6px;
