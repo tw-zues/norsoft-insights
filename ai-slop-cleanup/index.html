@@ -85,10 +85,10 @@ not a security boundary.
 
   .wordmark {
     color: var(--green);
-    font-size: clamp(34px, 8vw, 72px);
+    font-size: 72px;
     line-height: .88;
     font-weight: 900;
-    letter-spacing: 2px;
+    letter-spacing: 0;
     text-shadow: 0 0 22px rgba(53, 255, 124, .45);
   }
 
@@ -102,7 +102,7 @@ not a security boundary.
     color: var(--amber);
     font-size: 11px;
     font-weight: 900;
-    letter-spacing: 2px;
+    letter-spacing: 0;
   }
 
   .tag {
@@ -163,8 +163,10 @@ not a security boundary.
 
   .stage {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
-    min-height: 590px;
+    grid-template-columns: 1fr;
+    width: min(640px, 100%);
+    min-height: 0;
+    margin: 0 auto;
   }
 
   .left {
@@ -175,15 +177,19 @@ not a security boundary.
     background:
       repeating-linear-gradient(0deg, rgba(98,220,255,.025) 0 1px, transparent 1px 5px),
       #101418;
-    border-right: 1px solid var(--line);
   }
 
   .right {
+    display: none;
     padding: 18px;
-    display: grid;
     gap: 14px;
     align-content: start;
     background: #0b1013;
+    border-top: 1px solid var(--line);
+  }
+
+  .game.rated .right {
+    display: grid;
   }
 
   .prompt-row {
@@ -194,7 +200,7 @@ not a security boundary.
     color: var(--amber);
     font-size: 11px;
     font-weight: 900;
-    letter-spacing: 2px;
+    letter-spacing: 0;
   }
 
   .prompt-row span:last-child {
@@ -213,6 +219,10 @@ not a security boundary.
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 18px 36px rgba(0,0,0,.27);
+  }
+
+  .post-card.has-image {
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
   }
 
   .post-head {
@@ -261,12 +271,38 @@ not a security boundary.
 
   .post-body {
     padding: 22px;
-    font-size: clamp(20px, 2.4vw, 28px);
+    font-size: 28px;
     line-height: 1.28;
     font-weight: 900;
     display: flex;
     align-items: center;
     overflow-wrap: anywhere;
+  }
+
+  .post-card.has-image .post-body {
+    min-height: 0;
+    padding-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.35;
+    display: block;
+  }
+
+  .image-wrap {
+    padding: 0 18px 18px;
+  }
+
+  .image-wrap[hidden] {
+    display: none;
+  }
+
+  .post-shot {
+    display: block;
+    width: 100%;
+    max-height: 360px;
+    object-fit: contain;
+    border: 1px solid rgba(23,23,22,.22);
+    border-radius: 6px;
+    background: #0b0c0e;
   }
 
   .post-foot {
@@ -304,7 +340,7 @@ not a security boundary.
   }
 
   .choice strong {
-    font-size: clamp(22px, 4vw, 34px);
+    font-size: 34px;
     line-height: 1;
   }
 
@@ -414,7 +450,7 @@ not a security boundary.
     color: var(--amber);
     font-size: 11px;
     font-weight: 900;
-    letter-spacing: 1px;
+    letter-spacing: 0;
   }
 
   .panel-head span:last-child {
@@ -604,7 +640,7 @@ not a security boundary.
     color: var(--amber);
     font-size: 11px;
     font-weight: 900;
-    letter-spacing: 1px;
+    letter-spacing: 0;
   }
 
   textarea, select, input {
@@ -615,6 +651,14 @@ not a security boundary.
     border-radius: 6px;
     padding: 10px;
     font: inherit;
+  }
+
+  input[type="checkbox"] {
+    width: auto;
+  }
+
+  input[type="file"] {
+    color: var(--muted);
   }
 
   textarea {
@@ -632,6 +676,36 @@ not a security boundary.
     color: var(--muted);
     font-size: 12px;
     font-weight: 800;
+  }
+
+  .check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .image-preview {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #080c0f;
+    padding: 8px;
+  }
+
+  .image-preview[hidden] {
+    display: none;
+  }
+
+  .image-preview img,
+  .submission-thumb {
+    display: block;
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    border-radius: 4px;
+    background: #050607;
   }
 
   .admin-panel[hidden] {
@@ -723,39 +797,41 @@ not a security boundary.
       gap: 8px;
     }
 
+    .wordmark {
+      font-size: 34px;
+    }
+
     .tag {
+      display: none;
       justify-self: center;
       text-align: center;
     }
 
     .submark {
       font-size: 9px;
-      letter-spacing: 1px;
+      letter-spacing: 0;
     }
 
     .hud {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .hud-item:nth-child(2),
+    .hud-item:nth-child(3) {
+      display: none;
     }
 
     .hud-item {
-      min-height: 52px;
-      border-bottom: 1px solid var(--line);
+      min-height: 44px;
     }
 
-    .hud-item:nth-child(2n) { border-right: 0; }
+    .hud-item:nth-child(4) { border-right: 1px solid var(--line); }
     .hud-item:last-child {
-      grid-column: 1 / -1;
-      border-bottom: 0;
-    }
-
-    .stage {
-      grid-template-columns: 1fr;
-      min-height: 0;
+      grid-column: auto;
     }
 
     .left {
       padding: 12px;
-      border-right: 0;
       border-bottom: 1px solid var(--line);
     }
 
@@ -764,8 +840,8 @@ not a security boundary.
     }
 
     .post-card {
-      min-height: 360px;
-      grid-template-rows: auto minmax(240px, 1fr) auto;
+      min-height: 330px;
+      grid-template-rows: auto minmax(210px, 1fr) auto;
     }
 
     .post-body {
@@ -775,11 +851,20 @@ not a security boundary.
     }
 
     .choice-row {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
     }
 
     .choice {
-      min-height: 72px;
+      min-height: 68px;
+      padding: 10px 8px;
+    }
+
+    .choice strong {
+      font-size: 28px;
+    }
+
+    .choice span {
+      font-size: 10px;
     }
 
     .end-grid {
@@ -822,7 +907,7 @@ not a security boundary.
   <div class="tag">COMPOSITE FEED DECK / CURRENT-DAY CONTENT PANIC</div>
 </header>
 
-<main class="game" aria-label="Slop or Not game">
+<main id="game" class="game" aria-label="Slop or Not game">
   <section id="hud" class="hud" aria-live="polite">
     <div class="hud-item"><span class="hud-label">SCORE</span><span id="score" class="hud-value good">0</span></div>
     <div class="hud-item"><span class="hud-label">TASTE</span><span id="taste" class="hud-value good">100%</span></div>
@@ -834,11 +919,11 @@ not a security boundary.
   <section id="stage" class="stage">
     <div class="left">
       <div class="prompt-row">
-        <span>WOULD YOU REPORT THIS?</span>
-        <span id="timer">VIBE CLOCK 14.0</span>
+        <span>IS THIS AI SLOP?</span>
+        <span id="timer">14.0 SEC</span>
       </div>
 
-      <article class="post-card" aria-label="Post under rating">
+      <article id="postCard" class="post-card" aria-label="Post under rating">
         <div class="post-head">
           <div id="avatar" class="avatar">@</div>
           <div class="author-wrap">
@@ -848,20 +933,23 @@ not a security boundary.
           <div class="dots">...</div>
         </div>
         <div id="body" class="post-body">Loading post.</div>
+        <div id="imageWrap" class="image-wrap" hidden>
+          <img id="postImage" class="post-shot" alt="Submitted screenshot for rating">
+        </div>
         <div class="post-foot">
           <span id="genre">classification pending</span>
-        <span id="fakeStats">composite sample</span>
+          <span id="fakeStats">composite sample</span>
         </div>
       </article>
 
       <div class="choice-row" aria-label="Rating choices">
         <button id="slopBtn" class="choice slop" type="button">
           <strong>SLOP</strong>
-          <span>report it with confidence</span>
+          <span>looks AI-made</span>
         </button>
         <button id="notBtn" class="choice not" type="button">
           <strong>NOT</strong>
-          <span>let the human speak</span>
+          <span>probably human</span>
         </button>
       </div>
 
@@ -936,13 +1024,25 @@ not a security boundary.
 <section class="community" aria-label="Community Slop or Not MVP">
   <section>
     <div class="prompt-row">
-      <span>SUBMIT A POST</span>
+      <span>SUBMIT A POST OR SCREENSHOT</span>
       <span>admin-reviewed before publishing</span>
     </div>
     <div class="field">
-      <label for="submissionText">POST TEXT</label>
-      <textarea id="submissionText" maxlength="700" placeholder="Paste the post text here. Remove names, handles, links, emails, screenshots, and anything identifying."></textarea>
-      <div class="fine">MVP rule: submissions stay pending until reviewed. This static version stores them locally in this browser.</div>
+      <label for="submissionImage">SCREENSHOT</label>
+      <input id="submissionImage" type="file" accept="image/png,image/jpeg,image/webp">
+      <div id="submissionPreviewWrap" class="image-preview" hidden>
+        <img id="submissionPreview" alt="Submission preview">
+      </div>
+      <div class="fine">Crop or blur names, handles, profile photos, links, and private details before uploading. MVP images are compressed and stored locally in this browser.</div>
+    </div>
+    <div class="field">
+      <label for="submissionText">POST TEXT OR CONTEXT</label>
+      <textarea id="submissionText" maxlength="700" placeholder="Optional if you uploaded a screenshot. Paste text or add context after removing names, handles, links, emails, and anything identifying."></textarea>
+      <label class="check-row" for="identityCheck">
+        <input id="identityCheck" type="checkbox">
+        <span>I removed names, handles, profile photos, private info, and anything identifying.</span>
+      </label>
+      <div class="fine">MVP rule: submissions stay pending until reviewed. Static storage proves the flow; a public version needs backend storage and moderation.</div>
     </div>
     <div class="field">
       <label for="submissionGuess">YOUR GUESS</label>
@@ -1013,6 +1113,42 @@ not a security boundary.
   }
   function slugify(value) {
     return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 64) || "card";
+  }
+  function compressImageFile(file) {
+    return new Promise(function (resolve, reject) {
+      if (!file) { resolve(""); return; }
+      if (!/^image\/(png|jpeg|webp)$/i.test(file.type)) {
+        reject(new Error("Use a PNG, JPG, or WebP screenshot."));
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        reject(new Error("Screenshot is too large. Crop it under 5MB first."));
+        return;
+      }
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error("Could not read that image.")); };
+      reader.onload = function () {
+        var img = new Image();
+        img.onerror = function () { reject(new Error("Could not load that image.")); };
+        img.onload = function () {
+          var maxSide = 1100;
+          var scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+          var canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(img.width * scale));
+          canvas.height = Math.max(1, Math.round(img.height * scale));
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          var dataUrl = canvas.toDataURL("image/jpeg", .82);
+          if (dataUrl.length > 1200000) {
+            reject(new Error("Screenshot is still too large. Crop tighter before submitting."));
+            return;
+          }
+          resolve(dataUrl);
+        };
+        img.src = String(reader.result || "");
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   var CARDS = [
@@ -1368,15 +1504,17 @@ not a security boundary.
   };
 
   var queue = [];
+  var pendingImageData = "";
   var el = {};
   [
-    "score", "taste", "lives", "cardCount", "streak", "timer", "avatar", "author",
-    "meta", "body", "genre", "fakeStats", "slopBtn", "notBtn", "reveal", "revealHead",
+    "game", "score", "taste", "lives", "cardCount", "streak", "timer", "avatar", "author",
+    "meta", "body", "postCard", "imageWrap", "postImage", "genre", "fakeStats", "slopBtn", "notBtn", "reveal", "revealHead",
     "verdict", "delta", "punchline", "explain", "nextBtn", "slopScore", "slopBar",
     "meterLabel", "tells", "log", "modeLabel", "stage", "end", "endTitle", "endLine",
     "finalScore", "finalRight", "finalWrong", "finalBest", "againBtn", "liveState",
     "crowdSlop", "crowdTotal", "crowdBar", "submissionText", "submissionGuess",
-    "submissionNote", "submitPostBtn", "submitStatus", "adminPanel", "submissionList"
+    "submissionNote", "submissionImage", "submissionPreviewWrap", "submissionPreview",
+    "identityCheck", "submitPostBtn", "submitStatus", "adminPanel", "submissionList"
   ].forEach(function (id) { el[id] = document.getElementById(id); });
 
   function readJson(key, fallback) {
@@ -1430,13 +1568,14 @@ not a security boundary.
         answer: item.guess === "not" ? "not" : "slop",
         score: item.guess === "not" ? 3.8 : 8.1,
         author: "Community submission",
-        meta: "reader-submitted / admin-approved composite",
+        meta: item.imageData ? "reader screenshot / admin-approved" : "reader-submitted / admin-approved composite",
         genre: item.note || "community sample",
-        body: item.text,
+        body: item.text || "Screenshot submitted for society's judgment.",
+        imageData: item.imageData || "",
         tells: [
           [item.note || "reader-submitted tell", "approved from the MVP queue"],
-          ["crowd will decide", "the slopometer remains dramatic"],
-          ["names removed", "composite mode protects the joke"]
+          [item.imageData ? "screenshot evidence" : "crowd will decide", item.imageData ? "society gets to judge the crop" : "the slopometer remains dramatic"],
+          ["identifying info removed", "moderation keeps the joke from getting personal"]
         ],
         hit: item.guess === "not" ? "Correct. The crowd tried to panic, but this one still reads human." : "Correct. The submission had premium slop energy.",
         miss: item.guess === "not" ? "You flagged a community-submitted human-ish post." : "You let a reader-submitted slop specimen roam free.",
@@ -1479,6 +1618,7 @@ not a security boundary.
     state.limit = clamp(14 - Math.floor(state.index / 5) * 1.5, 9, 14);
     state.time = state.limit;
     el.reveal.classList.remove("active");
+    el.game.classList.remove("rated");
     render();
   }
 
@@ -1523,11 +1663,19 @@ not a security boundary.
     el.author.textContent = c.author;
     el.meta.textContent = c.meta;
     el.body.textContent = c.body;
+    el.postCard.classList.toggle("has-image", !!c.imageData);
+    if (c.imageData) {
+      el.postImage.src = c.imageData;
+      el.imageWrap.hidden = false;
+    } else {
+      el.postImage.removeAttribute("src");
+      el.imageWrap.hidden = true;
+    }
     el.genre.textContent = "composite / " + c.genre;
     el.fakeStats.textContent = c.stats;
     el.slopBtn.disabled = state.locked;
     el.notBtn.disabled = state.locked;
-    el.timer.textContent = "VIBE CLOCK " + state.time.toFixed(1);
+    el.timer.textContent = state.time.toFixed(1) + " SEC";
     el.timer.style.color = state.time < 4 ? "var(--red)" : state.time < 7 ? "var(--amber)" : "var(--muted)";
     if (!state.locked) {
       el.slopScore.textContent = "?";
@@ -1574,6 +1722,7 @@ not a security boundary.
     var copy = correct ? c.hit : c.miss;
     var aside = correct ? pick(GOOD_LINES) : pick(BAD_LINES);
     el.reveal.classList.add("active");
+    el.game.classList.add("rated");
     el.revealHead.className = "reveal-head " + (correct ? "good" : "bad");
     el.verdict.textContent = title;
     el.delta.textContent = delta > 0 ? "+" + delta : String(delta);
@@ -1661,15 +1810,22 @@ not a security boundary.
     var text = cleanText(el.submissionText.value, 700);
     var note = cleanText(el.submissionNote.value, 160);
     var guess = el.submissionGuess.value === "not" ? "not" : "slop";
-    if (text.length < 40) {
-      el.submitStatus.textContent = "Needs more post text before review.";
+    var hasImage = !!pendingImageData;
+    if (!hasImage && text.length < 40) {
+      el.submitStatus.textContent = "Add post text or upload a screenshot before review.";
+      return;
+    }
+    if (!el.identityCheck.checked) {
+      el.submitStatus.textContent = "Confirm that identifying details were removed first.";
       return;
     }
     var items = pendingSubmissions();
     var item = {
       id: "sub-" + Date.now().toString(36) + "-" + Math.floor(Math.random() * 10000).toString(36),
-      text: text,
-      note: note || (guess === "slop" ? "reader thinks this is slop" : "reader thinks this is human"),
+      text: text || "Screenshot submitted for society's judgment.",
+      imageData: pendingImageData,
+      kind: hasImage ? "screenshot" : "text",
+      note: note || (hasImage ? "reader submitted screenshot" : guess === "slop" ? "reader thinks this is slop" : "reader thinks this is human"),
       guess: guess,
       createdAt: new Date().toISOString()
     };
@@ -1677,6 +1833,11 @@ not a security boundary.
     savePendingSubmissions(items.slice(0, 50));
     el.submissionText.value = "";
     el.submissionNote.value = "";
+    el.submissionImage.value = "";
+    el.identityCheck.checked = false;
+    pendingImageData = "";
+    el.submissionPreview.removeAttribute("src");
+    el.submissionPreviewWrap.hidden = true;
     el.submitStatus.textContent = "Submitted to local MVP queue. Open ?admin=1 to review.";
     renderAdmin();
   }
@@ -1697,14 +1858,21 @@ not a security boundary.
     items.forEach(function (item) {
       var node = document.createElement("div");
       var text = document.createElement("p");
+      var image = document.createElement("img");
       var meta = document.createElement("div");
       var actions = document.createElement("div");
       var approve = document.createElement("button");
       var reject = document.createElement("button");
       node.className = "submission-item";
       text.textContent = item.text;
+      if (item.imageData) {
+        image.className = "submission-thumb";
+        image.alt = "Pending screenshot submission";
+        image.src = item.imageData;
+        node.appendChild(image);
+      }
       meta.className = "fine";
-      meta.textContent = (item.guess === "slop" ? "Probably slop" : "Probably not") + " / " + item.note;
+      meta.textContent = (item.kind === "screenshot" ? "Screenshot" : "Text") + " / " + (item.guess === "slop" ? "Probably slop" : "Probably not") + " / " + item.note;
       actions.className = "submission-actions";
       approve.className = "small-button primary";
       approve.type = "button";
@@ -1759,7 +1927,7 @@ not a security boundary.
         showReveal("none", false, -90);
         render();
       } else {
-        el.timer.textContent = "VIBE CLOCK " + state.time.toFixed(1);
+        el.timer.textContent = state.time.toFixed(1) + " SEC";
         el.timer.style.color = state.time < 4 ? "var(--red)" : state.time < 7 ? "var(--amber)" : "var(--muted)";
       }
     }
@@ -1777,6 +1945,23 @@ not a security boundary.
   el.nextBtn.addEventListener("click", next);
   el.againBtn.addEventListener("click", restart);
   el.submitPostBtn.addEventListener("click", submitPost);
+  el.submissionImage.addEventListener("change", function () {
+    var file = el.submissionImage.files && el.submissionImage.files[0];
+    pendingImageData = "";
+    el.submissionPreview.removeAttribute("src");
+    el.submissionPreviewWrap.hidden = true;
+    if (!file) return;
+    el.submitStatus.textContent = "Preparing screenshot preview...";
+    compressImageFile(file).then(function (dataUrl) {
+      pendingImageData = dataUrl;
+      el.submissionPreview.src = dataUrl;
+      el.submissionPreviewWrap.hidden = false;
+      el.submitStatus.textContent = "Screenshot ready. Confirm it is anonymized before submitting.";
+    }).catch(function (err) {
+      el.submissionImage.value = "";
+      el.submitStatus.textContent = err.message || "Could not prepare that screenshot.";
+    });
+  });
   window.addEventListener("keydown", function (e) {
     if (e.key === "ArrowLeft" || e.key === "s" || e.key === "S") {
       if (!state.locked && state.current) recordVote(state.current, "slop");
